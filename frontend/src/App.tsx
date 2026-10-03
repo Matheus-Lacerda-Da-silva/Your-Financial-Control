@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
+import Navbar from './components/Navbar'
+
 import Inicio from './pages/Inicio'
 import Transacoes from './pages/Transacoes'
 import Categorias from './pages/Categorias'
@@ -7,6 +9,8 @@ import Categorias from './pages/Categorias'
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
+      
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/transacoes" element={<Transacoes />} />
