@@ -1,20 +1,18 @@
-import { Button, Typography } from '@mui/material'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+import Inicio from './pages/Inicio'
+import Transacoes from './pages/Transacoes'
+import Categorias from './pages/Categorias'
 
 function App() {
   return (
-    <div>
-      <Typography variant="h3">
-        Your Financial Control
-      </Typography>
-
-      <Typography variant="body1">
-        Personal finance management application.
-      </Typography>
-
-      <Button variant="contained">
-        Get Started
-      </Button>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+        <Route path="/transacoes" element={<Transacoes />} />
+        <Route path="/categorias" element={<Categorias />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
