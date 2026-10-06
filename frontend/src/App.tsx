@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import Sidebar from './components/Sidebar'
+import LayoutPrincipal from './layouts/LayoutPrincipal'
 
 import Inicio from './pages/Inicio'
 import Transacoes from './pages/Transacoes'
@@ -9,15 +9,13 @@ import Categorias from './pages/Categorias'
 function App() {
   return (
     <BrowserRouter>
-      <Sidebar />
-
-      <main>
-        <Routes>
+      <Routes>
+        <Route element={<LayoutPrincipal />}>
           <Route path="/" element={<Inicio />} />
           <Route path="/transacoes" element={<Transacoes />} />
           <Route path="/categorias" element={<Categorias />} />
-        </Routes>
-      </main>
+        </Route>
+      </Routes>
     </BrowserRouter>
   )
 }
