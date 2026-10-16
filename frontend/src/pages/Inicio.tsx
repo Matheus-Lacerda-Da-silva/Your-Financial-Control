@@ -13,27 +13,21 @@ import {
   Paper,
 } from '@mui/material'
 
-function Inicio() {
-  const transacoes = [
-  {
-    descricao: 'Salário',
-    categoria: 'Trabalho',
-    data: '05/10/2026',
-    valor: 3500,
-  },
-  {
-    descricao: 'Supermercado',
-    categoria: 'Alimentação',
-    data: '04/10/2026',
-    valor: -250,
-  },
-  {
-    descricao: 'Internet',
-    categoria: 'Contas',
-    data: '03/10/2026',
-    valor: -100,
-  },
-]
+type Transacao = {
+  id: number
+  descricao: string
+  tipo: 'receita' | 'despesa'
+  valor: number
+  categoria: string
+  data: string
+}
+
+type InicioProps = {
+  transacoes: Transacao[]
+}
+
+function Inicio({ transacoes }: InicioProps) {
+
   const formatarMoeda = (valor: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',

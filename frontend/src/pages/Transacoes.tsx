@@ -12,7 +12,25 @@ import {
   Typography,
 } from '@mui/material'
 
-function Transacoes() {
+
+type TransacaoNova = {
+  descricao: string
+  tipo: 'receita' | 'despesa'
+  valor: number
+  categoria: string
+  data: string
+}
+
+type InicioProps = {
+  transacoes: TransacaoNova[]
+}
+
+type TransacoesProps = {
+  onCadastrarTransacao: (transacao: TransacaoNova) => void
+}
+
+
+function Transacoes({ onCadastrarTransacao }: TransacoesProps) {
   const [descricao, setDescricao] = useState('')
   const [tipo, setTipo] = useState('receita')
   const [valor, setValor] = useState('')
@@ -35,15 +53,15 @@ function Transacoes() {
       return
     }
 
-    const novaTransacao = {
-      descricao,
-      tipo,
-      valor: tipo === 'despesa' ? -valorNumerico : valorNumerico,
-      categoria,
-      data,
-    }
+  const novaTransacao: TransacaoNova = {
+    descricao,
+    tipo: tipo as 'receita' | 'despesa',
+    valor: tipo === 'despesa' ? -valorNumerico : valorNumerico,
+    categoria,
+    data,
+  }
 
-    console.log('Nova transação:', novaTransacao)
+    onCadastrarTransacao(novaTransacao)
 
     alert('Transação cadastrada com sucesso!')
 
