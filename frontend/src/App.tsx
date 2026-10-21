@@ -17,9 +17,6 @@ type Transacao = {
   data: string
 }
 
-type InicioProps = {
-  transacoes: Transacao[]
-}
 
 function App() {
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
@@ -38,6 +35,12 @@ function App() {
     ])
   }
 
+  const excluirTransacao = (id: number) => {
+    setTransacoes((transacoesAtuais) =>
+      transacoesAtuais.filter((transacao) => transacao.id !== id),
+    )
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -47,14 +50,18 @@ function App() {
             element={<Inicio transacoes={transacoes} />}
           />
 
+
           <Route
             path="/transacoes"
             element={
               <Transacoes
+                transacoes={transacoes}
                 onCadastrarTransacao={cadastrarTransacao}
+                onExcluirTransacao={excluirTransacao}
               />
             }
           />
+
 
           <Route path="/categorias" element={<Categorias />} />
         </Route>

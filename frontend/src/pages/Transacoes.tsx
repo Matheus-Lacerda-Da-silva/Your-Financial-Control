@@ -13,24 +13,28 @@ import {
 } from '@mui/material'
 
 
-type TransacaoNova = {
-  descricao: string
-  tipo: 'receita' | 'despesa'
-  valor: number
-  categoria: string
-  data: string
-}
+  type Transacao = {
+    id: number
+    descricao: string
+    tipo: 'receita' | 'despesa'
+    valor: number
+    categoria: string
+    data: string
+  }
 
-type InicioProps = {
-  transacoes: TransacaoNova[]
-}
+  type TransacaoNova = Omit<Transacao, 'id'>
 
-type TransacoesProps = {
-  onCadastrarTransacao: (transacao: TransacaoNova) => void
-}
+  type TransacoesProps = {
+    transacoes: Transacao[]
+    onCadastrarTransacao: (transacao: TransacaoNova) => void
+    onExcluirTransacao: (id: number) => void
+  }
 
-
-function Transacoes({ onCadastrarTransacao }: TransacoesProps) {
+  function Transacoes({
+    transacoes,
+    onCadastrarTransacao,
+    onExcluirTransacao,
+  }: TransacoesProps) {
   const [descricao, setDescricao] = useState('')
   const [tipo, setTipo] = useState('receita')
   const [valor, setValor] = useState('')
