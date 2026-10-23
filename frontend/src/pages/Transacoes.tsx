@@ -7,7 +7,14 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material'
@@ -28,6 +35,18 @@ import {
     transacoes: Transacao[]
     onCadastrarTransacao: (transacao: TransacaoNova) => void
     onExcluirTransacao: (id: number) => void
+  }
+
+  const formatarData = (data: string) => {
+    const [ano, mes, dia] = data.split('-')
+    return `${dia}/${mes}/${ano}`
+  }
+
+  const formatarValor = (valor: number) => {
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    })
   }
 
   function Transacoes({
@@ -157,6 +176,60 @@ import {
               Cadastrar transação
             </Button>
           </Box>
+        </CardContent>
+      </Card>
+       <Card sx={{ mt: 3 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Histórico de transações
+          </Typography>
+
+          {transacoes.length === 0 ? (
+            <Typography color="text.secondary">
+              Nenhuma transação cadastrada ainda.
+            </Typography>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Descrição</TableCell>
+                    <TableCell>Categoria</TableCell>
+                    <TableCell>Data</TableCell>
+                    <TableCell>Tipo</TableCell>
+                    <TableCell align="right">Valor</TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {transacoes.map((transacao) => (
+                    <TableRow key={transacao.id}>
+                      <TableCell>{transacao.descricao}</TableCell>
+                      <TableCell>{transacao.categoria}</TableCell>
+                      <TableCell>{formatarData(transacao.data)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={transacao.tipo === 'receita' ? 'Receita' : 'Despesa'}
+                          color={transacao.tipo === 'receita' ? 'success' : 'error'}
+                          size="small"
+                          variant="outlined"
+                        />
+                      </TableCell>
+                      <TableCell 
+                      align="right"
+                      sx={{
+                        color: transacao.tipo === 'receita' ? 'sucess.main' : 'error.main',
+                        fontWeight: 'bold',
+                      }}
+                      >
+                        {formatarValor(transacao.valor)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </CardContent>
       </Card>
     </Box>
