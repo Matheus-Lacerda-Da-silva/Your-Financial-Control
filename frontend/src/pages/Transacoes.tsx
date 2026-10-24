@@ -8,6 +8,11 @@ import {
   Card,
   CardContent,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   IconButton,
   MenuItem,
   Table,
@@ -61,6 +66,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
   const [valor, setValor] = useState('')
   const [categoria, setCategoria] = useState('')
   const [data, setData] = useState('2026-10-08')
+  const [transacaoParaExcluir, setTransacaoParaExcluir] =
+    useState<Transacao | null>(null)
 
   const cadastrarTransacao = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
@@ -231,7 +238,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
                         <IconButton
                           aria-label="Excluir transação"
                           color="error"
-                          onClick={() => onExcluirTransacao(transacao.id)}
+                          onClick={() => setTransacaoParaExcluir(transacao)}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -244,6 +251,38 @@ import DeleteIcon from '@mui/icons-material/Delete'
           )}
         </CardContent>
       </Card>
+      <Dialog
+        open={transacaoParaExcluir !== null}
+        onClose={() => setTransacaoParaExcluir(null)}
+      >
+        <DialogTitle>Excluir transação</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza de que deseja excluir "
+            {transacaoParaExcluir?.descricao}"? Essa ação não pode ser
+            desfeita.
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setTransacaoParaExcluir(null)}>
+            Cancelar
+          </Button>
+
+          <Button
+            color="error"
+            onClick={() => {
+              if (transacaoParaExcluir) {
+                onExcluirTransacao(transacaoParaExcluir.id)
+              }
+              setTransacaoParaExcluir(null)
+            }}
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
