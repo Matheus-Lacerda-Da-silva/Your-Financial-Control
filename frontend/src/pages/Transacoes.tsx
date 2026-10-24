@@ -8,6 +8,7 @@ import {
   Card,
   CardContent,
   Chip,
+  IconButton,
   MenuItem,
   Table,
   TableBody,
@@ -19,6 +20,7 @@ import {
   Typography,
 } from '@mui/material'
 
+import DeleteIcon from '@mui/icons-material/Delete'
 
   type Transacao = {
     id: number
@@ -198,6 +200,7 @@ import {
                     <TableCell>Data</TableCell>
                     <TableCell>Tipo</TableCell>
                     <TableCell align="right">Valor</TableCell>
+                    <TableCell align="center">Ação</TableCell>
                   </TableRow>
                 </TableHead>
 
@@ -223,6 +226,15 @@ import {
                       }}
                       >
                         {formatarValor(transacao.valor)}
+                      </TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          aria-label="Excluir transação"
+                          color="error"
+                          onClick={() => onExcluirTransacao(transacao.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))}
