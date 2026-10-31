@@ -26,6 +26,7 @@ import {
 } from '@mui/material'
 
 import DeleteIcon from '@mui/icons-material/Delete'
+import { formatarData, formatarMoeda } from '../utils/formatadores'
 
   type Transacao = {
     id: number
@@ -42,18 +43,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
     transacoes: Transacao[]
     onCadastrarTransacao: (transacao: TransacaoNova) => void
     onExcluirTransacao: (id: number) => void
-  }
-
-  const formatarData = (data: string) => {
-    const [ano, mes, dia] = data.split('-')
-    return `${dia}/${mes}/${ano}`
-  }
-
-  const formatarValor = (valor: number) => {
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    })
   }
 
   function Transacoes({
@@ -232,7 +221,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
                         fontWeight: 'bold',
                       }}
                       >
-                        {formatarValor(transacao.valor)}
+                        {(formatarMoeda(transacao.valor))}
                       </TableCell>
                       <TableCell align="center">
                         <IconButton

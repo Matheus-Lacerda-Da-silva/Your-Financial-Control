@@ -12,6 +12,7 @@ import {
   Typography,
   Paper,
 } from '@mui/material'
+import { formatarData, formatarMoeda } from '../utils/formatadores'
 
 type Transacao = {
   id: number
@@ -28,12 +29,6 @@ type InicioProps = {
 
 function Inicio({ transacoes }: InicioProps) {
 
-  const formatarMoeda = (valor: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(valor)
-  }
   const receitas = transacoes
     .filter((transacao) => transacao.valor > 0)
     .reduce((total, transacao) => total + transacao.valor, 0)
@@ -117,7 +112,7 @@ function Inicio({ transacoes }: InicioProps) {
 
     <TableBody>
       {transacoes.map((transacao) => (
-        <TableRow key={transacao.descricao}>
+        <TableRow key={transacao.id}>
           <TableCell>
             {transacao.descricao}
           </TableCell>
@@ -127,7 +122,7 @@ function Inicio({ transacoes }: InicioProps) {
           </TableCell>
 
           <TableCell>
-            {transacao.data}
+            {formatarData(transacao.data)}
           </TableCell>
 
         <TableCell
