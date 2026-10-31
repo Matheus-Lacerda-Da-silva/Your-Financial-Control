@@ -38,6 +38,7 @@ function Inicio({ transacoes }: InicioProps) {
     .reduce((total, transacao) => total + Math.abs(transacao.valor), 0)
 
   const saldoAtual = receitas - despesas
+  const ultimasTransacoes = transacoes.slice(0, 5)
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -99,50 +100,53 @@ function Inicio({ transacoes }: InicioProps) {
           </Card>
         </Grid>
       </Grid>
-      <TableContainer component={Paper}>
-  <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell>Descrição</TableCell>
-        <TableCell>Categoria</TableCell>
-        <TableCell>Data</TableCell>
-        <TableCell align="right">Valor</TableCell>
-      </TableRow>
-    </TableHead>
+    <Box>
+      <Grid container spacing={3}>
+      </Grid>
+    </Box>
+ <Box sx={{ mt: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        Últimas transações
+      </Typography>
 
-    <TableBody>
-      {transacoes.map((transacao) => (
-        <TableRow key={transacao.id}>
-          <TableCell>
-            {transacao.descricao}
-          </TableCell>
+      {ultimasTransacoes.length === 0 ? (
+        <Typography color="text.secondary">
+          Nenhuma transação cadastrada ainda.
+        </Typography>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Descrição</TableCell>
+                <TableCell>Categoria</TableCell>
+                <TableCell>Data</TableCell>
+                <TableCell align="right">Valor</TableCell>
+              </TableRow>
+              </TableHead>
 
-          <TableCell>
-            {transacao.categoria}
-          </TableCell>
-
-          <TableCell>
-            {formatarData(transacao.data)}
-          </TableCell>
-
-        <TableCell
-          align="right"
-          sx={{
-            color: transacao.valor >= 0 ? 'success.main' : 'error.main',
-            fontWeight: 600,
-          }}
-        >
-          {formatarMoeda(transacao.valor)}
-        </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
-      <Box sx={{ mt: 4 }}>
-  <Typography variant="h5" gutterBottom>
-    Últimas transações
-  </Typography>
+              <TableBody>
+                {ultimasTransacoes.map((transacao) => (
+                  <TableRow key={transacao.id}>
+                    <TableCell>{transacao.descricao}</TableCell>
+                    <TableCell>{transacao.categoria}</TableCell>
+                    <TableCell>{formatarData(transacao.data)}</TableCell>
+                    <TableCell
+                      align="right"
+                      sx={{
+                        color:
+                          transacao.valor >= 0 ? 'success.main' : 'error.main',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {formatarMoeda(transacao.valor)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
     </Box>
   )
