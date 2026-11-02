@@ -41,6 +41,14 @@ function App() {
     )
   }
 
+   const editarTransacao = (transacaoEditada: Transacao) => {
+    setTransacoes((transacoesAtuais) =>
+      transacoesAtuais.map((transacao) =>
+        transacao.id === transacaoEditada.id ? transacaoEditada : transacao,
+      ),
+    )
+  } 
+
   return (
     <BrowserRouter>
       <Routes>
@@ -58,6 +66,7 @@ function App() {
                 transacoes={transacoes}
                 onCadastrarTransacao={cadastrarTransacao}
                 onExcluirTransacao={excluirTransacao}
+                onEditarTransacao={editarTransacao}
               />
             }
           />

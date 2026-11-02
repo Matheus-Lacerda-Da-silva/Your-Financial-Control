@@ -26,6 +26,7 @@ import {
 } from '@mui/material'
 
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import { formatarData, formatarMoeda } from '../utils/formatadores'
 
   type Transacao = {
@@ -43,20 +44,27 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
     transacoes: Transacao[]
     onCadastrarTransacao: (transacao: TransacaoNova) => void
     onExcluirTransacao: (id: number) => void
+    onEditarTransacao: (transacao: Transacao) => void
   }
 
   function Transacoes({
     transacoes,
     onCadastrarTransacao,
     onExcluirTransacao,
+    onEditarTransacao,
   }: TransacoesProps) {
   const [descricao, setDescricao] = useState('')
   const [tipo, setTipo] = useState('receita')
   const [valor, setValor] = useState('')
   const [categoria, setCategoria] = useState('')
   const [data, setData] = useState('2026-10-08')
-  const [transacaoParaExcluir, setTransacaoParaExcluir] =
-    useState<Transacao | null>(null)
+  const [transacaoParaExcluir, setTransacaoParaExcluir] = useState<Transacao | null>(null)
+  const [transacaoEmEdicao, setTransacaoEmEdicao] = useState<Transacao | null>(null)
+  const [descricaoEdicao, setDescricaoEdicao] = useState('')
+  const [tipoEdicao, setTipoEdicao] = useState('receita')
+  const [valorEdicao, setValorEdicao] = useState('')
+  const [categoriaEdicao, setCategoriaEdicao] = useState('')
+  const [dataEdicao, setDataEdicao] = useState('')
 
   const cadastrarTransacao = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
@@ -92,6 +100,45 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
     setCategoria('')
     setData('2026-10-08')
   }
+
+const abrirEdicao = (transacao: Transacao) => {
+  setTransacaoEmEdicao(transacao)
+  setDescricaoEdicao(transacao.descricao)
+  setTipoEdicao(transacao.tipo)
+  setValorEdicao(String(Math.abs(transacao.valor)))
+  setCategoriaEdicao(transacao.categoria)
+  setDataEdicao(transacao.data)
+} 
+
+const salvarEdicao = () => {
+  if (!transacaoEmEdicao) {
+    return
+  }
+
+  const valorNumerico = Number(valorEdicao)
+
+  if (
+    !descricaoEdicao.trim() ||
+    !categoriaEdicao.trim() ||
+    !dataEdicao ||
+    !Number.isFinite(valorNumerico) ||
+    valorNumerico <= 0
+  ) {
+    alert('Preencha todos os campos com valores válidos.')
+    return
+  }
+
+  onEditarTransacao({
+    id: transacaoEmEdicao.id,
+    descricao: descricaoEdicao,
+    tipo: tipoEdicao as 'receita' | 'despesa',
+    valor: tipoEdicao === 'despesa' ? -valorNumerico : valorNumerico,
+    categoria: categoriaEdicao,
+    data: dataEdicao,
+    })
+
+  setTransacaoEmEdicao(null)
+}
 
   return (
     <Box>
@@ -225,6 +272,13 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
+                          aria-label="Editar transação"
+                          color="primary"
+                          onClick={() => abrirEdicao(transacao)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
                           aria-label="Excluir transação"
                           color="error"
                           onClick={() => setTransacaoParaExcluir(transacao)}
@@ -259,6 +313,13 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
             Cancelar
           </Button>
 
+          <DialogActions>
+            <Button onClick={() => setTransacaoEmEdicao(null)}>Cancelar</Button>
+            <Button variant="contained" onClick={salvarEdicao}>
+            Salvar
+          </Button>
+        </DialogActions>
+
           <Button
             color="error"
             onClick={() => {
@@ -269,6 +330,75 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
             }}
           >
             Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={transacaoEmEdicao !== null}
+        onClose={() => setTransacaoEmEdicao(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Editar transação</DialogTitle>
+
+        <DialogContent>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              pt: 1,
+            }}
+          >
+            <TextField
+              label="Descrição"
+              value={descricaoEdicao}
+              onChange={(evento) => setDescricaoEdicao(evento.target.value)}
+              fullWidth
+            />
+
+            <TextField
+              select
+              label="Tipo de transação"
+              value={tipoEdicao}
+              onChange={(evento) => setTipoEdicao(evento.target.value)}
+              fullWidth
+            >
+              <MenuItem value="receita">Receita</MenuItem>
+              <MenuItem value="despesa">Despesa</MenuItem>
+            </TextField>
+
+            <TextField
+              label="Valor (R$)"
+              type="number"
+              value={valorEdicao}
+              onChange={(evento) => setValorEdicao(evento.target.value)}
+              slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
+              fullWidth
+            />
+
+            <TextField
+              label="Categoria"
+              value={categoriaEdicao}
+              onChange={(evento) => setCategoriaEdicao(evento.target.value)}
+              fullWidth
+            />
+
+            <TextField
+              label="Data"
+              type="date"
+              value={dataEdicao}
+              onChange={(evento) => setDataEdicao(evento.target.value)}
+              slotProps={{ inputLabel: { shrink: true } }}
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setTransacaoEmEdicao(null)}>Cancelar</Button>
+          <Button variant="contained" onClick={salvarEdicao}>
+            Salvar
           </Button>
         </DialogActions>
       </Dialog>
