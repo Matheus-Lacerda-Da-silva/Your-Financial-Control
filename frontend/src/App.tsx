@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -8,14 +7,7 @@ import Inicio from './pages/Inicio'
 import Transacoes from './pages/Transacoes'
 import Categorias from './pages/Categorias'
 
-type Transacao = {
-  id: number
-  descricao: string
-  tipo: 'receita' | 'despesa'
-  valor: number
-  categoria: string
-  data: string
-}
+import type { Transacao } from './types/transacao'
 
 
 function App() {
@@ -41,13 +33,13 @@ function App() {
     )
   }
 
-   const editarTransacao = (transacaoEditada: Transacao) => {
+  const editarTransacao = (transacaoEditada: Transacao) => {
     setTransacoes((transacoesAtuais) =>
       transacoesAtuais.map((transacao) =>
         transacao.id === transacaoEditada.id ? transacaoEditada : transacao,
       ),
     )
-  } 
+  }
 
   return (
     <BrowserRouter>

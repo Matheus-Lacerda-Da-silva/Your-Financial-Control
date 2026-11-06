@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { Box, IconButton, Typography } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Outlet } from 'react-router-dom'
@@ -10,7 +10,7 @@ export default function LayoutPrincipal() {
     <a className="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
     <Sidebar aberta={menuAberto} onFechar={() => setMenuAberto(false)} />
     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-      <Box component="header" sx={{ height: 80, px: { xs: 2, md: 4 }, display: 'flex', alignItems: 'center', gap: 1, borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+      <Box component="header" sx={{ height: 80, pl: { xs: 2, md: 4 }, pr: { xs: 8, sm: 22 }, display: 'flex', alignItems: 'center', gap: 1, borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
         <IconButton aria-label="Abrir menu de navegação" onClick={() => setMenuAberto(true)} sx={{ display: { md: 'none' } }}><MenuIcon /></IconButton>
         <Typography variant="body2" color="text.secondary">Seu dinheiro, com mais clareza.</Typography>
       </Box>

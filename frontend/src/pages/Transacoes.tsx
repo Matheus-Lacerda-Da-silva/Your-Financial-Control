@@ -1,8 +1,9 @@
-
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
 import {
+  Alert,
+  Snackbar,
   Box,
   Button,
   Card,
@@ -27,37 +28,32 @@ import {
 
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
-import { formatarData, formatarMoeda } from '../utils/formatadores'
+import TransacaoCard from '../components/TransacaoCard'
+import { dataLocalAtual, formatarData, formatarMoeda } from '../utils/formatadores'
 
-  type Transacao = {
-    id: number
-    descricao: string
-    tipo: 'receita' | 'despesa'
-    valor: number
-    categoria: string
-    data: string
-  }
+import type { Transacao } from '../types/transacao'
 
-  type TransacaoNova = Omit<Transacao, 'id'>
+type TransacaoNova = Omit<Transacao, 'id'>
 
-  type TransacoesProps = {
-    transacoes: Transacao[]
-    onCadastrarTransacao: (transacao: TransacaoNova) => void
-    onExcluirTransacao: (id: number) => void
-    onEditarTransacao: (transacao: Transacao) => void
-  }
+type TransacoesProps = {
+  transacoes: Transacao[]
+  onCadastrarTransacao: (transacao: TransacaoNova) => void
+  onExcluirTransacao: (id: number) => void
+  onEditarTransacao: (transacao: Transacao) => void
+}
 
-  function Transacoes({
-    transacoes,
-    onCadastrarTransacao,
-    onExcluirTransacao,
-    onEditarTransacao,
-  }: TransacoesProps) {
+function Transacoes({
+  transacoes,
+  onCadastrarTransacao,
+  onExcluirTransacao,
+  onEditarTransacao,
+}: TransacoesProps) {
+  const [aviso, setAviso] = useState<{ texto: string; erro: boolean } | null>(null)
   const [descricao, setDescricao] = useState('')
   const [tipo, setTipo] = useState('receita')
   const [valor, setValor] = useState('')
   const [categoria, setCategoria] = useState('')
-  const [data, setData] = useState('2026-10-08')
+  const [data, setData] = useState(dataLocalAtual)
   const [transacaoParaExcluir, setTransacaoParaExcluir] = useState<Transacao | null>(null)
   const [transacaoEmEdicao, setTransacaoEmEdicao] = useState<Transacao | null>(null)
   const [descricaoEdicao, setDescricaoEdicao] = useState('')
@@ -78,71 +74,76 @@ import { formatarData, formatarMoeda } from '../utils/formatadores'
       !Number.isFinite(valorNumerico) ||
       valorNumerico <= 0
     ) {
-      alert('Preencha todos os campos com valores válidos.')
+      setAviso({ texto: 'Preencha todos os campos com valores válidos.', erro: true })
       return
     }
 
-  const novaTransacao: TransacaoNova = {
-    descricao,
-    tipo: tipo as 'receita' | 'despesa',
-    valor: tipo === 'despesa' ? -valorNumerico : valorNumerico,
-    categoria,
-    data,
-  }
+    const novaTransacao: TransacaoNova = {
+      descricao,
+      tipo: tipo as 'receita' | 'despesa',
+      valor: tipo === 'despesa' ? -valorNumerico : valorNumerico,
+      categoria,
+      data,
+    }
 
     onCadastrarTransacao(novaTransacao)
 
-    alert('Transação cadastrada com sucesso!')
+    setAviso({ texto: 'Transação cadastrada com sucesso!', erro: false })
 
     setDescricao('')
     setTipo('receita')
     setValor('')
     setCategoria('')
-    setData('2026-10-08')
+    setData(dataLocalAtual())
   }
 
-const abrirEdicao = (transacao: Transacao) => {
-  setTransacaoEmEdicao(transacao)
-  setDescricaoEdicao(transacao.descricao)
-  setTipoEdicao(transacao.tipo)
-  setValorEdicao(String(Math.abs(transacao.valor)))
-  setCategoriaEdicao(transacao.categoria)
-  setDataEdicao(transacao.data)
-} 
-
-const salvarEdicao = () => {
-  if (!transacaoEmEdicao) {
-    return
+  const abrirEdicao = (transacao: Transacao) => {
+    setTransacaoEmEdicao(transacao)
+    setDescricaoEdicao(transacao.descricao)
+    setTipoEdicao(transacao.tipo)
+    setValorEdicao(String(Math.abs(transacao.valor)))
+    setCategoriaEdicao(transacao.categoria)
+    setDataEdicao(transacao.data)
   }
 
-  const valorNumerico = Number(valorEdicao)
+  const salvarEdicao = () => {
+    if (!transacaoEmEdicao) {
+      return
+    }
 
-  if (
-    !descricaoEdicao.trim() ||
-    !categoriaEdicao.trim() ||
-    !dataEdicao ||
-    !Number.isFinite(valorNumerico) ||
-    valorNumerico <= 0
-  ) {
-    alert('Preencha todos os campos com valores válidos.')
-    return
-  }
+    const valorNumerico = Number(valorEdicao)
 
-  onEditarTransacao({
-    id: transacaoEmEdicao.id,
-    descricao: descricaoEdicao,
-    tipo: tipoEdicao as 'receita' | 'despesa',
-    valor: tipoEdicao === 'despesa' ? -valorNumerico : valorNumerico,
-    categoria: categoriaEdicao,
-    data: dataEdicao,
+    if (
+      !descricaoEdicao.trim() ||
+      !categoriaEdicao.trim() ||
+      !dataEdicao ||
+      !Number.isFinite(valorNumerico) ||
+      valorNumerico <= 0
+    ) {
+      setAviso({ texto: 'Preencha todos os campos com valores válidos.', erro: true })
+      return
+    }
+
+    onEditarTransacao({
+      id: transacaoEmEdicao.id,
+      descricao: descricaoEdicao,
+      tipo: tipoEdicao as 'receita' | 'despesa',
+      valor: tipoEdicao === 'despesa' ? -valorNumerico : valorNumerico,
+      categoria: categoriaEdicao,
+      data: dataEdicao,
     })
 
-  setTransacaoEmEdicao(null)
-}
+    setTransacaoEmEdicao(null)
+  }
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
+      <Snackbar open={aviso !== null} autoHideDuration={5000} onClose={() => setAviso(null)}>
+        <Alert severity={aviso?.erro ? 'error' : 'success'} onClose={() => setAviso(null)} variant="filled">
+          {aviso?.texto}
+        </Alert>
+      </Snackbar>
+      <Typography variant="h4" component="h1" gutterBottom>
         Transações
       </Typography>
 
@@ -160,10 +161,9 @@ const salvarEdicao = () => {
             component="form"
             onSubmit={cadastrarTransacao}
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              maxWidth: 600,
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', xl: 'repeat(3, minmax(0, 1fr))' },
+              gap: 2.5,
             }}
           >
             <TextField
@@ -223,7 +223,7 @@ const salvarEdicao = () => {
           </Box>
         </CardContent>
       </Card>
-       <Card sx={{ mt: 3 }}>
+      <Card sx={{ mt: 3 }}>
         <CardContent>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Histórico de transações
@@ -234,7 +234,18 @@ const salvarEdicao = () => {
               Nenhuma transação cadastrada ainda.
             </Typography>
           ) : (
-            <TableContainer>
+            <Box>
+              <Box sx={{ display: { xs: 'grid', sm: 'none' }, gap: 2 }}>
+                {transacoes.map((transacao) => (
+                  <TransacaoCard
+                    key={transacao.id}
+                    transacao={transacao}
+                    onEditar={abrirEdicao}
+                    onExcluir={setTransacaoParaExcluir}
+                  />
+                ))}
+              </Box>
+              <TableContainer sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -261,12 +272,12 @@ const salvarEdicao = () => {
                           variant="outlined"
                         />
                       </TableCell>
-                      <TableCell 
-                      align="right"
-                      sx={{
-                        color: transacao.tipo === 'receita' ? 'sucess.main' : 'error.main',
-                        fontWeight: 'bold',
-                      }}
+                      <TableCell
+                        align="right"
+                        sx={{
+                          color: transacao.tipo === 'receita' ? 'success.main' : 'error.main',
+                          fontWeight: 'bold',
+                        }}
                       >
                         {(formatarMoeda(transacao.valor))}
                       </TableCell>
@@ -290,7 +301,8 @@ const salvarEdicao = () => {
                   ))}
                 </TableBody>
               </Table>
-            </TableContainer>
+              </TableContainer>
+            </Box>
           )}
         </CardContent>
       </Card>
@@ -312,14 +324,6 @@ const salvarEdicao = () => {
           <Button onClick={() => setTransacaoParaExcluir(null)}>
             Cancelar
           </Button>
-
-          <DialogActions>
-            <Button onClick={() => setTransacaoEmEdicao(null)}>Cancelar</Button>
-            <Button variant="contained" onClick={salvarEdicao}>
-            Salvar
-          </Button>
-        </DialogActions>
-
           <Button
             color="error"
             onClick={() => {
