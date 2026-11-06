@@ -29,3 +29,17 @@ Execute `npm run dev` na pasta `frontend` e abra o endereço informado pelo Vite
 - Conferir mensagem para campos inválidos e notificação de cadastro concluído.
 
 Os dados financeiros continuam apenas em memória. Recarregar apaga as transações; somente a preferência de tema é salva.
+
+## Acesso e cadastro demonstrativos
+
+- Abrir `/` sem sessão e conferir o redirecionamento para `/acesso`.
+- Conferir as duas páginas em 320, 375, 768, 1024 e 1440 px e nos dois temas.
+- Usar Tab para navegar pelos campos, mostrar/ocultar senha, enviar e alternar entre acesso e cadastro.
+- Enviar acesso vazio ou com e-mail inválido e conferir mensagens nos campos.
+- Conferir que mostrar/ocultar senha não envia o formulário.
+- No cadastro, testar nome vazio, e-mail inválido, senha curta, somente espaços e confirmação diferente.
+- Validar um cadastro fictício e conferir o retorno ao acesso com o e-mail preenchido e a mensagem de demonstração.
+- Entrar com dados fictícios válidos e conferir o painel e suas rotas.
+- Clicar em Sair e conferir o retorno ao acesso. Voltar pelo navegador não deve reabrir o painel sem sessão.
+- Recarregar o painel e conferir que volta ao acesso sem transações ou sessão.
+- Conferir que nenhuma senha é adicionada a localStorage, sessionStorage ou à URL.

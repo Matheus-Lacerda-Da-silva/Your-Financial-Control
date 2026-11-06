@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import LayoutPrincipal from './layouts/LayoutPrincipal'
 
 import Inicio from './pages/Inicio'
 import Transacoes from './pages/Transacoes'
 import Categorias from './pages/Categorias'
+import Acesso from './pages/Acesso'
+import Cadastro from './pages/Cadastro'
 
 import type { Transacao } from './types/transacao'
 
 
 function App() {
+  const [sessaoDemo, setSessaoDemo] = useState(false)
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
 
   const cadastrarTransacao = (
@@ -44,7 +47,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<LayoutPrincipal />}>
+        <Route path="/acesso" element={sessaoDemo ? <Navigate to="/" replace /> : <Acesso onEntrar={() => setSessaoDemo(true)} />} />
+        <Route path="/cadastro" element={sessaoDemo ? <Navigate to="/" replace /> : <Cadastro />} />
+        <Route element={sessaoDemo ? <LayoutPrincipal onSair={() => {
+          setSessaoDemo(false)
+          setTransacoes([])
+        }} /> : <Navigate to="/acesso" replace />}>
           <Route
             path="/"
             element={<Inicio transacoes={transacoes} />}
@@ -66,6 +74,7 @@ function App() {
 
           <Route path="/categorias" element={<Categorias />} />
         </Route>
+        <Route path="*" element={<Navigate to={sessaoDemo ? '/' : '/acesso'} replace />} />
       </Routes>
     </BrowserRouter>
   )
