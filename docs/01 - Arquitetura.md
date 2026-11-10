@@ -16,7 +16,15 @@ Relacionadas: [[00 - Visão Geral]], [[02 - Banco de Dados]], [[03 - Regras Fina
 | `frontend/src/theme/` | Tema Material UI, preferência do sistema e localStorage |
 | `frontend/tests/` | Seis testes de validação de acesso/cadastro |
 | `backend/` | Apenas `.gitkeep`; backend não identificado |
-| `docs/` | Notas desta auditoria; documentação e configuração Obsidian anteriores em `docs/docs/` |
+| `docs/` | Raiz única do cofre, com seis notas oficiais e configurações em `.obsidian/` |
+
+## Orientações para evolução incremental
+
+O projeto está em estágio inicial. Preservar o código funcional e evoluir por mudanças pequenas, com validação do fluxo afetado. Reutilizar os componentes, layouts e tema existentes; extrair componentes e regras compartilhadas quando houver benefício concreto, evitando reescritas amplas.
+
+A direção visual provisória é glassmorphism em cinza e verde, conforme [[00 - Visão Geral]]. Alterações futuras devem preservar contraste, leitura de valores, foco e uso por teclado; transparência e desfoque são opcionais quando prejudicarem acessibilidade ou desempenho. Validar responsividade e os temas existentes antes de ampliar a mudança para outras telas. Esta orientação é planejada, sem alteração de estilos nesta atualização.
+
+Backend, banco e autenticação real serão abordados em etapas posteriores do [[04 - Roadmap]]. A ausência atual é compatível com o estágio demonstrativo; os requisitos de persistência e isolamento devem ser atendidos antes da transição para uso real com dados pessoais e financeiros.
 
 ## Fluxo e rotas
 
@@ -43,6 +51,8 @@ Sem sessão, as rotas principais redirecionam para `/acesso`. Sair limpa sessão
 
 ## Riscos técnicos e de segurança
 
+Os impactos abaixo registram limites e riscos técnicos da auditoria inicial. Eles não tornam backend e banco tarefas imediatas; a sequência de evolução está no [[04 - Roadmap]].
+
 | Impacto | Constatação e consequência | Evidência |
 | --- | --- | --- |
 | Alto para uso real | Sessão é booleano no cliente; não existe barreira de autorização de servidor nem isolamento entre usuários. Não há backend atual a ser protegido, mas a demo não serve como mecanismo de segurança para futura API | `App.tsx`, `Acesso.tsx`, `backend/.gitkeep` |
@@ -51,7 +61,7 @@ Sem sessão, as rotas principais redirecionam para `/acesso`. Sair limpa sessão
 | Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `App.tsx` |
 | Médio | Validação concentrada na interface; data só é verificada como não vazia nos handlers; tipo usa cast, não validação de execução | `Transacoes.tsx` |
 | Médio | Totais usam sinal do valor; rótulos usam tipo. Objetos inconsistentes podem produzir exibição contraditória | `Inicio.tsx`, `TransacaoCard.tsx`, `Transacoes.tsx` |
-| Médio | README anuncia stack não implementada; notas anteriores em outro nível de diretório podem divergir | `README.md`, `docs/docs/00 - Visão Geral.md` |
+| Médio | README anuncia stack não implementada; distinguir a intenção full stack do estágio demonstrativo atual | `README.md` |
 
 Não foram identificadas configurações de CI, monitoramento, políticas de backup ou infraestrutura de produção nos arquivos examinados. Não houve auditoria de dependências contra bases de vulnerabilidades, análise do histórico Git ou validação de TLS, headers, CORS e ambiente publicado; não se afirma ausência de vulnerabilidades ou segredos no histórico. `.gitignore` exclui `.env` e variantes, mas isso não comprova ausência de segredos já versionados.
 

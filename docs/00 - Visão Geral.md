@@ -6,6 +6,17 @@ Auditoria inicial: 2026-11-09. Escopo: código e arquivos locais; sem consulta a
 
 Aplicação web para gerenciamento de finanças pessoais: registrar receitas e despesas e acompanhar saldo e histórico. A versão encontrada é um frontend demonstrativo, sem persistência financeira nem autenticação real. Não deve ser tratada como sistema financeiro pronto para uso real.
 
+O projeto está em estágio inicial e será desenvolvido progressivamente. A prioridade é preservar o código e os fluxos existentes, entregando melhorias pequenas e verificáveis. Backend, banco de dados e autenticação real são etapas futuras do [[04 - Roadmap]], sem exigência de implementação imediata para continuar a evolução da demonstração.
+
+## Direção de evolução e visual provisório
+
+- Evoluir incrementalmente, reutilizando componentes e padrões existentes antes de introduzir novas abstrações ou reescrever telas.
+- Priorizar responsividade, navegação por teclado, foco visível, legibilidade e acessibilidade em cada entrega.
+- Adotar glassmorphism como direção visual provisória, com tons de cinza como base e verde para destaques. Essa é uma orientação para futuras alterações, não uma declaração de estilo já implementado ou identidade visual definitiva.
+- Aplicar transparência e desfoque somente quando preservarem contraste e leitura, especialmente de valores financeiros, campos e mensagens. Prever superfícies opacas quando necessário e não depender apenas de cor para comunicar receita, despesa ou erro.
+
+Esta definição não altera o código ou os estilos atuais. A implementação visual deve ser gradual e validada em diferentes tamanhos de tela e nos temas disponíveis.
+
 O README raiz descreve uma aplicação full stack e cita Node.js, Express, PostgreSQL, REST e JWT. Essas declarações não comprovam implementação: `backend/` contém somente `.gitkeep`; não foram identificados servidor, endpoints, esquema ou integração de autenticação. Node.js é utilizado pelo comando de testes, não por um backend identificado.
 
 ## Tecnologias confirmadas
@@ -41,4 +52,4 @@ Seis testes de validação de acesso/cadastro passaram com `npm.cmd test` em `fr
 - [[04 - Roadmap]]: propostas priorizadas, sem compromisso de entrega.
 - [[05 - Diário de Desenvolvimento]]: registro e limites da auditoria.
 
-As notas desta auditoria ficam em `docs/`, conforme solicitado. O conteúdo anterior estava em `docs/docs/00 - Visão Geral.md`; esse arquivo e o diretório `.obsidian` existente foram preservados. O vault identificado em `docs/docs/` pode precisar ser aberto em `docs/` para incluir estas notas; nenhuma configuração foi alterada. A duplicidade de nomes poderá tornar links ambíguos se ambas as cópias estiverem no mesmo vault.
+`docs/` é a única raiz do cofre Obsidian, com configurações em `docs/.obsidian/`. A documentação antiga de `docs/docs/` foi preservada em backup externo antes da remoção da pasta duplicada. O histórico da auditoria permanece em [[05 - Diário de Desenvolvimento]].

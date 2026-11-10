@@ -2,6 +2,15 @@
 
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
+## 2026-11-09 — Direção de desenvolvimento progressivo
+
+- Registrado o estágio inicial do projeto e a evolução por entregas pequenas, preservando o código e os fluxos existentes.
+- Definido glassmorphism com tons de cinza e verde como direção visual provisória para futuras alterações, condicionada a legibilidade, contraste, responsividade e acessibilidade.
+- Priorizados componentes reutilizáveis e validação incremental; nenhuma alteração de código ou estilos foi realizada nesta atualização.
+- Backend, API, banco e autenticação real foram situados em etapas posteriores do roadmap, sem exigência imediata para evoluir a demonstração. Os requisitos de segurança continuam necessários antes do uso real.
+- Atualizadas referências à organização do cofre: `docs/` é a raiz única e `docs/docs/` foi removida após backup externo verificado na tarefa anterior. O registro da auditoria abaixo foi preservado como histórico.
+- Alteradas apenas as notas de visão geral, arquitetura, roadmap e este diário. `AGENTS.md` permanece inalterado: já orienta mudanças pequenas e consulta à visão geral.
+
 ## 2026-11-09 — Auditoria inicial e documentação
 
 ### Escopo e método
