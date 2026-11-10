@@ -1,55 +1,20 @@
 {
   "main": {
-    "id": "b9bf44fd817136f4",
+    "id": "d2c4b4dfbe434c50",
     "type": "split",
     "children": [
       {
-        "id": "8f0b7047d55bc544",
+        "id": "30a96dc71656c1b1",
         "type": "tabs",
         "children": [
           {
-            "id": "6e9ced0afd28835e",
+            "id": "8cd63ffd29e6e074",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Bem-vindo.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Bem-vindo"
-            }
-          },
-          {
-            "id": "5d577d1c1db5e4e2",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "00 - Visão Geral.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "00 - Visão Geral"
-            }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
-        "id": "de1252e8dae337fa",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "53ca542c5e416fc6",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Visualização em gráfico"
+              "icon": "lucide-file",
+              "title": "Nova aba"
             }
           }
         ]
@@ -58,15 +23,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "55c5fec797591420",
+    "id": "8a2aefb5fa0c3573",
     "type": "split",
     "children": [
       {
-        "id": "1f44f1d8263fb1c7",
+        "id": "6fb99a5e3333e2e6",
         "type": "tabs",
         "children": [
           {
-            "id": "91af7a04e795dc85",
+            "id": "f28f0493a144521d",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -81,7 +46,7 @@
             }
           },
           {
-            "id": "d8867ea7b3b247f3",
+            "id": "4645696e3272bc00",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -98,7 +63,7 @@
             }
           },
           {
-            "id": "555e8ff6c6fba66e",
+            "id": "09aeea69feec1187",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -117,20 +82,19 @@
     "width": 300
   },
   "right": {
-    "id": "426f9fc67afc2850",
+    "id": "f24eb9225b2b9d7d",
     "type": "split",
     "children": [
       {
-        "id": "578d58826f0b6bff",
+        "id": "8ad20b7bc6bb1f58",
         "type": "tabs",
         "children": [
           {
-            "id": "73e36fd6f3df1d83",
+            "id": "52f80784dbd8a861",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "00 - Visão Geral.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -144,12 +108,11 @@
             }
           },
           {
-            "id": "8d8d48c86c26f28c",
+            "id": "21d8d37837b08a0c",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "00 - Visão Geral.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -158,7 +121,7 @@
             }
           },
           {
-            "id": "16e4bc95720f43dc",
+            "id": "8a864f9b35607b0d",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -173,7 +136,7 @@
             }
           },
           {
-            "id": "5141cd5ebefe9e42",
+            "id": "712d0e97df9893db",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -187,12 +150,11 @@
             }
           },
           {
-            "id": "97356db5c61a6bcb",
+            "id": "02a5e39eda2f9572",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "00 - Visão Geral.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -219,9 +181,6 @@
       "bases:Criar nova base": false
     }
   },
-  "active": "5d577d1c1db5e4e2",
-  "lastOpenFiles": [
-    "Bem-vindo.md",
-    "00 - Visão Geral.md"
-  ]
+  "active": "8cd63ffd29e6e074",
+  "lastOpenFiles": []
 }
