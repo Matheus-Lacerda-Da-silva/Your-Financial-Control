@@ -38,7 +38,7 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 
 ## Qualidade e limites
 
-Seis testes de validação de acesso/cadastro passaram com `npm.cmd test` em `frontend`. Eles não verificam autenticação real, componentes ou regras financeiras. O roteiro `frontend/VALIDACAO_VISUAL.md` é uma lista manual, não um relatório de execução. Resultados adicionais e riscos estão em [[01 - Arquitetura]] e [[05 - Diário de Desenvolvimento]].
+Os valores financeiros agora usam `valorCentavos` com inteiros seguros, rejeição de frações de centavo e limites por lançamento e total. Operações monetárias inválidas preservam os dados anteriores. Ver [[03 - Regras Financeiras]]. A suíte reúne testes de acesso/cadastro e testes financeiros das funções e reducer utilizados pela aplicação. Ela não comprova interação visual ou autenticação real. O roteiro `frontend/VALIDACAO_VISUAL.md` é uma lista manual, não um relatório de execução. Resultados e limitações estão em [[01 - Arquitetura]] e [[05 - Diário de Desenvolvimento]].
 
 ## Instruções do projeto
 

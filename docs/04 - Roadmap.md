@@ -10,13 +10,13 @@ Direção atualizada em 2026-11-09: o projeto está em estágio inicial e será 
 
 | Prioridade | Proposta e estado atual | Impacto | Esforço | Critério de conclusão |
 | --- | --- | --- | --- | --- |
-| P0 | Definir representação/limites/arredondamento de dinheiro; hoje `number` sem política explícita | Alto | Médio | Regra documentada e testes de decimais, extremos e saldo aprovados |
-| P0 | Definir e testar validação central de transação; hoje verificações locais duplicadas | Alto | Médio | Cadastro/edição compartilham invariantes de tipo/sinal, data e precisão com testes |
+| Concluído | Centavos inteiros seguros, limites e rejeição de frações de centavo | Alto | Médio | Implementado e testado em `utils/dinheiro.ts`, `utils/transacoes.ts` e `tests/financeiro.test.mjs` |
+| P0 parcial | Validação monetária centralizada; ampliar posteriormente a validação compartilhada de descrição/categoria/data | Alto | Médio | Precisão e sinal/tipo já cobertos; regras não monetárias ainda devem ser consolidadas |
 | P1 | Explorar glassmorphism provisório com base cinza e destaques verdes, em uma superfície por vez | Médio | Médio | Componentes existentes preservados, leitura e contraste verificados, alternativa opaca quando necessária e validação nos temas e tamanhos de tela disponíveis |
 | P1 | Reutilizar componentes e regras compartilhadas conforme cada fluxo evoluir | Médio | Médio | Extrações pequenas com benefício concreto, sem regressão de comportamento, teclado ou responsividade |
 | P1 | Substituir estratégia de IDs; hoje `Date.now()` | Médio | Baixo | Identificadores com garantia adequada ao armazenamento adotado e verificação de unicidade |
 | P1 | Investigar dependência local que impede o lint; carregamento de `@typescript-eslint/scope-manager` falhou | Médio | Baixo estimado | Causa confirmada e lint executado com sucesso; eventual reinstalação exige autorização |
-| P1 | Cobrir CRUD, resumo, sessão demo e rotas com testes; hoje só validação de acesso | Alto | Médio | Testes relevantes de criação, edição, exclusão, saldo e limpeza ao sair/recarregar |
+| P1 parcial | Ampliar testes de interação, sessão demo e rotas; CRUD financeiro e resumo já cobertos pelo reducer | Alto | Médio | Testar campos, diálogos, cartões/dashboard e navegação no navegador, além das regras já automatizadas |
 | P1 | Executar roteiro visual e verificar teclado/acessibilidade; há checklist sem resultado desta auditoria | Médio | Médio | Evidências em larguras/temas previstos e correção de falhas verificadas |
 | P1 | Reconciliar README com o estágio inicial e a stack efetivamente implementada | Médio | Baixo | Intenção futura e implementação atual claramente diferenciadas; cofre já consolidado em `docs/` |
 | P2 | Definir backend/API e sua integração, após estabilizar os fluxos e levantar necessidades de persistência | Alto | Alto | Contratos documentados, validação no servidor e tratamento de erros testados; tecnologia a decidir |

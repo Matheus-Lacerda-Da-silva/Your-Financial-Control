@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import LayoutPrincipal from './layouts/LayoutPrincipal'
@@ -10,11 +10,12 @@ import Acesso from './pages/Acesso'
 import Cadastro from './pages/Cadastro'
 
 import type { Transacao } from './types/transacao'
+import { reduzirTransacoes } from './utils/transacoes'
 
 
 function App() {
   const [sessaoDemo, setSessaoDemo] = useState(false)
-  const [transacoes, setTransacoes] = useState<Transacao[]>([])
+  const [{ transacoes, erro }, dispatch] = useReducer(reduzirTransacoes, { transacoes: [], erro: null })
 
   const cadastrarTransacao = (
     novaTransacao: Omit<Transacao, 'id'>,
@@ -24,24 +25,15 @@ function App() {
       id: Date.now(),
     }
 
-    setTransacoes((transacoesAtuais) => [
-      transacaoComId,
-      ...transacoesAtuais,
-    ])
+    dispatch({ tipo: 'cadastrar', transacao: transacaoComId })
   }
 
   const excluirTransacao = (id: number) => {
-    setTransacoes((transacoesAtuais) =>
-      transacoesAtuais.filter((transacao) => transacao.id !== id),
-    )
+    dispatch({ tipo: 'excluir', id })
   }
 
   const editarTransacao = (transacaoEditada: Transacao) => {
-    setTransacoes((transacoesAtuais) =>
-      transacoesAtuais.map((transacao) =>
-        transacao.id === transacaoEditada.id ? transacaoEditada : transacao,
-      ),
-    )
+    dispatch({ tipo: 'editar', transacao: transacaoEditada })
   }
 
   return (
@@ -51,7 +43,7 @@ function App() {
         <Route path="/cadastro" element={sessaoDemo ? <Navigate to="/" replace /> : <Cadastro />} />
         <Route element={sessaoDemo ? <LayoutPrincipal onSair={() => {
           setSessaoDemo(false)
-          setTransacoes([])
+          dispatch({ tipo: 'limpar' })
         }} /> : <Navigate to="/acesso" replace />}>
           <Route
             path="/"
@@ -64,6 +56,8 @@ function App() {
             element={
               <Transacoes
                 transacoes={transacoes}
+                erroFinanceiro={erro}
+                onLimparErro={() => dispatch({ tipo: 'limparErro' })}
                 onCadastrarTransacao={cadastrarTransacao}
                 onExcluirTransacao={excluirTransacao}
                 onEditarTransacao={editarTransacao}

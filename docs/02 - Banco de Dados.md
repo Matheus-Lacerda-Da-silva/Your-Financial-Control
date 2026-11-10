@@ -15,11 +15,11 @@ O tipo abaixo é um contrato TypeScript, não uma tabela ou esquema de banco. Ev
 | `id` | `number` | Criado por `Date.now()` em `App.tsx` |
 | `descricao` | `string` | Texto informado no formulário |
 | `tipo` | `'receita'` ou `'despesa'` | Seleção da natureza do lançamento |
-| `valor` | `number` | Receita positiva, despesa negativa pelos handlers da interface |
+| `valorCentavos` | `number` inteiro seguro | Receita positiva e despesa negativa, em centavos; limites e sinal validados pelas operações |
 | `categoria` | `string` | Texto livre, sem entidade relacionada |
 | `data` | `string` | Input de data; formato esperado `YYYY-MM-DD` |
 
-`App.tsx` mantém um array inicialmente vazio. Cadastro insere no início; edição substitui objetos pelo ID; exclusão filtra pelo ID. Não existem transações de banco, chaves estrangeiras, índices, constraints ou garantias de unicidade identificados. Não há `usuarioId`, conta financeira, timestamps de auditoria ou exclusão lógica no tipo atual.
+`App.tsx` mantém um array inicialmente vazio, atualizado por `reduzirTransacoes` em `utils/transacoes.ts`. Cadastro insere no início; edição substitui objetos pelo ID; exclusão filtra pelo ID. Operações que violam os limites monetários preservam o array anterior. Não existem transações de banco, chaves estrangeiras, índices, constraints ou garantias de unicidade identificados. Não há `usuarioId`, conta financeira, timestamps de auditoria ou exclusão lógica no tipo atual.
 
 ## Persistência e ciclo de vida
 
@@ -29,6 +29,6 @@ O tipo abaixo é um contrato TypeScript, não uma tabela ou esquema de banco. Ev
 
 ## Decisões pendentes
 
-Antes de implementar persistência, definir tecnologia, esquema e propriedade dos dados; representação monetária exata e limites; integridade entre sinal e tipo; unicidade de IDs; categorias; semântica de datas; retenção/exclusão; backup e restauração; migrations e ambientes. Nenhuma dessas decisões deve ser inferida como já aprovada. Isolamento por usuário deve ser aplicado e testado no servidor, não por filtro de interface.
+Antes de implementar persistência, definir tecnologia, esquema e propriedade dos dados; unicidade de IDs; categorias; semântica de datas; retenção/exclusão; backup e restauração; migrations e ambientes. A representação monetária atual foi aprovada como centavos inteiros seguros, com limites e integridade de sinal/tipo descritos em [[03 - Regras Financeiras]]; o armazenamento futuro deverá preservar essas regras. Não há dados persistidos a migrar nesta correção. Isolamento por usuário deve ser aplicado e testado no servidor, não por filtro de interface.
 
 Não foi possível confirmar banco externo, volume real, infraestrutura, credenciais, backups ou integrações fora deste repositório. Nenhuma conexão ou migration foi executada.

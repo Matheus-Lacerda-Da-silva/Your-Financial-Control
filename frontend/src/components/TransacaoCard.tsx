@@ -20,7 +20,7 @@ export default function TransacaoCard({ transacao, onEditar, onExcluir }: Props)
       </Typography>
       <Chip size="small" variant="outlined" color={receita ? 'success' : 'error'} label={receita ? 'Receita' : 'Despesa'} sx={{ mt: 1 }} />
       <Typography color={receita ? 'success.main' : 'error.main'} sx={{ mt: 1, overflowWrap: 'anywhere', fontWeight: 700 }}>
-        {formatarMoeda(transacao.valor)}
+        {formatarMoeda(transacao.valorCentavos)}
       </Typography>
       <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         <Button startIcon={<EditIcon />} onClick={() => onEditar(transacao)}>Editar</Button>

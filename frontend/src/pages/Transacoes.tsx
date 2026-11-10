@@ -32,11 +32,15 @@ import TransacaoCard from '../components/TransacaoCard'
 import { dataLocalAtual, formatarData, formatarMoeda } from '../utils/formatadores'
 
 import type { Transacao } from '../types/transacao'
+import { converterParaCentavos, centavosParaEntrada } from '../utils/dinheiro'
+import { aplicarOperacao } from '../utils/transacoes'
 
 type TransacaoNova = Omit<Transacao, 'id'>
 
 type TransacoesProps = {
   transacoes: Transacao[]
+  erroFinanceiro: string | null
+  onLimparErro: () => void
   onCadastrarTransacao: (transacao: TransacaoNova) => void
   onExcluirTransacao: (id: number) => void
   onEditarTransacao: (transacao: Transacao) => void
@@ -44,20 +48,22 @@ type TransacoesProps = {
 
 function Transacoes({
   transacoes,
+  erroFinanceiro,
+  onLimparErro,
   onCadastrarTransacao,
   onExcluirTransacao,
   onEditarTransacao,
 }: TransacoesProps) {
   const [aviso, setAviso] = useState<{ texto: string; erro: boolean } | null>(null)
   const [descricao, setDescricao] = useState('')
-  const [tipo, setTipo] = useState('receita')
+  const [tipo, setTipo] = useState<Transacao['tipo']>('receita')
   const [valor, setValor] = useState('')
   const [categoria, setCategoria] = useState('')
   const [data, setData] = useState(dataLocalAtual)
   const [transacaoParaExcluir, setTransacaoParaExcluir] = useState<Transacao | null>(null)
   const [transacaoEmEdicao, setTransacaoEmEdicao] = useState<Transacao | null>(null)
   const [descricaoEdicao, setDescricaoEdicao] = useState('')
-  const [tipoEdicao, setTipoEdicao] = useState('receita')
+  const [tipoEdicao, setTipoEdicao] = useState<Transacao['tipo']>('receita')
   const [valorEdicao, setValorEdicao] = useState('')
   const [categoriaEdicao, setCategoriaEdicao] = useState('')
   const [dataEdicao, setDataEdicao] = useState('')
@@ -65,14 +71,20 @@ function Transacoes({
   const cadastrarTransacao = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
 
-    const valorNumerico = Number(valor)
+    let valorCentavos: number
+    try {
+      valorCentavos = converterParaCentavos(valor)
+    } catch (erro) {
+      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+      return
+    }
 
     if (
       !descricao.trim() ||
       !categoria.trim() ||
       !data ||
-      !Number.isFinite(valorNumerico) ||
-      valorNumerico <= 0
+      !Number.isFinite(valorCentavos) ||
+      valorCentavos <= 0
     ) {
       setAviso({ texto: 'Preencha todos os campos com valores válidos.', erro: true })
       return
@@ -80,12 +92,18 @@ function Transacoes({
 
     const novaTransacao: TransacaoNova = {
       descricao,
-      tipo: tipo as 'receita' | 'despesa',
-      valor: tipo === 'despesa' ? -valorNumerico : valorNumerico,
+      tipo,
+      valorCentavos: tipo === 'despesa' ? -valorCentavos : valorCentavos,
       categoria,
       data,
     }
 
+    try {
+      aplicarOperacao(transacoes, { tipo: 'cadastrar', transacao: { ...novaTransacao, id: 0 } })
+    } catch (erro) {
+      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+      return
+    }
     onCadastrarTransacao(novaTransacao)
 
     setAviso({ texto: 'Transação cadastrada com sucesso!', erro: false })
@@ -101,7 +119,7 @@ function Transacoes({
     setTransacaoEmEdicao(transacao)
     setDescricaoEdicao(transacao.descricao)
     setTipoEdicao(transacao.tipo)
-    setValorEdicao(String(Math.abs(transacao.valor)))
+    setValorEdicao(centavosParaEntrada(transacao.valorCentavos))
     setCategoriaEdicao(transacao.categoria)
     setDataEdicao(transacao.data)
   }
@@ -111,36 +129,49 @@ function Transacoes({
       return
     }
 
-    const valorNumerico = Number(valorEdicao)
+    let valorCentavos: number
+    try {
+      valorCentavos = converterParaCentavos(valorEdicao)
+    } catch (erro) {
+      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+      return
+    }
 
     if (
       !descricaoEdicao.trim() ||
       !categoriaEdicao.trim() ||
       !dataEdicao ||
-      !Number.isFinite(valorNumerico) ||
-      valorNumerico <= 0
+      !Number.isFinite(valorCentavos) ||
+      valorCentavos <= 0
     ) {
       setAviso({ texto: 'Preencha todos os campos com valores válidos.', erro: true })
       return
     }
 
-    onEditarTransacao({
+    const transacaoEditada: Transacao = {
       id: transacaoEmEdicao.id,
       descricao: descricaoEdicao,
-      tipo: tipoEdicao as 'receita' | 'despesa',
-      valor: tipoEdicao === 'despesa' ? -valorNumerico : valorNumerico,
+      tipo: tipoEdicao,
+      valorCentavos: tipoEdicao === 'despesa' ? -valorCentavos : valorCentavos,
       categoria: categoriaEdicao,
       data: dataEdicao,
-    })
+    }
 
+    try {
+      aplicarOperacao(transacoes, { tipo: 'editar', transacao: transacaoEditada })
+    } catch (erro) {
+      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+      return
+    }
+    onEditarTransacao(transacaoEditada)
     setTransacaoEmEdicao(null)
   }
 
   return (
     <Box>
-      <Snackbar open={aviso !== null} autoHideDuration={5000} onClose={() => setAviso(null)}>
-        <Alert severity={aviso?.erro ? 'error' : 'success'} onClose={() => setAviso(null)} variant="filled">
-          {aviso?.texto}
+      <Snackbar open={aviso !== null || erroFinanceiro !== null} autoHideDuration={5000} onClose={() => { setAviso(null); onLimparErro() }}>
+        <Alert severity={erroFinanceiro || aviso?.erro ? 'error' : 'success'} onClose={() => { setAviso(null); onLimparErro() }} variant="filled">
+          {erroFinanceiro ?? aviso?.texto}
         </Alert>
       </Snackbar>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -178,7 +209,7 @@ function Transacoes({
               select
               label="Tipo de transação"
               value={tipo}
-              onChange={(evento) => setTipo(evento.target.value)}
+              onChange={(evento) => setTipo(evento.target.value as Transacao['tipo'])}
               fullWidth
             >
               <MenuItem value="receita">Receita</MenuItem>
@@ -279,7 +310,7 @@ function Transacoes({
                           fontWeight: 'bold',
                         }}
                       >
-                        {(formatarMoeda(transacao.valor))}
+                        {(formatarMoeda(transacao.valorCentavos))}
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
@@ -365,7 +396,7 @@ function Transacoes({
               select
               label="Tipo de transação"
               value={tipoEdicao}
-              onChange={(evento) => setTipoEdicao(evento.target.value)}
+              onChange={(evento) => setTipoEdicao(evento.target.value as Transacao['tipo'])}
               fullWidth
             >
               <MenuItem value="receita">Receita</MenuItem>

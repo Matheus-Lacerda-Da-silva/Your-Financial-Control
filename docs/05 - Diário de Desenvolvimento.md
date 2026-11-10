@@ -2,6 +2,20 @@
 
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
+## 2026-11-09 — Correção incremental de precisão monetária
+
+- Substituído `valor` em reais por `valorCentavos`, inteiro seguro com sinal, em tipos, cadastro/edição, cartões, tabela e dashboard. IDs, estilos e fluxos de navegação foram preservados.
+- Adicionados `frontend/src/utils/dinheiro.ts` (conversão decimal textual, limites, soma segura e entrada para edição) e `frontend/src/utils/transacoes.ts` (resumo, operações imutáveis e reducer).
+- Rejeitadas frações de centavo como `0.005`, notação científica, entradas não monetárias, zero e valores fora do limite. Nenhum arredondamento silencioso é aplicado.
+- Limite por lançamento em magnitude, por total de receitas e por total de despesas: 9.007.199.254.740.991 centavos. O saldo também deve ser inteiro seguro. Compensação entre receitas/despesas não permite exceder os limites dos grupos.
+- Conversões e limites intermediários usam `BigInt`; o estado permanece em `number` inteiro seguro. A formatação BRL preserva centavos inclusive no limite e não apresenta zero negativo.
+- Cadastro/edição são pré-validados antes de limpar formulário/fechar diálogo. O reducer também valida sobre o estado atualizado e mantém o array anterior quando uma operação é inválida.
+- Criado `frontend/tests/financeiro.test.mjs` com 16 testes financeiros/regressivos, incluindo totais após edição/exclusão, limites de receitas/despesas, formatação, sinal/tipo e preservação dos dados.
+- Verificação final: `npm.cmd test` passou com 22 testes (16 financeiros e 6 de acesso); `npm.cmd run build` passou, incluindo TypeScript. O build emitiu aviso de chunk JavaScript acima de 500 kB, sem impedir a compilação.
+- `npm.cmd run lint` continua bloqueado por `SyntaxError` na dependência local `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js`, falha já observada anteriormente. Dependências não foram modificadas nem reinstaladas.
+- Revisão React aplicada aos componentes alterados: estado financeiro validado em reducer puro, totais derivados sem efeitos e componentes/estilos reutilizados. `git diff --check` e links internos verificados. Não foram executados testes de interação/visuais no navegador; os testes financeiros exercitam as funções e o reducer reais.
+- Não houve implementação de backend, banco, autenticação, persistência ou alteração de IDs/identidade visual, commit ou push. Os riscos conhecidos de colisão de IDs e perda de estado na recarga permanecem fora desta correção.
+
 ## 2026-11-09 — Direção de desenvolvimento progressivo
 
 - Registrado o estágio inicial do projeto e a evolução por entregas pequenas, preservando o código e os fluxos existentes.
