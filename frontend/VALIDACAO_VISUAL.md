@@ -6,6 +6,11 @@ Execute `npm run dev` na pasta `frontend` e abra o endereço informado pelo Vite
 
 Roteiro pendente de execução no navegador; não representa validação concluída.
 
+- Refinamento: conferir iluminação esmeralda estática e brilho interno discretos nos dois temas, sem aparência de botão nos painéis. Somente o saldo deve ter maior destaque tipográfico.
+- Forçar saldo negativo com uma despesa fictícia maior que a receita: conferir sinal negativo, cor de erro e detalhe “Receitas menos despesas”, sem confundir a decoração esmeralda com resultado positivo.
+- Em 320/375 px, conferir o padding externo reduzido, estado vazio compacto, foco do botão e valores da lista em linha própria. Em telas maiores, conferir alinhamento dos valores à direita e que valores extensos continuam quebrando sem cortes.
+- Comparar rolagem antes/depois em dispositivo móvel: o refinamento mantém quatro filtros de 8 px; iluminação usa gradiente estático e sombras, sem animações ou filtros adicionais.
+
 - Entrar com dados fictícios e conferir Início vazio, depois cadastrar receita e despesa em Transações e retornar ao painel. Conferir totais, saldo negativo e as cinco movimentações cadastradas mais recentemente.
 - Conferir superfícies claras e grafite, borda esmeralda no saldo e leitura de títulos, valores, detalhes e aviso de sessão nos dois temas. Os outros fluxos devem manter suas superfícies anteriores.
 - Repetir as larguras e o zoom deste roteiro, incluindo 599/600, 899/900 e 1199/1200 px. Verificar quebra de textos longos e valores grandes sem rolagem horizontal da página.

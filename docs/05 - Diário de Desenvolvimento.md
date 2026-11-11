@@ -2,6 +2,16 @@
 
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
+## 2026-11-10 — Refinamento visual do dashboard
+
+- Refinamento aprovado, usando `frontend-design`, sobre a primeira versão existente. `theme.glass` recebeu luz interna, sombra de destaque e iluminação esmeralda estática com intensidades próprias para claro/escuro. `SuperficieVidro` combina sombra externa e brilho interno; opacidades, fallback opaco e blur de 8 px foram preservados.
+- `CartaoResumo` diferencia o saldo por tamanho do valor, borda e iluminação discreta. Saldo negativo mantém o sinal da formatação e recebe `error.main`; esmeralda é decoração, não indicador de resultado positivo. Nenhum cálculo, formatação monetária, estado financeiro ou fluxo foi alterado.
+- `Inicio` reduz padding externo no celular, separa seções em 24–32 px, mantém o grid existente, reorganiza valores da lista no celular e alinha-os à direita nas telas maiores. Estado vazio ganhou suporte visual para o ícone, título h3, largura de texto limitada e menor espaço vertical no celular.
+- Verificação: 22 testes passaram; TypeScript (`tsc -b`) passou com saída 0; build passou. Bundle principal: 560,49 kB (173,57 kB gzip), com aviso acima de 500 kB; primeira versão registrava 559,61 kB (173,31 kB gzip). Sem dependências novas.
+- Lint executado, mas terminou com saída 2 ao carregar `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js` (`SyntaxError: Invalid or unexpected token`), repetindo falha local prévia. Nenhuma reinstalação ou reparo realizado; análise automática do código pelo ESLint não concluída.
+- Revisão estática conforme `react-best-practices`: componentes e hooks existentes preservados, sem estado/efeitos novos, sem casts para `any`, sem animações, sem filtros extras ou aninhados, quatro superfícies filtradas e estilos restritos ao dashboard. `git diff --check` sem erros de whitespace.
+- Limitações: não houve inspeção no navegador, medição de contraste composto, validação de zoom/foco/fallback ou perfil de desempenho móvel. Esses itens continuam pendentes no roteiro visual; testes de funções e compilação não os comprovam. Sem commit, push ou instalação de dependências.
+
 ## 2026-11-09 — Correção incremental de precisão monetária
 
 - Substituído `valor` em reais por `valorCentavos`, inteiro seguro com sinal, em tipos, cadastro/edição, cartões, tabela e dashboard. IDs, estilos e fluxos de navegação foram preservados.

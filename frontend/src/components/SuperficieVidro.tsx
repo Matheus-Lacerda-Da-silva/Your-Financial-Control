@@ -9,7 +9,7 @@ export default function SuperficieVidro({ sx = [], ...props }: CardProps) {
       backgroundColor: tema.glass.opaca,
       backgroundImage: 'none',
       border: `1px solid ${tema.glass.borda}`,
-      boxShadow: tema.glass.sombra,
+      boxShadow: `${tema.glass.luzInterna}, ${tema.glass.sombra}`,
       '@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))': {
         backgroundColor: tema.glass.superficie,
         backdropFilter: `blur(${tema.glass.blur})`,

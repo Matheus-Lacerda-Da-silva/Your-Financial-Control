@@ -15,10 +15,10 @@ export default function Inicio({ transacoes }: { transacoes: Transacao[] }) {
     { titulo: 'Receitas', valor: receitas, detalhe: 'Total de entradas registradas', icone: ArrowUpward, cor: 'success.main' },
     { titulo: 'Despesas', valor: despesas, detalhe: 'Total de saídas registradas', icone: ArrowDownward, cor: 'error.main' },
   ]
-  return <Stack spacing={{ xs: 2, sm: 3 }} sx={tema => ({
+  return <Stack spacing={{ xs: 3, lg: 4 }} sx={tema => ({
     background: tema.glass.fundoDashboard,
     borderRadius: 4,
-    p: { xs: 2, sm: 3 },
+    p: { xs: 1, sm: 3 },
     minWidth: 0,
   })}>
     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -30,12 +30,12 @@ export default function Inicio({ transacoes }: { transacoes: Transacao[] }) {
     </Box>
     <SuperficieVidro><CardContent>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 3 }}><Box><Typography variant="h6" component="h2">Últimas transações</Typography><Typography variant="body2" color="text.secondary">Suas cinco movimentações cadastradas mais recentemente.</Typography></Box><Button component={Link} to="/transacoes" endIcon={<ArrowForward />}>Ver todas</Button></Stack>
-      {transacoes.length === 0 ? <Box sx={{ textAlign: 'center', py: 6, px: 1 }}><AccountBalanceWalletOutlined sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} /><Typography variant="h6">Seu controle começa aqui</Typography><Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>Registre sua primeira receita ou despesa para acompanhar seu saldo.</Typography><Button component={Link} to="/transacoes" variant="outlined" startIcon={<Add />}>Adicionar transação</Button></Box> : <Stack divider={<Box sx={{ borderBottom: 1, borderColor: 'divider' }} />}>
+      {transacoes.length === 0 ? <Box sx={{ textAlign: 'center', py: { xs: 3, sm: 5 }, px: 1, maxWidth: 440, mx: 'auto' }}><Box sx={{ display: 'inline-flex', p: 2, mb: 2, bgcolor: 'action.hover', borderRadius: 3 }}><AccountBalanceWalletOutlined aria-hidden="true" sx={{ fontSize: 40, color: 'primary.main' }} /></Box><Typography variant="h6" component="h3">Seu controle começa aqui</Typography><Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>Registre sua primeira receita ou despesa para acompanhar seu saldo.</Typography><Button component={Link} to="/transacoes" variant="outlined" startIcon={<Add />}>Adicionar transação</Button></Box> : <Stack divider={<Box sx={{ borderBottom: 1, borderColor: 'divider' }} />}>
         {transacoes.slice(0, 5).map(t => <Box key={t.id} sx={{ display: 'flex', gap: 2, alignItems: 'center', py: 2, flexWrap: 'wrap' }}>
           <Box sx={{ bgcolor: 'action.hover', color: t.valorCentavos >= 0 ? 'success.main' : 'error.main', p: 1.2, borderRadius: 3, display: { xs: 'none', sm: 'flex' } }}>{t.valorCentavos >= 0 ? <ArrowUpward /> : <ArrowDownward />}</Box>
           <Box sx={{ flex: '1 1 140px', minWidth: 0 }}><Typography sx={{ overflowWrap: 'anywhere', fontWeight: 650 }}>{t.descricao}</Typography><Typography variant="body2" color="text.secondary" sx={{ overflowWrap: 'anywhere' }}>{t.categoria} · {formatarData(t.data)}</Typography></Box>
           <Chip size="small" variant="outlined" label={t.tipo === 'receita' ? 'Receita' : 'Despesa'} color={t.tipo === 'receita' ? 'success' : 'error'} />
-          <Typography color={t.valorCentavos >= 0 ? 'success.main' : 'error.main'} sx={{ overflowWrap: 'anywhere', fontWeight: 650, fontVariantNumeric: 'tabular-nums' }}>{formatarMoeda(t.valorCentavos)}</Typography>
+          <Typography color={t.valorCentavos >= 0 ? 'success.main' : 'error.main'} sx={{ overflowWrap: 'anywhere', fontWeight: 650, fontVariantNumeric: 'tabular-nums', textAlign: { sm: 'right' }, flexBasis: { xs: '100%', sm: 'auto' }, maxWidth: '100%' }}>{formatarMoeda(t.valorCentavos)}</Typography>
         </Box>)}
       </Stack>}
     </CardContent></SuperficieVidro>

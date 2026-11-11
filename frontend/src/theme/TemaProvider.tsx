@@ -8,6 +8,9 @@ type TokensVidro = {
   borda: string
   blur: string
   sombra: string
+  luzInterna: string
+  sombraDestaque: string
+  iluminacao: string
   fundoDashboard: string
   destaque: string
 }
@@ -31,7 +34,12 @@ export default function TemaProvider({ children }: { children: ReactNode }) {
       opaca: modo === 'light' ? '#ffffff' : '#1f2125',
       borda: modo === 'light' ? 'rgba(24,24,27,0.12)' : 'rgba(255,255,255,0.14)',
       blur: '8px',
-      sombra: modo === 'light' ? '0 8px 24px rgba(24,24,27,0.06)' : '0 8px 24px rgba(0,0,0,0.20)',
+      sombra: modo === 'light' ? '0 2px 4px rgba(24,24,27,0.03), 0 10px 28px rgba(24,24,27,0.06)' : '0 2px 4px rgba(0,0,0,0.12), 0 10px 28px rgba(0,0,0,0.22)',
+      luzInterna: modo === 'light' ? 'inset 0 1px 0 rgba(255,255,255,0.90)' : 'inset 0 1px 0 rgba(255,255,255,0.08)',
+      sombraDestaque: modo === 'light' ? '0 8px 28px rgba(8,127,104,0.10)' : '0 8px 28px rgba(0,0,0,0.28)',
+      iluminacao: modo === 'light'
+        ? 'radial-gradient(ellipse at top right, rgba(8,127,104,0.07), transparent 65%)'
+        : 'radial-gradient(ellipse at top right, rgba(101,219,192,0.08), transparent 65%)',
       fundoDashboard: modo === 'light'
         ? 'radial-gradient(ellipse at top left, #dceee7, #f4f4f5 70%)'
         : 'radial-gradient(ellipse at top left, #20372f, #18181b 70%)',
