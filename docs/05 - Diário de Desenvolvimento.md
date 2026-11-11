@@ -25,6 +25,16 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados
 - Atualizadas referências à organização do cofre: `docs/` é a raiz única e `docs/docs/` foi removida após backup externo verificado na tarefa anterior. O registro da auditoria abaixo foi preservado como histórico.
 - Alteradas apenas as notas de visão geral, arquitetura, roadmap e este diário. `AGENTS.md` permanece inalterado: já orienta mudanças pequenas e consulta à visão geral.
 
+## 2026-11-10 — Redesign incremental de Início
+
+Implementação aprovada com a skill `frontend-design`. Adicionados tokens tipados `theme.glass` em `TemaProvider.tsx`, o componente `SuperficieVidro` (Card MUI com fallback opaco e filtros condicionados a suporte) e `CartaoResumo`. Aplicação restrita a Início: fundo local cinza/grafite, quatro superfícies com blur de 8 px, saldo com borda esmeralda, padding responsivo e valores tabulares. Escala de espaçamento, temas, rotas, avisos, estado vazio e últimas cinco transações preservados. Nenhuma alteração em reducer, cálculos em centavos, formatação ou persistência.
+
+Verificações: 22 testes passaram; TypeScript local (`tsc -b`) concluiu sem erros; `npm.cmd run build` passou. Build emitiu aviso de chunk principal de 559,61 kB (173,31 kB gzip), sem análise comparativa anterior que permita atribuir o tamanho ao redesign. `npm.cmd run lint` falhou ao carregar `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js` com erro de sintaxe, repetindo a limitação local já registrada; não concluiu a análise da aplicação. Não houve reinstalação de dependências.
+
+Revisão estática conforme `react-best-practices`: componentes definidos fora da renderização, props tipadas sem `any`, composição MUI, ausência de estado/efeitos novos ou animações e identidade estável nos itens. Sem dependências novas, commit, push ou deploy. Build produziu artefatos locais ignorados pelo Git. A skill `frontend-design` criada na etapa anterior continua como arquivo não rastreado.
+
+Limitações: não houve execução no navegador; contraste composto, fallback em navegador sem filtros, foco, responsividade e desempenho em dispositivo móvel ainda precisam ser conferidos. Testes de funções e compilação não comprovam esses aspectos. Roteiro atualizado em `frontend/VALIDACAO_VISUAL.md`; resumo e arquitetura atualizados para distinguir o dashboard implementado da direção visual futura.
+
 ## 2026-11-09 — Auditoria inicial e documentação
 
 ### Escopo e método

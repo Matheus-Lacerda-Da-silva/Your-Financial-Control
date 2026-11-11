@@ -2,6 +2,21 @@ import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 
+type TokensVidro = {
+  superficie: string
+  opaca: string
+  borda: string
+  blur: string
+  sombra: string
+  fundoDashboard: string
+  destaque: string
+}
+
+declare module '@mui/material/styles' {
+  interface Theme { glass: TokensVidro }
+  interface ThemeOptions { glass?: TokensVidro }
+}
+
 export default function TemaProvider({ children }: { children: ReactNode }) {
   const [modo, setModo] = useState<'light' | 'dark'>(() => {
     try {
@@ -11,6 +26,17 @@ export default function TemaProvider({ children }: { children: ReactNode }) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   })
   const tema = useMemo(() => createTheme({
+    glass: {
+      superficie: modo === 'light' ? 'rgba(255,255,255,0.88)' : 'rgba(31,33,37,0.90)',
+      opaca: modo === 'light' ? '#ffffff' : '#1f2125',
+      borda: modo === 'light' ? 'rgba(24,24,27,0.12)' : 'rgba(255,255,255,0.14)',
+      blur: '8px',
+      sombra: modo === 'light' ? '0 8px 24px rgba(24,24,27,0.06)' : '0 8px 24px rgba(0,0,0,0.20)',
+      fundoDashboard: modo === 'light'
+        ? 'radial-gradient(ellipse at top left, #dceee7, #f4f4f5 70%)'
+        : 'radial-gradient(ellipse at top left, #20372f, #18181b 70%)',
+      destaque: modo === 'light' ? '#087f68' : '#65dbc0',
+    },
     palette: {
       mode: modo,
       primary: { main: modo === 'light' ? '#087f68' : '#65dbc0' },

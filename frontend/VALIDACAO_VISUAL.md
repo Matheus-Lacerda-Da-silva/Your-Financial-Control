@@ -2,6 +2,18 @@
 
 Execute `npm run dev` na pasta `frontend` e abra o endereço informado pelo Vite.
 
+## Dashboard com glassmorphism
+
+Roteiro pendente de execução no navegador; não representa validação concluída.
+
+- Entrar com dados fictícios e conferir Início vazio, depois cadastrar receita e despesa em Transações e retornar ao painel. Conferir totais, saldo negativo e as cinco movimentações cadastradas mais recentemente.
+- Conferir superfícies claras e grafite, borda esmeralda no saldo e leitura de títulos, valores, detalhes e aviso de sessão nos dois temas. Os outros fluxos devem manter suas superfícies anteriores.
+- Repetir as larguras e o zoom deste roteiro, incluindo 599/600, 899/900 e 1199/1200 px. Verificar quebra de textos longos e valores grandes sem rolagem horizontal da página.
+- Conferir contraste efetivo de texto normal (4,5:1), texto grande (3:1), foco e controles (3:1), inclusive hover e seleção. Bordas dos painéis são decorativas; significado financeiro também aparece por rótulos.
+- No inspetor, desativar a regra `@supports` de cada superfície: o fundo base deve ficar opaco. Para simular apenas a retirada do blur, também restaurar o `background-color` base. Conferir leitura e composição sem suporte a filtros.
+- Conferir que há somente quatro superfícies com blur de 8 px, sem filtros internos, efeitos animados ou blur no menu/cabeçalho. Avaliar rolagem e repinturas em dispositivo móvel; não há medição de desempenho concluída.
+- Usar Tab/Shift+Tab, Enter e Escape para conferir links, menu, alternador de tema e retorno de foco nos fluxos existentes.
+
 ## Telas e navegação
 
 - Conferir larguras de 320, 375, 768, 1024 e 1440 px, além de zoom de 200%.

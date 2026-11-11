@@ -15,7 +15,7 @@ O projeto está em estágio inicial e será desenvolvido progressivamente. A pri
 - Adotar glassmorphism como direção visual provisória, com tons de cinza como base e verde para destaques. Essa é uma orientação para futuras alterações, não uma declaração de estilo já implementado ou identidade visual definitiva.
 - Aplicar transparência e desfoque somente quando preservarem contraste e leitura, especialmente de valores financeiros, campos e mensagens. Prever superfícies opacas quando necessário e não depender apenas de cor para comunicar receita, despesa ou erro.
 
-Esta definição não altera o código ou os estilos atuais. A implementação visual deve ser gradual e validada em diferentes tamanhos de tela e nos temas disponíveis.
+Em 2026-11-10, a primeira aplicação dessa direção foi implementada somente em Início: tokens tipados `theme.glass`, superfícies translúcidas com fallback opaco e cartões de resumo reutilizáveis. As outras telas preservam seus estilos. A validação visual no navegador continua pendente; a evolução deve permanecer gradual nos dois temas e em diferentes tamanhos de tela.
 
 O README raiz descreve uma aplicação full stack e cita Node.js, Express, PostgreSQL, REST e JWT. Essas declarações não comprovam implementação: `backend/` contém somente `.gitkeep`; não foram identificados servidor, endpoints, esquema ou integração de autenticação. Node.js é utilizado pelo comando de testes, não por um backend identificado.
 
