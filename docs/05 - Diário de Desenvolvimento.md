@@ -2,6 +2,15 @@
 
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
+## 2026-11-10 — Sidebar, cabeçalho e alternador reutilizável
+
+- Plano aprovado implementado com `frontend-design`. Criados `AlternadorTema.tsx` e `ContextoTema.ts`; estado único em `TemaProvider`, atualização funcional e persistência opcional de `yfc-tema` por efeito. Removidos o botão absoluto e suas regras CSS. Controle reutilizado no cabeçalho principal e no layout compartilhado de acesso/cadastro, com ícones MUI e nome acessível indicando o tema de destino.
+- Cabeçalho usa controles no fluxo, altura mínima adaptável e superfícies opacas do tema. Sidebar usa fundo opaco, luz interna, marcador ativo sem deslocamento, hover específico para item ativo, ícones de 24 px e foco explícito. Foco comum dos controles MUI definido no tema. Não foram adicionados filtros, animações, dependências ou alterações financeiras.
+- Drawer móvel mantém modal, backdrop e gestão de foco MUI. Adicionados botão Fechar, identificação do diálogo e estado expandido no botão de abertura. Ao atravessar `md`, o layout limpa o estado aberto do menu. `Navbar.tsx` legado não foi alterado nem integrado ao fluxo.
+- Verificações: 22 testes passaram; TypeScript (`tsc -b`) com saída 0; build passou. Bundle principal 565,13 kB (175,06 kB gzip), mantendo aviso acima de 500 kB. Lint executado com saída 2 por `SyntaxError` ao carregar `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js`, falha local já registrada; sem reparo/reinstalação de dependências.
+- Revisão estática com `react-best-practices`: componentes fora da renderização, contexto tipado, nenhum `any`, persistência fora do updater de estado e navegação por links preservada. `git diff --check` sem erros de whitespace.
+- Limitações: não houve inspeção no navegador, medição de contraste ou verificação de leitor de tela, retorno/contenção de foco, teclado, zoom e transição de breakpoint. São critérios pendentes no roteiro visual, não resultados comprovados pelos testes de funções. Sem commit, push ou deploy.
+
 ## 2026-11-10 — Refinamento visual do dashboard
 
 - Refinamento aprovado, usando `frontend-design`, sobre a primeira versão existente. `theme.glass` recebeu luz interna, sombra de destaque e iluminação esmeralda estática com intensidades próprias para claro/escuro. `SuperficieVidro` combina sombra externa e brilho interno; opacidades, fallback opaco e blur de 8 px foram preservados.

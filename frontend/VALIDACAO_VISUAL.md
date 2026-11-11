@@ -21,6 +21,12 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 
 ## Telas e navegação
 
+- Conferir exatamente um alternador de tema visível em Início, Transações, Categorias, acesso e cadastro. Ele deve participar do fluxo do layout, sem sobrepor títulos ou Sair, e preservar o tema ao navegar e recarregar.
+- Conferir sidebar e cabeçalho opacos nos dois temas, sem novos filtros. Diferenciar item ativo, hover, ativo + hover e foco; o marcador lateral não deve deslocar texto. Conferir `aria-current="page"` apenas na rota correspondente, inclusive Visão geral.
+- No celular, abrir o menu por teclado: conferir `aria-expanded`, identificação do diálogo, foco contido, botão Fechar, Escape, clique no fundo e fechamento após selecionar rota. Conferir retorno do foco quando fechar sem navegar.
+- Com menu aberto, ampliar para 900 px e voltar ao celular: não deve restar backdrop, bloqueio de rolagem ou menu reaberto. Conferir também navegação com zoom de 200% e altura de tela reduzida, permitindo rolagem do Drawer.
+- Conferir controles com área de pelo menos 44 px, ícones com nome acessível e foco visível. Medir contraste de texto (4,5:1), ícones essenciais e foco (3:1), incluindo seleção e hover, nos dois temas.
+
 - Conferir larguras de 320, 375, 768, 1024 e 1440 px, além de zoom de 200%.
 - Em telas menores que 900 px, abrir o menu pelo botão e selecionar cada página. O menu deve fechar ao navegar, clicar fora ou pressionar Escape.
 - Em telas a partir de 900 px, conferir a barra lateral permanente.

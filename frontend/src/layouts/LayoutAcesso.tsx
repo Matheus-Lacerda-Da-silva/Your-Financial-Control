@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import { AccountBalanceWalletOutlined, CheckCircleOutlined } from '@mui/icons-material'
+import AlternadorTema from '../components/AlternadorTema'
 
 export default function LayoutAcesso({ children }: { children: ReactNode }) {
   return (
@@ -23,7 +24,8 @@ export default function LayoutAcesso({ children }: { children: ReactNode }) {
         <Typography variant="body2" sx={{ color: '#d2eee7' }}>Um passo de cada vez. Um futuro com mais organização.</Typography>
         <Box aria-hidden="true" sx={{ position: 'absolute', width: 450, height: 450, border: '1px solid #ffffff16', borderRadius: '50%', bottom: -220, right: -180 }} />
       </Box>
-      <Box component="main" sx={{ minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', px: { xs: 2, sm: 5, lg: 8 }, pt: { xs: 11, md: 12 }, pb: 5 }}>
+      <Box component="main" sx={{ minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', px: { xs: 2, sm: 5, lg: 8 }, pt: 3, pb: 5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}><AlternadorTema /></Box>
         <Box sx={{ width: '100%', maxWidth: 440, mx: 'auto' }}>
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', mb: 4, color: 'primary.main' }}><AccountBalanceWalletOutlined /><Typography variant="h5">YFC.</Typography></Stack>
           {children}

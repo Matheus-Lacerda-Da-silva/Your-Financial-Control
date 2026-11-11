@@ -28,6 +28,8 @@ Backend, banco e autenticação real serão abordados em etapas posteriores do [
 
 ## Fluxo e rotas
 
+Sidebar e cabeçalho usam superfícies opacas de `theme.glass` e luz interna discreta, sem filtros novos. `AlternadorTema.tsx` é composto no cabeçalho principal e no layout compartilhado de acesso/cadastro, sem posicionamento absoluto. `ContextoTema.ts` compartilha modo e alternância; `TemaProvider` mantém o estado único, preferência inicial e persistência opcional em `yfc-tema`. A sidebar preserva NavLink e Drawer MUI, com marcador ativo, hover e foco explícitos, botão móvel de fechar e identificação do diálogo. Ao atingir `md`, o layout fecha o estado do menu móvel para evitar manter o modal aberto no desktop.
+
 No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombraDestaque` e `iluminacao`. `CartaoResumo` reutiliza a propriedade `destaque` para a hierarquia do saldo, preservando sinal monetário e usando cor de erro quando negativo. Iluminação é estática e decorativa; não representa avaliação financeira. Resultados técnicos e limitações visuais estão no [[05 - Diário de Desenvolvimento]].
 
 `main.tsx` monta `TemaProvider → App → BrowserRouter`. `App` entrega transações por props ao painel e à página de transações. Callbacks de criação, edição e exclusão despacham ações para `useReducer` com `utils/transacoes.ts`. O reducer valida o estado proposto antes de substituí-lo e preserva os dados em caso de erro monetário. Não há camada de serviços ou chamada HTTP identificada em `src`.

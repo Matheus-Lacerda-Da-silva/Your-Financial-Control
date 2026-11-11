@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
+import { ContextoTema } from './ContextoTema'
+import { useEffect } from 'react'
 
 type TokensVidro = {
   superficie: string
@@ -61,19 +63,25 @@ export default function TemaProvider({ children }: { children: ReactNode }) {
       button: { textTransform: 'none', fontWeight: 650 },
     },
     components: {
+      MuiButtonBase: { styleOverrides: { root: { '&.Mui-focusVisible': { outline: `3px solid ${modo === 'light' ? '#087f68' : '#65dbc0'}`, outlineOffset: 3 } } } },
       MuiCard: { defaultProps: { elevation: 0 }, styleOverrides: { root: { border: '1px solid', borderColor: modo === 'light' ? '#e1e9ec' : '#2c3d46' } } },
       MuiButton: { defaultProps: { disableElevation: true }, styleOverrides: { root: { borderRadius: 10, padding: '10px 18px' } } },
       MuiCardContent: { styleOverrides: { root: { padding: 24 } } },
       MuiTableCell: { styleOverrides: { head: { fontWeight: 700, whiteSpace: 'nowrap' } } },
     },
   }), [modo])
-  return <ThemeProvider theme={tema}>
+  useEffect(() => {
+    try { localStorage.setItem('yfc-tema', modo) } catch { /* Armazenamento opcional. */ }
+  }, [modo])
+  const controle = useMemo(() => ({
+    modo,
+    alternar: () => setModo(atual => {
+      const proximo = atual === 'light' ? 'dark' : 'light'
+      return proximo
+    }),
+  }), [modo])
+  return <ContextoTema.Provider value={controle}><ThemeProvider theme={tema}>
     <CssBaseline />
-    <button className="alternar-tema" aria-label={`Ativar tema ${modo === 'light' ? 'escuro' : 'claro'}`} onClick={() => {
-      const proximo = modo === 'light' ? 'dark' : 'light'
-      setModo(proximo)
-      try { localStorage.setItem('yfc-tema', proximo) } catch { /* Armazenamento opcional. */ }
-    }}>{modo === 'light' ? '☾' : '☀'}<span>Tema {modo === 'light' ? 'escuro' : 'claro'}</span></button>
     {children}
-  </ThemeProvider>
+  </ThemeProvider></ContextoTema.Provider>
 }
