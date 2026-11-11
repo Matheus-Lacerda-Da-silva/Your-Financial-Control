@@ -44,6 +44,18 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados
 - Atualizadas referências à organização do cofre: `docs/` é a raiz única e `docs/docs/` foi removida após backup externo verificado na tarefa anterior. O registro da auditoria abaixo foi preservado como histórico.
 - Alteradas apenas as notas de visão geral, arquitetura, roadmap e este diário. `AGENTS.md` permanece inalterado: já orienta mudanças pequenas e consulta à visão geral.
 
+## 2026-11-11 — Refinamento de Transações aguardando validação visual
+
+Implementado o escopo aprovado com `frontend-design`: dois painéis reutilizam `SuperficieVidro`, fundo local usa `theme.glass`, formulário de cadastro permanece visível e com a mesma ordem de campos. Adicionados títulos semânticos, estado vazio com ícone e orientação sem ação duplicada, aviso de sessão temporária, tabela com rolagem interna focável, quebra de textos e números tabulares, cartões móveis opacos sem blur e ações com descrição no nome acessível e alvo mínimo de 44 px.
+
+Edição mantém os handlers e validações existentes; campos receberam composição responsiva e indicação de obrigatoriedade, sem transformar o diálogo em formulário ou adicionar validação nativa ao envio. Erros aparecem em Alert dentro do diálogo, fora da área rolável dos campos, enquanto o Snackbar externo fica fechado. Ao abrir edição e após salvar com sucesso, mensagens locais antigas são limpas. Diálogos têm títulos associados, foco inicial explícito e preservam Escape e restauração do MUI; exclusão inclui fallback de foco no título do histórico se o acionador removido deixar o foco no body. Interação e anúncio assistivo ainda não foram executados no navegador.
+
+Verificações executadas: `npm.cmd run test` passou com 22 testes; TypeScript local `node_modules/.bin/tsc.cmd -b` passou; build final `npm.cmd run build` passou, incluindo TypeScript após os últimos ajustes. Vite informou chunk principal de 568,03 kB (175,73 kB gzip), com aviso acima de 500 kB. `npm.cmd run lint` continua bloqueado por `SyntaxError: Invalid or unexpected token` ao carregar `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js`; não analisou a aplicação. Dependências não foram alteradas ou reinstaladas.
+
+Revisão estática com `react-best-practices`: props tipadas, sem `any`, hooks no topo, ref de foco sem estado adicional, sem novos efeitos ou animações, composição MUI e callbacks financeiros preservados. `TemaProvider`, `SuperficieVidro`, dashboard, layouts, reducer, conversão, cálculos, datas e ordenação não foram alterados. Sem commit, push ou deploy.
+
+Pendente: validação visual pelo usuário e execução do roteiro atualizado em `frontend/VALIDACAO_VISUAL.md`, nos dois temas e em todas as larguras/zoom previstos. Contraste composto, overflow real, retorno de foco, anúncio do alerta e desempenho móvel não foram comprovados por testes de funções ou build. A etapa permanece aguardando aprovação visual.
+
 ## 2026-11-10 — Redesign incremental de Início
 
 Implementação aprovada com a skill `frontend-design`. Adicionados tokens tipados `theme.glass` em `TemaProvider.tsx`, o componente `SuperficieVidro` (Card MUI com fallback opaco e filtros condicionados a suporte) e `CartaoResumo`. Aplicação restrita a Início: fundo local cinza/grafite, quatro superfícies com blur de 8 px, saldo com borda esmeralda, padding responsivo e valores tabulares. Escala de espaçamento, temas, rotas, avisos, estado vazio e últimas cinco transações preservados. Nenhuma alteração em reducer, cálculos em centavos, formatação ou persistência.

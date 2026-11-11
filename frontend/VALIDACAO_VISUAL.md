@@ -42,6 +42,17 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 
 ## Transações
 
+Refinamento de 2026-11-11 implementado no código. Validação no navegador e aprovação visual do usuário pendentes; os itens abaixo são roteiro, não resultados.
+
+- Nos dois temas, conferir os dois painéis `SuperficieVidro`, campos com fundo opaco e cartões móveis sem blur. Desativar `@supports` no inspetor e conferir o fallback opaco. Medir contraste composto: texto normal 4,5:1, texto grande e controles essenciais 3:1.
+- Conferir 320, 375, 768, 1024 e 1440 px, transições 599/600, 899/900 e 1535/1536 px e zoom de 200%. O formulário deve continuar visível, com ordem Descrição → Tipo → Valor → Categoria → Data → Cadastrar. A rolagem horizontal deve ficar restrita à tabela, inclusive pelo teclado ao focar seu contêiner.
+- No histórico vazio, conferir ícone decorativo, título e orientação para o formulário acima, sem outro botão de cadastro.
+- Usar descrição e categoria longas, inclusive palavras sem espaços, e valores grandes fictícios. Conferir números tabulares, ausência de cortes, rótulos Receita/Despesa e acesso às duas ações nos cartões e na tabela.
+- Em edição, tentar descrição/categoria somente com espaços, data vazia, zero, `0.005` e valor acima do limite. Conferir alerta dentro do diálogo, sem expiração automática enquanto aberto, e preservação dos campos e do registro recusado. Corrigir e salvar: não deve reaparecer mensagem de erro antiga.
+- Usar Tab/Shift+Tab, Enter/Espaço e Escape nos diálogos. Conferir foco inicial na descrição ao editar e em Cancelar ao excluir; foco contido e retorno ao acionador ao cancelar/fechar/salvar. Ao confirmar exclusão, conferir foco no título do histórico se o acionador removido não puder recebê-lo. Repetir com o último registro e ao mudar o breakpoint com diálogo aberto.
+- Conferir nomes acessíveis de Editar/Excluir com a descrição, alvos de ação de pelo menos 44 px e foco visível. Conferir alerta anunciado por leitor de tela e ausência de sobreposição com notificações, menu ou alternador de tema.
+- Conferir aviso de dados temporários no fim da página e perda dos lançamentos ao recarregar/sair. Usar somente dados fictícios.
+
 - Cadastrar uma receita e uma despesa e conferir os totais na visão geral.
 - Conferir a data local atual no cadastro e depois de salvar.
 - No celular, conferir cartões com as ações Editar e Excluir; em telas maiores, conferir a tabela.
