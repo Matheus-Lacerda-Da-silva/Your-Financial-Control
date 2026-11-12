@@ -1,5 +1,9 @@
 # Your Financial Control
 
+## Atualização — Metas em memória (2026-11-12)
+
+Implementada a página `/metas`, com entrada na sidebar, CRUD de metas, aportes e exclusão individual com confirmação. Metas usam reducer independente, centavos inteiros seguros, calendário civil e planejamento mensal exato. Os detalhes distinguem planejamento de referência (objetivo menos reserva inicial no período completo das configurações atuais) e restante atualizado (acumulado e meses ainda disponíveis). Aportes não alteram receitas, despesas, saldo ou transações. Dados são temporários e apagados na recarga/saída. Ver regras e diário. Validação visual/funcional pelo usuário continua pendente; testes de funções não comprovam interface.
+
 Auditoria inicial: 2026-11-09. Escopo: código e arquivos locais; sem consulta a produção ou dados reais.
 
 ## Objetivo e estado atual

@@ -1,5 +1,11 @@
 # Roadmap
 
+## Atualização de Metas — 2026-11-12
+
+Metas e aportes independentes foram implementados em memória, com planejamento de referência e restante atualizado, exclusão individual de aportes, testes e integração de navegação. Aguardam aprovação visual/funcional do usuário conforme `frontend/VALIDACAO_VISUAL.md`. Não há autorização para commit/push nesta entrega.
+
+Continuam fora do escopo: persistência, backend, autenticação, edição de aportes, integração com transações, histórico de versões do planejamento e otimização do bundle. O lint passou nesta máquina, embora a falha histórica de dependência permaneça registrada abaixo. Nenhuma dependência foi instalada/reparada.
+
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[05 - Diário de Desenvolvimento]].
 
 ## Interpretação

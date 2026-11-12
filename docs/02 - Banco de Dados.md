@@ -1,5 +1,13 @@
 # Banco de Dados
 
+## Modelo adicional em memória — Metas (2026-11-12)
+
+Não há banco novo. `Meta` armazena `id` string, `nome`, `valorObjetivoCentavos`, `valorInicialCentavos`, `dataInicio` e `dataLimite`. `Aporte` armazena `id` string, `metaId`, `valorCentavos` positivo e `data`. `EstadoMetas` contém os dois arrays e erro transitório. Progresso, situação e roteiros são derivados; não são campos persistidos. Reserva inicial não é duplicada como aporte.
+
+Arrays ficam no App, separados do estado de categorias/transações, e são apagados ao recarregar/sair. IDs são aleatórios criptográficos com recusa de colisões no respectivo conjunto. O reducer valida referência ao excluir aporte; excluir meta remove somente seus aportes. Edição preserva o histórico e os campos imutáveis.
+
+PostgreSQL continua futuro: será necessário definir propriedade por usuário, constraints, representação dos inteiros no contrato HTTP, atomicidade, política de exclusão, migrations e backup. Nenhuma conexão, esquema ou autenticação foi implementada.
+
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
 ## Estado confirmado

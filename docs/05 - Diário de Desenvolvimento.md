@@ -1,5 +1,15 @@
 # Diário de Desenvolvimento
 
+## 2026-11-12 — Metas e aportes em memória, aguardando aprovação visual/funcional
+
+Implementado plano aprovado com `frontend-design`, incluindo exclusão individual de aportes com confirmação e distinção explícita entre planejamento de referência e restante atualizado. Criados tipos, calendário civil, cálculos puros, reducer independente, página `/metas`, cartões, formulários, detalhes, roteiros e histórico. IDs criptográficos com recusa de colisão; regras monetárias existentes reutilizadas sem alteração. Situações e parcelas atualizam na virada do dia, foco/visibilidade e retorno à página. Reserva inicial/início são imutáveis na edição; histórico preservado; meta/aportes são limpos juntos na saída. Não há efeito em categorias/transações/dashboard.
+
+Verificações finais da implementação: `npm.cmd test` passou com 44 testes (32 existentes + 12 de Metas); `npm.cmd run lint` passou; `npm.cmd run build` passou, incluindo `tsc -b`. Bundle principal: 614,41 kB (186,65 kB gzip), mantendo aviso acima de 500 kB. A primeira compilação indicou ajuste de union discriminada nas ações de limpeza; corrigido. O primeiro lint indicou export de função utilitária em componente; movida para utilitário, com verificações finais aprovadas. Nenhuma dependência nova ou reinstalada.
+
+Testes cobrem calendário/bissextos/120 meses, soma exata no limite seguro, resíduos de centavos/parcelas zero, sinais/valores/datas/IDs/vínculos inválidos, recusa preservando arrays, reserva inicial, referência versus restante, situações, reabertura, aportes retroativos, exclusão individual/cascata e estado financeiro independente. Sem medição de cobertura.
+
+Revisão estática com `react-best-practices`: componentes em escopo de módulo, props tipadas, sem any, cálculos derivados, efeitos com limpeza e controles MUI. Nenhuma alteração em dashboard, Transações, Categorias, tema, superfícies compartilhadas ou regras monetárias. Limites: sem navegador/E2E nesta entrega; contraste composto, responsividade, zoom, teclado e retorno/contenção de foco (inclusive confirmação de aporte sobre detalhes) devem ser validados pelo usuário. Checklist registrado em `frontend/VALIDACAO_VISUAL.md`. Aportes não têm edição; dados continuam temporários. Sem backend, banco, autenticação, commit, push ou deploy. Lockfile não rastreado da raiz preexistente preservado.
+
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]].
 
 ## 2026-11-11 — Categorias funcionais em memória, aguardando validação

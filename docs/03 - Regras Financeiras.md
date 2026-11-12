@@ -1,5 +1,22 @@
 # Regras Financeiras
 
+## Metas e aportes — regras implementadas em 2026-11-12
+
+- Domínio independente: não altera receitas, despesas, saldo, transações ou categorias. Não inclui rendimentos, juros ou inflação.
+- Objetivo positivo em centavos seguros; reserva inicial entre zero e objetivo. O formulário reconhece zero explicitamente para reserva e reutiliza o conversor existente para positivos, sem mudar regras monetárias compartilhadas.
+- Nome normalizado com NFC/trim/espaços, obrigatório; nomes repetidos são permitidos. IDs não vazios, sem espaços externos, únicos por conjunto, gerados criptograficamente na interface.
+- Datas civis reais `YYYY-MM-DD`, anos de 0001 a 9999, validação de bissexto. Início <= término; criação/edição exige término hoje ou futuro. Até 120 meses inclusivos, sem proporcionalidade por dias. Início passado/futuro permitido.
+- Referência: objetivo menos reserva inicial, distribuído pelo período completo das configurações atuais. Não desconta aportes nem preserva versões anteriores do planejamento. Não representa compromisso histórico imutável.
+- Restante atualizado: objetivo menos reserva inicial e todos os aportes. Distribuição pelos meses a partir do mais recente entre início e mês atual, incluindo o mês atual enquanto o prazo estiver aberto. Aportes já realizados não são cobrados novamente. Períodos passados ficam no histórico de aportes, sem recomendação retroativa.
+- Distribuição usa quociente/resto BigInt; primeiros meses recebem os centavos excedentes. Soma exata, diferença máxima de um centavo; parcelas zero são possíveis. O percentual é apenas apresentação, em centésimos, limitado a 99,99% enquanto houver restante.
+- Aportes positivos, até o restante, sem frações de centavo; excedente recusado integralmente. Data entre início e término e não futura. Registro após vencimento é permitido para fato ocorrido dentro do período. Fato posterior ao prazo requer prorrogação.
+- Exclusão individual exige confirmação na interface, preserva outros aportes e recalcula acumulado/roteiro/situação. Não há edição de aportes. Não há estorno em Transações.
+- Edição de meta altera somente nome, objetivo e prazo; início, reserva, ID e aportes preservados. Objetivo não pode ser menor que acumulado; prazo não pode anteceder início ou aporte existente. Aumento de objetivo/prorrogação pode reabrir meta.
+- Exclusão de meta confirma remoção dos aportes vinculados e ocorre em uma operação pura. Cancelar não altera estado. Erros do reducer preservam ambos os arrays anteriores.
+- Situação derivada: Concluída se acumulado=objetivo; senão Planejada antes do início; Prazo encerrado após término; Em andamento nos demais casos. Conclusão tem precedência. Sem planejamento restante após término/conclusão.
+
+Exemplos cobertos: R$ 12.000 em 12 meses = R$ 1.000/mês; R$ 100 em 3 meses = 33,34 + 33,33 + 33,33; dois centavos em 3 meses = 0,01 + 0,01 + 0,00. Datas e operações de Metas não modificam a validação preexistente de Transações.
+
 Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados]], [[04 - Roadmap]].
 
 ## Lançamentos implementados

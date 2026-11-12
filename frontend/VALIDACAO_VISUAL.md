@@ -1,5 +1,24 @@
 # Validação visual do YFC
 
+## Metas — entrega de 2026-11-12 (pendente de execução e aprovação)
+
+Usar somente dados fictícios. Os itens abaixo são roteiro, não comprovação de validação no navegador.
+
+- Entrar na demonstração, acessar Metas pela sidebar e diretamente `/metas`; sem sessão, conferir redirecionamento ao acesso. Conferir item ativo e fechamento do menu móvel.
+- Conferir estado vazio. Criar Viagem, objetivo R$ 12.000, reserva zero, 01/01/2027–31/12/2027: referência deve mostrar 12 meses de R$ 1.000. Se a data atual já ultrapassou o prazo, usar outro ano futuro.
+- Para aportes, criar outra meta com início hoje e prazo alguns meses adiante. Registrar valores menores que o restante, conferir acumulado, percentual e planejamento restante; referência deve permanecer igual. Os títulos/descrições devem explicar claramente quanto guardar desde o início e quanto falta guardar agora.
+- Testar R$ 100 em três meses, dois centavos em três meses, reserva inicial, conclusão integral e valores longos. Conferir soma exata, centavos extras nos primeiros meses e parcelas zero.
+- Tentar nome vazio, objetivo zero/negativo, fração de centavo, reserva acima do objetivo, prazo anterior ao início/hoje, período acima de 120 meses, data inexistente, aporte zero/negativo/excedente/futuro. Erro deve preservar campos/dados e permitir correção.
+- Editar nome, objetivo e prazo; início/reserva devem estar desabilitados e histórico preservado. Objetivo abaixo do acumulado deve ser recusado; igual conclui; aumento/prorrogação reabre conforme datas.
+- Conferir histórico por data, reserva inicial separada e datas retroativas válidas. Excluir aporte: cancelar preserva tudo; confirmar remove só o escolhido e atualiza progresso/roteiro/situação. Repetir em meta concluída. Edição de aporte não é oferecida.
+- Excluir meta: diálogo deve informar quantidade de aportes; cancelar preserva; confirmar remove somente a meta e seus aportes. Conferir retorno do foco após remoção.
+- Criar receita/despesa fictícia e anotar saldo. Criar/editar/aportar/excluir em Metas; voltar ao dashboard, Transações e Categorias e conferir valores, registros e vínculos intactos.
+- Conferir persistência na navegação e perda explícita dos dados ao sair/recarregar. Tema continua persistido independentemente.
+- Conferir situações Planejada, Em andamento, Concluída e Prazo encerrado; conferir atualização ao voltar à aba e na virada do dia. A situação encerrada requer passagem da data ou ambiente controlado; não foi reproduzida nesta entrega.
+- Repetir em claro/escuro, 320/375/768/1024/1440 px e zoom 200%. Testar títulos/valores longos, cartões, formulário, detalhes em tela inteira no celular e roteiros sem overflow de página.
+- Usar Tab/Shift+Tab, Enter/Espaço e Escape; conferir foco inicial, foco contido, retorno ao acionador, confirmação de aporte sobre detalhes e fallback após excluir. Validar nomes acessíveis, alertas e percentual com leitor de tela.
+- Medir contraste composto (texto 4,5:1, texto grande/controles 3:1), foco e alvos de toque. Conferir leitura com fallback opaco, sem filtros aninhados ou animação adicionada.
+
 Execute `npm run dev` na pasta `frontend` e abra o endereço informado pelo Vite.
 
 ## Dashboard com glassmorphism

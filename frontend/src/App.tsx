@@ -8,6 +8,9 @@ import Transacoes from './pages/Transacoes'
 import Categorias from './pages/Categorias'
 import Acesso from './pages/Acesso'
 import Cadastro from './pages/Cadastro'
+import Metas from './pages/Metas'
+import { aplicarAcaoMetas, criarEstadoMetas, reduzirMetas } from './utils/estadoMetas'
+import type { AcaoMetas } from './utils/estadoMetas'
 
 import type { TransacaoRegistrada } from './types/transacao'
 import { aplicarAcaoFinanceira, criarEstadoFinanceiro, reduzirEstadoFinanceiro, selecionarTransacoes } from './utils/estadoFinanceiro'
@@ -16,6 +19,16 @@ import type { AcaoFinanceira } from './utils/estadoFinanceiro'
 
 function App() {
   const [sessaoDemo, setSessaoDemo] = useState(false)
+  const [estadoMetas, dispatchMetas] = useReducer(reduzirMetas, undefined, criarEstadoMetas)
+  const executarAcaoMetas = (acao: AcaoMetas): string | null => {
+    try {
+      aplicarAcaoMetas(estadoMetas, acao)
+      dispatchMetas(acao)
+      return null
+    } catch (erro) {
+      return erro instanceof Error ? erro.message : 'Não foi possível concluir a operação.'
+    }
+  }
   const [estado, dispatch] = useReducer(reduzirEstadoFinanceiro, undefined, criarEstadoFinanceiro)
   const transacoes = selecionarTransacoes(estado)
 
@@ -58,7 +71,9 @@ function App() {
         <Route element={sessaoDemo ? <LayoutPrincipal onSair={() => {
           setSessaoDemo(false)
           dispatch({ tipo: 'limpar' })
+          dispatchMetas({ tipo: 'limpar' })
         }} /> : <Navigate to="/acesso" replace />}>
+          <Route path="/metas" element={<Metas estado={estadoMetas} onExecutar={executarAcaoMetas} />} />
           <Route
             path="/"
             element={<Inicio transacoes={transacoes} />}

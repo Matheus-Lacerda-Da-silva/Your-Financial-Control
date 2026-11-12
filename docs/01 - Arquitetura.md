@@ -1,5 +1,20 @@
 # Arquitetura
 
+## Metas — implementação de 2026-11-12
+
+`App.tsx` mantém um segundo `useReducer`, exclusivo de Metas, sem alterar `estadoFinanceiro.ts`. `/metas` está sob `LayoutPrincipal` e a sessão demonstrativa. `Sidebar.tsx` recebeu apenas o novo item. Sair limpa ambos os estados; recarregar também perde os dados. Dashboard, Transações, Categorias, tema e superfícies compartilhadas foram preservados.
+
+- `types/meta.ts`: Meta, Aporte, EstadoMetas, EdicaoMeta e SituacaoMeta.
+- `utils/datasMetas.ts`: validação de calendário civil e enumeração inclusiva de até 120 meses, sem interpretação UTC.
+- `utils/metas.ts`: IDs criptográficos, validação, distribuição exata e seletores de progresso/situação/roteiros.
+- `utils/estadoMetas.ts`: operações puras e reducer; erros preservam os arrays anteriores. Edição aplica lista explícita de campos permitidos. Exclusão de meta remove seus aportes na mesma operação; exclusão individual valida o vínculo.
+- `pages/Metas.tsx`: composição e referência diária atualizada na montagem, retorno de foco/visibilidade e virada do dia; timer e listeners têm limpeza.
+- Componentes locais: CartaoMeta, FormularioMeta, DetalhesMeta e RoteiroMensalMeta. Uma superfície glass externa e cartões opacos internos, sem novos tokens ou efeitos globais.
+
+IDs de metas/aportes são gerados fora do reducer com `crypto.randomUUID` ou bytes criptográficos, com colisões recusadas. Não foi reutilizado nem corrigido o `Date.now()` das transações. Os callbacks pré-validam e o reducer revalida o estado mais recente, seguindo o padrão existente. Uma futura integração com transações deve coordenar operações explicitamente para evitar dupla contabilização; não existe vínculo automático agora.
+
+Verificação nesta máquina: 44 testes, lint e build/TypeScript aprovados. Bundle principal 614,41 kB (186,65 kB gzip), com aviso acima de 500 kB. O erro histórico local do scope-manager não ocorreu. Sem testes de componentes/E2E ou inspeção no navegador nesta entrega.
+
 Relacionadas: [[00 - Visão Geral]], [[02 - Banco de Dados]], [[03 - Regras Financeiras]], [[04 - Roadmap]], [[05 - Diário de Desenvolvimento]].
 
 ## Estrutura confirmada

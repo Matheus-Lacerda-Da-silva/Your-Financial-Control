@@ -3,11 +3,13 @@ import { AccountBalanceWalletOutlined, CategoryOutlined, DashboardOutlined } fro
 import { NavLink } from 'react-router-dom'
 import { alpha, IconButton } from '@mui/material'
 import CloseOutlined from '@mui/icons-material/CloseOutlined'
+import FlagOutlined from '@mui/icons-material/FlagOutlined'
 
 const itens = [
   { caminho: '/', nome: 'Visão geral', icone: DashboardOutlined },
   { caminho: '/transacoes', nome: 'Transações', icone: AccountBalanceWalletOutlined },
   { caminho: '/categorias', nome: 'Categorias', icone: CategoryOutlined },
+  { caminho: '/metas', nome: 'Metas', icone: FlagOutlined },
 ]
 
 export default function Sidebar({ aberta, onFechar }: { aberta: boolean; onFechar: () => void }) {
