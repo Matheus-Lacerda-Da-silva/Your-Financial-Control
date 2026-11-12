@@ -11,7 +11,7 @@ Direção atualizada em 2026-11-09: o projeto está em estágio inicial e será 
 | Prioridade | Proposta e estado atual | Impacto | Esforço | Critério de conclusão |
 | --- | --- | --- | --- | --- |
 | Concluído | Centavos inteiros seguros, limites e rejeição de frações de centavo | Alto | Médio | Implementado e testado em `utils/dinheiro.ts`, `utils/transacoes.ts` e `tests/financeiro.test.mjs` |
-| P0 parcial | Validação monetária centralizada; ampliar posteriormente a validação compartilhada de descrição/categoria/data | Alto | Médio | Precisão e sinal/tipo já cobertos; regras não monetárias ainda devem ser consolidadas |
+| P0 parcial | Validação monetária e vínculo de categoria centralizados; ampliar posteriormente a validação compartilhada de descrição/data | Alto | Médio | Precisão, sinal/tipo e categorias cobertos; regras textuais e datas ainda devem ser consolidadas |
 | P1 | Explorar glassmorphism provisório com base cinza e destaques verdes, em uma superfície por vez | Médio | Médio | Componentes existentes preservados, leitura e contraste verificados, alternativa opaca quando necessária e validação nos temas e tamanhos de tela disponíveis |
 | P1 | Reutilizar componentes e regras compartilhadas conforme cada fluxo evoluir | Médio | Médio | Extrações pequenas com benefício concreto, sem regressão de comportamento, teclado ou responsividade |
 | P1 | Substituir estratégia de IDs; hoje `Date.now()` | Médio | Baixo | Identificadores com garantia adequada ao armazenamento adotado e verificação de unicidade |
@@ -22,7 +22,7 @@ Direção atualizada em 2026-11-09: o projeto está em estágio inicial e será 
 | P2 | Definir backend/API e sua integração, após estabilizar os fluxos e levantar necessidades de persistência | Alto | Alto | Contratos documentados, validação no servidor e tratamento de erros testados; tecnologia a decidir |
 | P2 | Definir banco e persistência com propriedade por usuário, junto ao desenho da API | Alto | Alto | Esquema revisado, integridade e backup/restauração testados em ambiente de teste |
 | P2 | Implementar autenticação e autorização reais na preparação para uso real; hoje somente demo | Alto | Alto | Identidade validada no servidor e testes negativos de acesso entre usuários, com isolamento integrado ao banco/API |
-| P2 | Implementar gerenciamento de categorias; planejado sinalizado na interface | Médio | Médio | CRUD e regras de associação, alteração e exclusão definidos e testados |
+| Implementado em memória; validação manual pendente | Gerenciamento de categorias com IDs, duplicidade e vínculos por tipo; sem persistência | Médio | Médio | Regras cobertas por testes de funções/reducer; validar interface, teclado e integração no navegador antes de concluir a entrega |
 | P2 | Definir automação de qualidade e ambiente reproduzível; CI não identificada | Médio | Médio | Versão suportada do Node documentada e testes, lint e build validados em automação |
 
 ## Dependências e decisões

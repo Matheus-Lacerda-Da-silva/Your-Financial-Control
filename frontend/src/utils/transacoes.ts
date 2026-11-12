@@ -1,7 +1,9 @@
 import type { Transacao } from '../types/transacao.ts'
 import { somarCentavos, validarCentavos } from './dinheiro.ts'
 
-export function calcularResumo(transacoes: readonly Transacao[]) {
+type TransacaoFinanceira = Pick<Transacao, 'id' | 'tipo' | 'valorCentavos'>
+
+export function calcularResumo(transacoes: readonly TransacaoFinanceira[]) {
   let receitas = 0
   let despesas = 0
   for (const transacao of transacoes) {
@@ -20,13 +22,13 @@ export function calcularResumo(transacoes: readonly Transacao[]) {
   return { receitas, despesas, saldo: somarCentavos(receitas, -despesas) }
 }
 
-export type OperacaoTransacao =
-  | { tipo: 'cadastrar'; transacao: Transacao }
-  | { tipo: 'editar'; transacao: Transacao }
+export type OperacaoTransacao<T = Transacao> =
+  | { tipo: 'cadastrar'; transacao: T }
+  | { tipo: 'editar'; transacao: T }
   | { tipo: 'excluir'; id: number }
 
-export function aplicarOperacao(transacoes: readonly Transacao[], operacao: OperacaoTransacao) {
-  let proximas: Transacao[]
+export function aplicarOperacao<T extends TransacaoFinanceira>(transacoes: readonly T[], operacao: OperacaoTransacao<T>) {
+  let proximas: T[]
   if (operacao.tipo === 'cadastrar') {
     proximas = [operacao.transacao, ...transacoes]
   } else if (operacao.tipo === 'editar') {

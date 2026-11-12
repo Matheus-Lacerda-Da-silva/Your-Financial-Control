@@ -34,7 +34,11 @@ Sidebar e cabeçalho usam superfícies opacas de `theme.glass` e luz interna dis
 
 No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombraDestaque` e `iluminacao`. `CartaoResumo` reutiliza a propriedade `destaque` para a hierarquia do saldo, preservando sinal monetário e usando cor de erro quando negativo. Iluminação é estática e decorativa; não representa avaliação financeira. Resultados técnicos e limitações visuais estão no [[05 - Diário de Desenvolvimento]].
 
-`main.tsx` monta `TemaProvider → App → BrowserRouter`. `App` entrega transações por props ao painel e à página de transações. Callbacks de criação, edição e exclusão despacham ações para `useReducer` com `utils/transacoes.ts`. O reducer valida o estado proposto antes de substituí-lo e preserva os dados em caso de erro monetário. Não há camada de serviços ou chamada HTTP identificada em `src`.
+`main.tsx` monta `TemaProvider → App → BrowserRouter`. `App` coordena categorias e transações em `useReducer` com `utils/estadoFinanceiro.ts`. A operação pura `aplicarAcaoFinanceira` pré-valida callbacks para manter formulários abertos em caso de recusa; o reducer revalida sobre o estado mais recente e preserva ambos os arrays em erros. Operações financeiras reutilizam `aplicarOperacao` de `utils/transacoes.ts`, com tipagem genérica para preservar `categoriaId`; o algoritmo monetário não foi alterado. Não há camada de serviços ou chamada HTTP identificada em `src`.
+
+`Categoria` contém ID string, nome e tipo. `TransacaoRegistrada` armazena `categoriaId`; `selecionarTransacoes` produz `TransacaoExibicao` com nome derivado, compatível com Início e TransacaoCard existentes, sem alterar esses componentes. O estado não duplica o nome da categoria. IDs são gerados fora do reducer por `crypto.randomUUID()`, com alternativa baseada em `crypto.getRandomValues`; colisões são recusadas no cadastro. Normalização e validação de vínculos ficam em `utils/categorias.ts`. Categorias não recebem valores financeiros e não criam lançamentos automaticamente.
+
+Categorias usa dois painéis `SuperficieVidro`, formulário visível e lista responsiva com itens opacos, contagem de vínculos e diálogos MUI com alertas internos. Cadastro e edição de transações usam seletores compatíveis com o tipo, sem escolha automática. Categorias começam vazias e são limpas junto às transações na saída. Tema, superfícies compartilhadas, dashboard, sidebar, cabeçalho e login não foram alterados nessa implementação. Validação no navegador permanece pendente.
 
 | Rota | Comportamento em `App.tsx` |
 | --- | --- |
@@ -42,7 +46,7 @@ No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombr
 | `/cadastro` | Validação demo; com sessão redireciona para `/` |
 | `/` | Resumo financeiro sob LayoutPrincipal, condicionado à sessão demo |
 | `/transacoes` | CRUD local sob LayoutPrincipal |
-| `/categorias` | Tela informativa sob LayoutPrincipal |
+| `/categorias` | CRUD local de categorias sob LayoutPrincipal |
 | Outras | Redirecionamento conforme sessão demo |
 
 Sem sessão, as rotas principais redirecionam para `/acesso`. Sair limpa sessão e transações. Recarregar recria ambos os estados vazios. BrowserRouter exige suporte a fallback para `index.html` ao acessar rotas diretamente em uma hospedagem; essa configuração não foi identificada ou testada. `vite.config.ts` configura somente o plugin React, sem proxy de API.

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 
 import {
   Alert,
@@ -32,23 +33,25 @@ import SuperficieVidro from '../components/SuperficieVidro'
 import TransacaoCard from '../components/TransacaoCard'
 import { dataLocalAtual, formatarData, formatarMoeda } from '../utils/formatadores'
 
-import type { Transacao } from '../types/transacao'
+import type { TransacaoExibicao, TransacaoRegistrada } from '../types/transacao'
+import type { Categoria } from '../types/categoria'
 import { converterParaCentavos, centavosParaEntrada } from '../utils/dinheiro'
-import { aplicarOperacao } from '../utils/transacoes'
 
-type TransacaoNova = Omit<Transacao, 'id'>
+type TransacaoNova = Omit<TransacaoRegistrada, 'id'>
 
 type TransacoesProps = {
-  transacoes: Transacao[]
+  transacoes: TransacaoExibicao[]
+  categorias: Categoria[]
   erroFinanceiro: string | null
   onLimparErro: () => void
-  onCadastrarTransacao: (transacao: TransacaoNova) => void
-  onExcluirTransacao: (id: number) => void
-  onEditarTransacao: (transacao: Transacao) => void
+  onCadastrarTransacao: (transacao: TransacaoNova) => string | null
+  onExcluirTransacao: (id: number) => string | null
+  onEditarTransacao: (transacao: TransacaoRegistrada) => string | null
 }
 
 function Transacoes({
   transacoes,
+  categorias,
   erroFinanceiro,
   onLimparErro,
   onCadastrarTransacao,
@@ -58,17 +61,19 @@ function Transacoes({
   const tituloHistorico = useRef<HTMLHeadingElement>(null)
   const [aviso, setAviso] = useState<{ texto: string; erro: boolean } | null>(null)
   const [descricao, setDescricao] = useState('')
-  const [tipo, setTipo] = useState<Transacao['tipo']>('receita')
+  const [tipo, setTipo] = useState<TransacaoRegistrada['tipo']>('receita')
   const [valor, setValor] = useState('')
-  const [categoria, setCategoria] = useState('')
+  const [categoriaId, setCategoriaId] = useState('')
   const [data, setData] = useState(dataLocalAtual)
-  const [transacaoParaExcluir, setTransacaoParaExcluir] = useState<Transacao | null>(null)
-  const [transacaoEmEdicao, setTransacaoEmEdicao] = useState<Transacao | null>(null)
+  const [transacaoParaExcluir, setTransacaoParaExcluir] = useState<TransacaoExibicao | null>(null)
+  const [transacaoEmEdicao, setTransacaoEmEdicao] = useState<TransacaoExibicao | null>(null)
   const [descricaoEdicao, setDescricaoEdicao] = useState('')
-  const [tipoEdicao, setTipoEdicao] = useState<Transacao['tipo']>('receita')
+  const [tipoEdicao, setTipoEdicao] = useState<TransacaoRegistrada['tipo']>('receita')
   const [valorEdicao, setValorEdicao] = useState('')
-  const [categoriaEdicao, setCategoriaEdicao] = useState('')
+  const [categoriaIdEdicao, setCategoriaIdEdicao] = useState('')
   const [dataEdicao, setDataEdicao] = useState('')
+  const categoriasCadastro = categorias.filter(c => c.tipo === tipo)
+  const categoriasEdicao = categorias.filter(c => c.tipo === tipoEdicao)
 
   const cadastrarTransacao = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
@@ -83,7 +88,7 @@ function Transacoes({
 
     if (
       !descricao.trim() ||
-      !categoria.trim() ||
+      !categoriaId.trim() ||
       !data ||
       !Number.isFinite(valorCentavos) ||
       valorCentavos <= 0
@@ -96,36 +101,40 @@ function Transacoes({
       descricao,
       tipo,
       valorCentavos: tipo === 'despesa' ? -valorCentavos : valorCentavos,
-      categoria,
+      categoriaId,
       data,
     }
 
-    try {
-      aplicarOperacao(transacoes, { tipo: 'cadastrar', transacao: { ...novaTransacao, id: 0 } })
-    } catch (erro) {
-      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+    const erroCadastro = onCadastrarTransacao(novaTransacao)
+    if (erroCadastro) {
+      setAviso({ texto: erroCadastro, erro: true })
       return
     }
-    onCadastrarTransacao(novaTransacao)
 
     setAviso({ texto: 'Transação cadastrada com sucesso!', erro: false })
 
     setDescricao('')
     setTipo('receita')
     setValor('')
-    setCategoria('')
+    setCategoriaId('')
     setData(dataLocalAtual())
   }
 
-  const abrirEdicao = (transacao: Transacao) => {
+  const abrirEdicao = (transacao: TransacaoExibicao) => {
     setAviso(null)
     onLimparErro()
     setTransacaoEmEdicao(transacao)
     setDescricaoEdicao(transacao.descricao)
     setTipoEdicao(transacao.tipo)
     setValorEdicao(centavosParaEntrada(transacao.valorCentavos))
-    setCategoriaEdicao(transacao.categoria)
+    setCategoriaIdEdicao(transacao.categoriaId)
     setDataEdicao(transacao.data)
+  }
+
+  const abrirExclusao = (transacao: TransacaoExibicao) => {
+    setAviso(null)
+    onLimparErro()
+    setTransacaoParaExcluir(transacao)
   }
 
   const salvarEdicao = () => {
@@ -143,7 +152,7 @@ function Transacoes({
 
     if (
       !descricaoEdicao.trim() ||
-      !categoriaEdicao.trim() ||
+      !categoriaIdEdicao.trim() ||
       !dataEdicao ||
       !Number.isFinite(valorCentavos) ||
       valorCentavos <= 0
@@ -152,29 +161,27 @@ function Transacoes({
       return
     }
 
-    const transacaoEditada: Transacao = {
+    const transacaoEditada: TransacaoRegistrada = {
       id: transacaoEmEdicao.id,
       descricao: descricaoEdicao,
       tipo: tipoEdicao,
       valorCentavos: tipoEdicao === 'despesa' ? -valorCentavos : valorCentavos,
-      categoria: categoriaEdicao,
+      categoriaId: categoriaIdEdicao,
       data: dataEdicao,
     }
 
-    try {
-      aplicarOperacao(transacoes, { tipo: 'editar', transacao: transacaoEditada })
-    } catch (erro) {
-      setAviso({ texto: erro instanceof Error ? erro.message : 'Valor inválido.', erro: true })
+    const erroEdicao = onEditarTransacao(transacaoEditada)
+    if (erroEdicao) {
+      setAviso({ texto: erroEdicao, erro: true })
       return
     }
-    onEditarTransacao(transacaoEditada)
     setAviso(null)
     setTransacaoEmEdicao(null)
   }
 
   return (
     <Box sx={tema => ({ background: tema.glass.fundoDashboard, borderRadius: 4, p: { xs: 1, sm: 3 }, minWidth: 0 })}>
-      <Snackbar open={transacaoEmEdicao === null && (aviso !== null || erroFinanceiro !== null)} autoHideDuration={5000} onClose={() => { setAviso(null); onLimparErro() }}>
+      <Snackbar open={transacaoEmEdicao === null && transacaoParaExcluir === null && (aviso !== null || erroFinanceiro !== null)} autoHideDuration={5000} onClose={() => { setAviso(null); onLimparErro() }}>
         <Alert severity={erroFinanceiro || aviso?.erro ? 'error' : 'success'} onClose={() => { setAviso(null); onLimparErro() }} variant="filled">
           {erroFinanceiro ?? aviso?.texto}
         </Alert>
@@ -216,7 +223,7 @@ function Transacoes({
               select
               label="Tipo de transação"
               value={tipo}
-              onChange={(evento) => setTipo(evento.target.value as Transacao['tipo'])}
+              onChange={(evento) => { setTipo(evento.target.value as TransacaoRegistrada['tipo']); setCategoriaId('') }}
               fullWidth
             >
               <MenuItem value="receita">Receita</MenuItem>
@@ -234,12 +241,18 @@ function Transacoes({
             />
 
             <TextField
+              select
               label="Categoria"
-              value={categoria}
-              onChange={(evento) => setCategoria(evento.target.value)}
+              value={categoriaId}
+              onChange={(evento) => setCategoriaId(evento.target.value)}
               required
               fullWidth
-            />
+              helperText={categoriasCadastro.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
+              slotProps={{ select: { MenuProps: { slotProps: { paper: { sx: { maxWidth: 'calc(100vw - 32px)' } } } } } }}
+            >
+              <MenuItem value="" disabled>Selecione uma categoria</MenuItem>
+              {categoriasCadastro.map(c => <MenuItem key={c.id} value={c.id} sx={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{c.nome}</MenuItem>)}
+            </TextField>
 
             <TextField
               label="Data"
@@ -259,6 +272,7 @@ function Transacoes({
               Cadastrar transação
             </Button>
           </Box>
+          {categoriasCadastro.length === 0 && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>Cadastrar categorias</Button>}
         </CardContent>
       </SuperficieVidro>
       <SuperficieVidro sx={{ mt: 3 }}>
@@ -280,8 +294,8 @@ function Transacoes({
                   <TransacaoCard
                     key={transacao.id}
                     transacao={transacao}
-                    onEditar={abrirEdicao}
-                    onExcluir={setTransacaoParaExcluir}
+                    onEditar={() => abrirEdicao(transacao)}
+                    onExcluir={() => abrirExclusao(transacao)}
                   />
                 ))}
               </Box>
@@ -336,7 +350,7 @@ function Transacoes({
                           aria-label={`Excluir transação: ${transacao.descricao}`}
                           sx={{ width: 44, height: 44 }}
                           color="error"
-                          onClick={() => setTransacaoParaExcluir(transacao)}
+                          onClick={() => abrirExclusao(transacao)}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -362,6 +376,7 @@ function Transacoes({
         } } }}
       >
         <DialogTitle id="titulo-exclusao">Excluir transação</DialogTitle>
+        {(erroFinanceiro || aviso?.erro) && <Alert severity="error" sx={{ mx: 3, mb: 2 }}>{erroFinanceiro ?? aviso?.texto}</Alert>}
 
         <DialogContent>
           <DialogContentText id="descricao-exclusao" sx={{ overflowWrap: 'anywhere' }}>
@@ -379,7 +394,8 @@ function Transacoes({
             color="error"
             onClick={() => {
               if (transacaoParaExcluir) {
-                onExcluirTransacao(transacaoParaExcluir.id)
+                const erroExclusao = onExcluirTransacao(transacaoParaExcluir.id)
+                if (erroExclusao) { setAviso({ texto: erroExclusao, erro: true }); return }
               }
               setTransacaoParaExcluir(null)
             }}
@@ -426,7 +442,7 @@ function Transacoes({
               select
               label="Tipo de transação"
               value={tipoEdicao}
-              onChange={(evento) => setTipoEdicao(evento.target.value as Transacao['tipo'])}
+              onChange={(evento) => { setTipoEdicao(evento.target.value as TransacaoRegistrada['tipo']); setCategoriaIdEdicao('') }}
               fullWidth
             >
               <MenuItem value="receita">Receita</MenuItem>
@@ -444,12 +460,18 @@ function Transacoes({
             />
 
             <TextField
+              select
               label="Categoria"
-              value={categoriaEdicao}
+              value={categoriaIdEdicao}
               required
-              onChange={(evento) => setCategoriaEdicao(evento.target.value)}
+              onChange={(evento) => setCategoriaIdEdicao(evento.target.value)}
               fullWidth
-            />
+              helperText={categoriasEdicao.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
+              slotProps={{ select: { MenuProps: { slotProps: { paper: { sx: { maxWidth: 'calc(100vw - 32px)' } } } } } }}
+            >
+              <MenuItem value="" disabled>Selecione uma categoria</MenuItem>
+              {categoriasEdicao.map(c => <MenuItem key={c.id} value={c.id} sx={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{c.nome}</MenuItem>)}
+            </TextField>
 
             <TextField
               label="Data"
@@ -461,6 +483,7 @@ function Transacoes({
               fullWidth
             />
           </Box>
+          {categoriasEdicao.length === 0 && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>Ir para Categorias (descarta esta edição)</Button>}
         </DialogContent>
 
         <DialogActions>

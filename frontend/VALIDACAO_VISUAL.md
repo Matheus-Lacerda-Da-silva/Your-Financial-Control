@@ -44,6 +44,8 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 
 Refinamento de 2026-11-11 implementado no código. Validação no navegador e aprovação visual do usuário pendentes; os itens abaixo são roteiro, não resultados.
 
+Integração com Categorias: antes do primeiro lançamento, criar categorias dos tipos necessários. O campo Categoria agora é um seletor por tipo, sem escolha automática. Trocar o tipo limpa a seleção no cadastro e na edição. Sem opções, conferir orientação e navegação para Categorias; sair do diálogo por esse link descarta o rascunho da edição, sem alterar o registro.
+
 - Nos dois temas, conferir os dois painéis `SuperficieVidro`, campos com fundo opaco e cartões móveis sem blur. Desativar `@supports` no inspetor e conferir o fallback opaco. Medir contraste composto: texto normal 4,5:1, texto grande e controles essenciais 3:1.
 - Conferir 320, 375, 768, 1024 e 1440 px, transições 599/600, 899/900 e 1535/1536 px e zoom de 200%. O formulário deve continuar visível, com ordem Descrição → Tipo → Valor → Categoria → Data → Cadastrar. A rolagem horizontal deve ficar restrita à tabela, inclusive pelo teclado ao focar seu contêiner.
 - No histórico vazio, conferir ícone decorativo, título e orientação para o formulário acima, sem outro botão de cadastro.
@@ -63,6 +65,22 @@ Refinamento de 2026-11-11 implementado no código. Validação no navegador e ap
 - Conferir mensagem para campos inválidos e notificação de cadastro concluído.
 
 Os dados financeiros continuam apenas em memória. Recarregar apaga as transações; somente a preferência de tema é salva.
+
+## Categorias e integridade dos vínculos
+
+Implementação de 2026-11-11 com testes de funções/reducer e compilação executados. Este roteiro de interação ainda não foi executado no navegador e depende da validação visual e funcional do usuário.
+
+- Iniciar sessão fictícia e abrir Categorias: lista vazia, sem categorias padrão, formulário Nome → Tipo → Cadastrar sempre visível. Conferir estado vazio e aviso de dados temporários.
+- Criar “Salário” como Receita e “Alimentação” como Despesa. Nome vazio ou somente espaços deve ser recusado; espaços externos e internos repetidos devem ser normalizados. “ SALÁRIO ” deve duplicar “Salário” no mesmo tipo; o mesmo nome no outro tipo pode existir. Acentos permanecem significativos.
+- Editar uma categoria sem vínculos: mudar nome e tipo; tentar duplicar outra categoria do tipo de destino. Em recusa, conferir alerta dentro do diálogo, campos preservados e lista intacta. Cancelar e Escape não devem salvar.
+- Criar receita e despesa em Transações: conferir que somente as categorias compatíveis aparecem. Trocar o tipo deve limpar a categoria sem selecionar outra, inclusive ao editar. Sem categorias do tipo escolhido, conferir orientação e link para Categorias, sem aceitar envio inválido. O link da edição deve informar que o rascunho será descartado.
+- Voltar a Categorias: conferir contagens. Renomear categoria vinculada e verificar o nome novo na tabela, nos cartões móveis e nas últimas transações de Início, sem alteração dos valores, totais, datas ou ordem.
+- Em categoria vinculada, conferir tipo desabilitado com explicação. Ao abrir Excluir, conferir quantidade de vínculos, orientação de reclassificação e confirmação desabilitada, sem remoção de transações.
+- Reclassificar uma transação para outra categoria do mesmo tipo e conferir atualização das duas contagens. Excluir categoria agora sem vínculos: cancelar deve preservar; confirmar deve remover somente a categoria. Repetir com o último item para conferir estado vazio e foco no título da lista após remoção do acionador.
+- Conferir nomes acessíveis Editar/Excluir incluindo nome e tipo da categoria, Tab/Shift+Tab, Enter/Espaço, foco visível, foco inicial no Nome ao editar e em Cancelar ao excluir, Escape, contenção e retorno de foco MUI. Conferir anúncio de erros por leitor de tela.
+- Repetir nos temas claro/escuro, em 320, 375, 768, 1024 e 1440 px, transições de breakpoints e zoom de 200%. Usar nomes extensos, sem espaços, tanto na lista quanto nas opções do seletor. Conferir quebra de texto e ausência de rolagem horizontal da página ou sobreposição de controles.
+- Conferir contraste composto de texto normal (4,5:1), texto grande/controles essenciais (3:1), alvos de ação de pelo menos 44 px e fallback opaco ao desativar `@supports`. Categorias deve ter dois painéis com blur de 8 px, sem filtros internos ou animações novas.
+- Sair e entrar de novo, depois recarregar: categorias e transações devem iniciar vazias. Preferência de tema continua independente. Usar apenas dados fictícios.
 
 ## Acesso e cadastro demonstrativos
 

@@ -32,11 +32,13 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Layout responsivo, menu lateral, cartões no celular e tabela em telas maiores | Implementado no código; validação visual não executada nesta auditoria | `frontend/src/layouts/LayoutPrincipal.tsx`, `frontend/src/components/Sidebar.tsx`, `frontend/src/pages/Transacoes.tsx` |
 | Tema claro/escuro com preferência salva | Implementado | `frontend/src/theme/TemaProvider.tsx` |
 | Acesso e cadastro | Parcial: formulários demonstrativos e validação local; nenhuma conta criada | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
-| Categorias | Parcial: texto livre em transações; tela sem gerenciamento | `frontend/src/pages/Categorias.tsx` |
-| Gerenciamento de categorias | Planejado sinalizado pela interface, sem prazo identificado | `frontend/src/pages/Categorias.tsx` |
+| Categorias de Receita/Despesa | CRUD em memória com IDs, normalização, duplicidade por nome/tipo e contagem de vínculos; validação interativa pendente | `frontend/src/pages/Categorias.tsx`, `frontend/src/utils/categorias.ts` |
+| Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
 | Backend, API, banco, JWT e isolamento por usuário | Não identificados no código | `backend/.gitkeep`, `frontend/src/App.tsx` |
 
 ## Qualidade e limites
+
+Em 2026-11-11, Categorias passou a reutilizar dois painéis `SuperficieVidro` e `theme.glass`, sem mudanças nos componentes compartilhados. Categorias começam vazias e desaparecem junto das transações ao recarregar/sair. O estado coordenado armazena `categoriaId`; nomes são derivados para exibição, preservando o dashboard. Foram executados 32 testes, TypeScript e build com sucesso; lint segue bloqueado pela dependência local. Aparência e interação ainda aguardam validação do usuário conforme `frontend/VALIDACAO_VISUAL.md`.
 
 Os valores financeiros agora usam `valorCentavos` com inteiros seguros, rejeição de frações de centavo e limites por lançamento e total. Operações monetárias inválidas preservam os dados anteriores. Ver [[03 - Regras Financeiras]]. A suíte reúne testes de acesso/cadastro e testes financeiros das funções e reducer utilizados pela aplicação. Ela não comprova interação visual ou autenticação real. O roteiro `frontend/VALIDACAO_VISUAL.md` é uma lista manual, não um relatório de execução. Resultados e limitações estão em [[01 - Arquitetura]] e [[05 - Diário de Desenvolvimento]].
 

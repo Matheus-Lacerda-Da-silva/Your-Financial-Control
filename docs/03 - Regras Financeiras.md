@@ -6,8 +6,8 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[02 - Banco de Dados
 
 Evidências: `frontend/src/pages/Transacoes.tsx`, `frontend/src/types/transacao.ts` e `frontend/src/App.tsx`.
 
-- Cadastro e edição exigem descrição e categoria não vazias após `trim`, data não vazia e magnitude monetária válida, convertida do texto diretamente para centavos inteiros por `utils/dinheiro.ts`.
-- Descrição e categoria são verificadas com trim, mas armazenadas como digitadas, incluindo espaços nas extremidades.
+- Cadastro e edição exigem descrição não vazia após `trim`, categoria cadastrada com tipo compatível, data não vazia e magnitude monetária válida, convertida do texto diretamente para centavos inteiros por `utils/dinheiro.ts`.
+- Descrição é verificada com trim, mas armazenada como digitada, incluindo espaços nas extremidades. Categoria é selecionada por ID; seu nome é normalizado no cadastro/edição da própria categoria.
 - O usuário informa uma magnitude positiva em reais. O estado armazena `valorCentavos`: inteiro seguro positivo para receita e negativo para despesa. Zero e valores negativos de entrada são rejeitados; a camada de operações também verifica coerência entre sinal e tipo.
 - O input mantém `min: 0` e `step: '0.01'`, mas a validação compartilhada em execução rejeita mais de duas casas decimais, inclusive `0.005`, sem arredondamento silencioso, tanto no cadastro quanto na edição.
 - Ao editar, a interface recebe a magnitude decimal exata produzida por `centavosParaEntrada` e reconstrói o sinal conforme o tipo escolhido. Mantém o ID e a posição do registro no array.
@@ -27,7 +27,7 @@ Evidência: `frontend/src/pages/Inicio.tsx`.
 
 Os totais incluem todos os lançamentos em memória, sem filtro de período, situação de pagamento ou restrição a datas passadas. Uma data futura aceita pelo formulário participa dos totais. O saldo inicial implícito é zero; não há entidade de conta ou saldo de abertura identificada.
 
-`utils/transacoes.ts` centraliza resumo, operações e reducer. Antes de atualizar o estado, valida inteiros seguros e coerência de sinal/tipo. Cadastro ou edição inválidos preservam o array anterior e produzem uma mensagem de erro. A pré-validação dos formulários mantém os campos e o diálogo abertos quando a operação é recusada; o reducer revalida sobre o estado mais recente. Não há validação de servidor nesta demonstração.
+`utils/transacoes.ts` centraliza resumo, operações e o reducer financeiro original. O coordenador atual de categorias/transações em `utils/estadoFinanceiro.ts` reutiliza essas operações, validando também o vínculo. Antes de atualizar o estado, são validados inteiros seguros e coerência de sinal/tipo. Cadastro ou edição inválidos preservam os arrays anteriores e produzem uma mensagem de erro. A pré-validação mantém os campos e o diálogo abertos quando a operação é recusada; o reducer revalida sobre o estado mais recente. Não há validação de servidor nesta demonstração.
 
 ## Moeda e datas
 
@@ -43,7 +43,13 @@ Conversão e somas usam `BigInt` transitoriamente para verificar limites antes d
 
 Não foram identificados parcelamento, recorrência, juros, transferências entre contas, conciliação, orçamento, metas, importação/exportação, múltiplas moedas, estado pago/pendente ou relatórios por período. São lacunas de escopo, não funcionalidades planejadas confirmadas.
 
-Gerenciamento de categorias é anunciado como em preparação em `Categorias.tsx`; a implementação atual aceita texto livre, sem padronização, deduplicação ou integridade referencial. Nenhum prazo ou regra futura foi identificado.
+## Categorias e vínculos em memória
+
+Desde 2026-11-11, `Categorias.tsx` implementa CRUD local. Categoria tem ID estável, nome e tipo Receita/Despesa. Nome usa normalização Unicode NFC, trim e consolidação dos espaços internos; vazio é recusado. Duplicidade compara nome normalizado em minúsculas pt-BR dentro do mesmo tipo, ignorando o próprio ID ao editar. Acentos são significativos e o mesmo nome pode existir em tipos diferentes.
+
+Transações armazenam `categoriaId`, com existência e compatibilidade de tipo validadas em `utils/estadoFinanceiro.ts` usando `utils/categorias.ts`. Trocar o tipo no formulário limpa a seleção; não há escolha automática. Renomear categoria atualiza apenas a exibição derivada, sem reescrever transações, valores, datas ou ordem. Categoria com vínculos não pode mudar de tipo nem ser excluída; o usuário deve primeiro reclassificar ou excluir os lançamentos. Categoria sem vínculos pode mudar de tipo, respeitando duplicidade no destino, ou ser excluída após confirmação. Não há exclusão em cascata ou reclassificação automática.
+
+Categorias e transações começam vazias e são eliminadas na saída/recarga. Nenhuma categoria padrão é adicionada. As novas regras são de classificação e integridade; conversão, limites, sinais e cálculos monetários permanecem iguais. O coordenador reutiliza `aplicarOperacao` e revalida no reducer; recusas preservam ambos os arrays.
 
 ## Verificação ausente
 

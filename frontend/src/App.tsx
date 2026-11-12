@@ -9,31 +9,45 @@ import Categorias from './pages/Categorias'
 import Acesso from './pages/Acesso'
 import Cadastro from './pages/Cadastro'
 
-import type { Transacao } from './types/transacao'
-import { reduzirTransacoes } from './utils/transacoes'
+import type { TransacaoRegistrada } from './types/transacao'
+import { aplicarAcaoFinanceira, criarEstadoFinanceiro, reduzirEstadoFinanceiro, selecionarTransacoes } from './utils/estadoFinanceiro'
+import type { AcaoFinanceira } from './utils/estadoFinanceiro'
 
 
 function App() {
   const [sessaoDemo, setSessaoDemo] = useState(false)
-  const [{ transacoes, erro }, dispatch] = useReducer(reduzirTransacoes, { transacoes: [], erro: null })
+  const [estado, dispatch] = useReducer(reduzirEstadoFinanceiro, undefined, criarEstadoFinanceiro)
+  const transacoes = selecionarTransacoes(estado)
+
+  // Pré-valida para manter formulários abertos em caso de recusa.
+  // O reducer também valida a ação sobre o estado mais recente.
+  const executarAcao = (acao: AcaoFinanceira): string | null => {
+    try {
+      aplicarAcaoFinanceira(estado, acao)
+      dispatch(acao)
+      return null
+    } catch (erro) {
+      return erro instanceof Error ? erro.message : 'Não foi possível concluir a operação.'
+    }
+  }
 
   const cadastrarTransacao = (
-    novaTransacao: Omit<Transacao, 'id'>,
+    novaTransacao: Omit<TransacaoRegistrada, 'id'>,
   ) => {
-    const transacaoComId: Transacao = {
+    const transacaoComId: TransacaoRegistrada = {
       ...novaTransacao,
       id: Date.now(),
     }
 
-    dispatch({ tipo: 'cadastrar', transacao: transacaoComId })
+    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'cadastrar', transacao: transacaoComId } })
   }
 
   const excluirTransacao = (id: number) => {
-    dispatch({ tipo: 'excluir', id })
+    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'excluir', id } })
   }
 
-  const editarTransacao = (transacaoEditada: Transacao) => {
-    dispatch({ tipo: 'editar', transacao: transacaoEditada })
+  const editarTransacao = (transacaoEditada: TransacaoRegistrada) => {
+    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'editar', transacao: transacaoEditada } })
   }
 
   return (
@@ -56,7 +70,8 @@ function App() {
             element={
               <Transacoes
                 transacoes={transacoes}
-                erroFinanceiro={erro}
+                categorias={estado.categorias}
+                erroFinanceiro={estado.erro}
                 onLimparErro={() => dispatch({ tipo: 'limparErro' })}
                 onCadastrarTransacao={cadastrarTransacao}
                 onExcluirTransacao={excluirTransacao}
@@ -66,7 +81,15 @@ function App() {
           />
 
 
-          <Route path="/categorias" element={<Categorias />} />
+          <Route path="/categorias" element={<Categorias
+            categorias={estado.categorias}
+            transacoes={estado.transacoes}
+            erro={estado.erro}
+            onLimparErro={() => dispatch({ tipo: 'limparErro' })}
+            onCadastrar={categoria => executarAcao({ tipo: 'categoria/cadastrar', categoria })}
+            onEditar={categoria => executarAcao({ tipo: 'categoria/editar', categoria })}
+            onExcluir={id => executarAcao({ tipo: 'categoria/excluir', id })}
+          />} />
         </Route>
         <Route path="*" element={<Navigate to={sessaoDemo ? '/' : '/acesso'} replace />} />
       </Routes>
