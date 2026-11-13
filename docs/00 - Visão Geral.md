@@ -1,5 +1,13 @@
 # Your Financial Control
 
+## Evolução financeira — 2026-11-13 (aprovação visual/funcional pendente)
+
+Início apresenta Evolução financeira entre Suas metas e Últimas transações: SVG nativo com receitas e despesas independentes nos últimos seis meses civis, incluindo o atual, e tabela acessível com valores exatos. Usa transações cadastradas na sessão, agrupadas pela data financeira, com meses ausentes zerados. Inclui datas futuras dentro do mês atual e exclui meses posteriores. Os cartões continuam com totais gerais, sem filtro. Metas/aportes não participam do gráfico.
+
+Agregação pura em `utils/evolucaoFinanceira.ts`, com soma segura em centavos e calendário civil sem UTC; datas inválidas são contadas e avisadas. Erros monetários/overflow tornam a seção indisponível, sem resultados parciais. `SecaoEvolucaoFinanceira` reutiliza SuperficieVidro, cores do tema e a referência diária já obtida por Início; sem dependências, timers adicionais ou alterações de reducer/resumo. Linhas e marcadores diferentes complementam as cores. Sem animação ou filtros internos.
+
+Verificação: 51 testes aprovados, lint e build/TypeScript aprovados. Bundle JS principal: 623,17 kB (189,08 kB gzip), mantendo aviso acima de 500 kB. Validação no navegador, contraste e leitor de tela pendentes conforme `frontend/VALIDACAO_VISUAL.md`. Sem commit/push.
+
 ## Visão Geral — seção Suas metas (2026-11-12)
 
 A página Início apresenta até quatro metas, na ordem atual do estado, entre os cartões financeiros e Últimas transações. O componente independente SecaoSuasMetas mostra nome, objetivo, acumulado, percentual, barra acessível e situação; o link “Ver todas as metas” permanece disponível no estado vazio. Não há gráficos nem espaços reservados.

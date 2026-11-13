@@ -1,5 +1,23 @@
 # Validação visual do YFC
 
+## Evolução financeira — 2026-11-13 (execução e aprovação pendentes)
+
+Usar somente dados fictícios. Testes de funções e build não comprovam aparência, acessibilidade ou interação.
+
+- Conferir posição entre Suas metas e Últimas transações; explicações de totais gerais dos cartões, janela de seis meses e futuros do mês atual.
+- Sem registros e com registros somente fora da janela, conferir estado vazio, link para Transações e tabela com seis meses zerados.
+- Criar receita de R$ 0,10 e outra de R$ 0,20 no mesmo mês e despesa de R$ 0,30: tabela deve mostrar R$ 0,30 nas duas séries, sem compensação nem estado vazio. Conferir linhas sobrepostas distinguíveis por marcadores.
+- Registrar primeiro/último dia da janela, um dia anterior, data futura dentro do mês atual e primeiro dia do mês seguinte. Apenas os registros na janela entram; últimos cadastrados continuam em ordem de cadastro, gráfico por data financeira.
+- Editar valor, tipo e mês; excluir e retornar a Início. Conferir atualização da tabela/gráfico e cartões gerais preservando suas regras. Criar/aportar/excluir metas não deve alterar o gráfico.
+- Com referência controlada, conferir dezembro/janeiro, virada do mês com página aberta, retorno de foco/visibilidade e ausência de timers adicionais. Não alterar relógio em ambiente de uso pessoal para testar.
+- Em ambiente controlado, fornecer data inexistente: conferir aviso com contagem e resultados somente de datas válidas; se todas inválidas, manter aviso junto do vazio. Fornecer valor inválido ou soma mensal acima do limite: conferir indisponibilidade sem tabela/gráfico parcial. O formulário normal rejeita inconsistências monetárias antes de chegarem à seção.
+- Conferir escala compartilhada linear de zero ao máximo com um centavo, valores iguais, uma série zerada e valores próximos do limite seguro. Valores exatos ficam na tabela; não há rótulos monetários sobre cada ponto.
+- Validar claro/escuro em 320, 375, 768, 1024 e 1440 px, transições 599/600, 899/900 e 1199/1200 e zoom 200%. Conferir textos sem cortes, meses legíveis e rolagem restrita à tabela em valores extensos.
+- Usar Tab/Shift+Tab para link e região da tabela; conferir foco visível e rolagem por teclado. Com leitor de tela, conferir título h2, nome/descrição do SVG, caption, cabeçalhos e valores das seis linhas. Cores são complementadas por legenda e estilos de linha/marcador.
+- Medir contraste composto: texto normal 4,5:1, gráficos essenciais 3:1. Conferir fallback opaco de SuperficieVidro, sem filtros internos/animação. Início passa a ter seis superfícies externas com blur; avaliar rolagem móvel.
+
+Verificações automatizadas: 51 testes, lint e build/TypeScript aprovados. Bundle JS: 623,17 kB (189,08 kB gzip), com aviso acima de 500 kB. Navegador, contraste e leitor de tela ainda não verificados.
+
 ## Suas metas na Visão Geral — 2026-11-12 (validação pendente)
 
 Usar somente dados fictícios. Este roteiro não comprova execução no navegador.

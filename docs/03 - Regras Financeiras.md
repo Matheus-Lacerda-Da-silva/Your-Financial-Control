@@ -1,5 +1,15 @@
 # Regras Financeiras
 
+## Evolução financeira — 2026-11-13
+
+- Agregação derivada somente de transações, por data financeira civil válida `YYYY-MM-DD`; não altera arrays, resumo geral, reducer, metas ou aportes.
+- Seis meses civis cronológicos, incluindo o atual e cinco anteriores, com zeros em meses sem registros. Aritmética mensal trata dezembro/janeiro sem conversão UTC. A referência usa a data local já atualizada por Início na virada do dia/foco/visibilidade.
+- Inclui futuros dentro do mês atual; exclui meses posteriores e anteriores à janela. Cartões financeiros continuam exibindo totais gerais.
+- Receitas positivas e magnitudes positivas de despesas são somadas separadamente por `somarCentavos`, sem compensação. Formatação exata por `formatarMoeda`; ponto flutuante apenas na geometria visual.
+- Valores não inteiros seguros, zero, tipo/sinal incompatível ou overflow mensal impedem o resultado completo; interface exibe indisponibilidade. Valores inválidos são detectados inclusive fora da janela. Não são mostrados totais parciais.
+- Datas inválidas são excluídas com contagem e aviso explícito, pois seu período não pode ser determinado; tabela identifica resultados como restritos a datas válidas. Data de referência inválida ou incapaz de abranger seis meses desde o ano 0001 gera indisponibilidade.
+- Estado vazio depende da quantidade de transações válidas no período, não do saldo líquido. A tabela mantém seis linhas zeradas no vazio. Reagregação por props, sem estado duplicado; sem filtros configuráveis.
+
 ## Metas e aportes — regras implementadas em 2026-11-12
 
 - Domínio independente: não altera receitas, despesas, saldo, transações ou categorias. Não inclui rendimentos, juros ou inflação.

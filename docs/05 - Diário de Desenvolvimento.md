@@ -1,5 +1,11 @@
 # Diário de Desenvolvimento
 
+## 2026-11-13 — Etapa 2: Evolução financeira
+
+Implementado planejamento aprovado com `frontend-design`: agregador puro `evolucaoFinanceira.ts`, seção SVG/MUI e tabela acessível, integração abaixo de Suas metas usando a referência diária existente. Receitas e despesas separadas em seis meses civis, datas futuras somente no mês atual, datas inválidas com aviso e erros monetários/overflow com indisponibilidade. Sem dependências novas, animação, filtros internos ou mudanças em reducers, calcularResumo, Transações, Categorias, Metas e navegação. Checklist `react-best-practices` aplicada: dados derivados no render, props somente leitura, chaves por competência, IDs acessíveis com useId e nenhum novo efeito/timer.
+
+51 testes aprovados (44 existentes e sete novos casos abrangentes), lint e build/TypeScript aprovados. JS principal 623,17 kB / 189,08 kB gzip; aviso de chunk acima de 500 kB permanece. Testes cobrem calendário, virada de ano/mês, limites do período, futuro, centavos, overflow, imutabilidade e reagregação após operações existentes. Não há infraestrutura de testes de componentes/E2E instalada; não houve inspeção no navegador, medição de contraste ou uso de leitor de tela. Roteiro manual atualizado; aprovação visual/funcional pendente. Sem commit ou push.
+
 ## 2026-11-12 — Metas e aportes em memória, aguardando aprovação visual/funcional
 
 Implementado plano aprovado com `frontend-design`, incluindo exclusão individual de aportes com confirmação e distinção explícita entre planejamento de referência e restante atualizado. Criados tipos, calendário civil, cálculos puros, reducer independente, página `/metas`, cartões, formulários, detalhes, roteiros e histórico. IDs criptográficos com recusa de colisão; regras monetárias existentes reutilizadas sem alteração. Situações e parcelas atualizam na virada do dia, foco/visibilidade e retorno à página. Reserva inicial/início são imutáveis na edição; histórico preservado; meta/aportes são limpos juntos na saída. Não há efeito em categorias/transações/dashboard.
