@@ -1,5 +1,37 @@
 # Validação visual do YFC
 
+## Correção de cores SVG — Evolução das metas (2026-11-13)
+
+Falha observada pelo usuário: linhas invisíveis e marcadores pretos sobre grafite, inclusive na referência de meta futura. Causa reproduzida no MUI instalado: `sx` preserva literalmente `stroke: 'text.secondary'` e `fill: 'success.main'`, que não são cores CSS válidas. Sem pintura válida, SVG usa stroke none e fill preto. CSS global não define regras SVG concorrentes. As polylines existem e as coordenadas válidas ficam em x=24..576 (ou 300 para mês único), y=16..184, dentro do viewBox 600x200; marcadores também cabem.
+
+Correção restrita ao componente: cores do tema em `sx.color`, atributos SVG `stroke="currentColor"` e `fill="currentColor"`, conforme o gráfico financeiro funcional. Aplicado às séries, marcadores, grade, divisor futuro e hachura; espessuras e tracejados explícitos. Legenda usa os mesmos tokens text.secondary/success.main. Nenhuma alteração de domínio, escala, coordenadas ou filtro de realizado futuro.
+
+Verificações: 59 testes, lint e build/TypeScript aprovados. JS principal 633,30 kB (191,46 kB gzip), aviso acima de 500 kB permanece. Reprodução de renderização estática com MUI/React confirmou cores resolvidas e atributos currentColor nos dois temas; não substitui validação no navegador.
+
+- Repetir as capturas nos temas claro/escuro: planejado neutro tracejado com quadrados; realizado esmeralda contínuo com círculos, sem marcadores pretos.
+- Conferir meta futura com linha planejada conectando os pontos e ausência integral de realizado. Meta com um único mês tem apenas marcadores, pois não há dois pontos para formar segmento.
+- Conferir parcial/concluída e séries coincidentes, hachura futura, legenda e tabela inalteradas. No inspetor, confirmar cores CSS resolvidas e stroke/fill currentColor nas séries/marcadores.
+- Medir contraste das séries sobre o fundo composto (mínimo 3:1) e texto (4,5:1), em 320/375/768/1024/1440 px e zoom 200%. Aprovação visual continua pendente; não houve inspeção no navegador nesta correção.
+
+## Evolução das metas — 2026-11-13 (execução e aprovação pendentes)
+
+Usar somente dados fictícios. Testes de funções e build não comprovam interface/acessibilidade.
+
+- Conferir seção abaixo de Evolução financeira e acima de Últimas transações. Sem metas, conferir orientação e link /metas.
+- Criar várias metas, inclusive nomes repetidos/longos. Conferir primeira seleção, identificação por nome/prazo/objetivo e resumo correspondente. Selecionar outra, renomear e cadastrar nova: preservar ID escolhido. Excluir selecionada: escolher primeira restante; excluir todas: vazio. Conferir retorno à página e seleção inicial local sem persistência.
+- Comparar objetivo, reserva, acumulado, percentual e situação com a página Metas. Reserva zero/parcial/integral, centavos, meta de um mês e conclusão antecipada. Reserva deve entrar uma única vez; primeiro planejado inclui primeira parcela de referência.
+- Registrar aportes fora da ordem de data, vários no mesmo mês e meses sem aporte. Excluir aporte e editar objetivo/prazo: conferir atualização e aviso de que a referência histórica é recalculada com configurações atuais. Roteiro restante não pode substituir a referência.
+- Com datas controladas, conferir início futuro inclusive no mês atual (sem realizado), mês parcial (até hoje), meses futuros null com hachura/texto e conclusão antecipada sem linha realizada projetada. Conferir vencida sem competências adicionais; conclusão integral pela reserva mantém situação do domínio. Não alterar relógio de ambiente pessoal para testar.
+- Conferir dezembro/janeiro, bissextos e virada do dia/mês com página aberta, retorno de foco/visibilidade. Não há timer adicional.
+- Conferir meta de 120 meses: linhas mantêm todos os meses, no máximo quatro rótulos no celular e oito a partir de sm. Expandir tabela e contar 120 competências. Pontos monetários não têm rótulos sobrepostos; escala começa em zero e termina no objetivo.
+- Em ambiente controlado, fornecer aporte futuro, data inválida, valor inválido, duplicidade ou overflow: conferir indisponibilidade sem dados parciais. Formulários/reducers normais já rejeitam esses casos; não alterar suas regras para testar.
+- Testar claro/escuro em 320, 375, 768, 1024 e 1440 px e zoom 200%, incluindo transições 599/600, 899/900 e 1199/1200. Conferir seletor/menu com nome longo, valores elevados, rótulos legíveis e rolagem horizontal restrita à tabela. Trocar meta deve recolher a tabela.
+- Usar Tab/Shift+Tab, Enter/Espaço e setas no seletor; Escape fecha opções. Conferir foco visível no seletor, summary e região da tabela; expansão anunciada nativamente. Com leitor de tela, conferir título/nome/descrição SVG, resumo anunciado, caption e cabeçalhos por coluna/linha, e futuros como “Ainda não ocorrido”.
+- Medir contraste composto de texto 4,5:1 e gráficos essenciais 3:1. Planejado neutro tracejado/quadrados, realizado esmeralda contínuo/círculos, futuro hachurado e descrito textualmente. Conferir fallback opaco, ausência de filtros internos/animação e rolagem móvel com sete superfícies externas glass em Início.
+- Conferir que aportes não alteram cartões financeiros, gráfico financeiro, transações ou categorias; todas as ações permanecem na página Metas existente.
+
+Verificações automatizadas: 59 testes, lint e build/TypeScript aprovados; git diff --check aprovado. Bundle principal 633,09 kB (191,44 kB gzip), aviso acima de 500 kB. Sem execução no navegador, medição de contraste ou leitor de tela nesta entrega.
+
 ## Evolução financeira — 2026-11-13 (execução e aprovação pendentes)
 
 Usar somente dados fictícios. Testes de funções e build não comprovam aparência, acessibilidade ou interação.

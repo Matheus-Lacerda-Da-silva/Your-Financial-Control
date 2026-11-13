@@ -1,5 +1,16 @@
 # Regras Financeiras
 
+## Evolução das metas — 2026-11-13
+
+- Janela completa entre início e prazo da meta, de uma a 120 competências civis, sem meses posteriores ao prazo. Calendário validado sem conversão UTC.
+- Planejado acumulado: reserva inicial mais parcelas acumuladas de `resumirMeta.referencia`, nunca do roteiro restante atualizado. Último ponto igual ao objetivo, com centavos exatos.
+- Referência corresponde ao objetivo/prazo atuais: edição recalcula inclusive competências passadas; não há armazenamento de versões históricas. Limitação explícita na interface.
+- Realizado: reserva inicial uma vez mais aportes por competência. Meses encerrados mantêm acumulado mesmo sem aportes. Mês atual considera fatos até hoje e é parcial; comparação com expectativa do fim do mês não implica atraso.
+- Antes do início (inclusive no mesmo mês), realizado null. Competências posteriores ao mês atual também null e não ligadas por projeção. Reserva continua no resumo mesmo antes do início, pois não possui data própria no modelo.
+- Conclusão antecipada mantém acumulado no objetivo nas competências já ocorridas; futuras continuam null. Conclusão por reserva integral respeita situação existente. Prazo encerrado é aceito para leitura e mantém série final sem estender período.
+- Validação local não altera domínio: objetivo/reserva inteiros seguros nos limites existentes; aportes vinculados positivos, IDs únicos, datas dentro do período e não futuras. Erro monetário, data inválida, duplicidade ou acumulado excedente torna a seção indisponível sem resultado parcial. Aportes de outras metas não participam.
+- Somas usam `somarCentavos`; exibição usa `formatarMoeda`. Aproximação somente na geometria SVG. Exclusão de aporte e edição de meta recalculam a evolução por props, sem estado agregado duplicado.
+
 ## Evolução financeira — 2026-11-13
 
 - Agregação derivada somente de transações, por data financeira civil válida `YYYY-MM-DD`; não altera arrays, resumo geral, reducer, metas ou aportes.

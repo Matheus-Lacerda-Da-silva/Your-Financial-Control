@@ -1,5 +1,13 @@
 # Arquitetura
 
+## Evolução das metas — 2026-11-13
+
+`utils/evolucaoMetas.ts` valida meta/aportes vinculados e produz competências acumuladas com `resumirMeta.referencia`, `somarCentavos` e calendário civil existentes. Não chama a validação de criação que rejeitaria metas vencidas. Não altera entrada nem depende de transações. `indicesRotulosMeta` reduz apenas rótulos, preservando extremos; todos os pontos permanecem no SVG e na tabela (até 120 meses).
+
+`SecaoEvolucaoMetas` recebe props somente leitura de Início e guarda apenas o ID selecionado. Se o ID desaparecer, sincroniza a escolha com a primeira meta restante. Dados derivados são calculados no render; usa a data diária já disponível sem efeitos/timers adicionais. O gráfico interno tem chave pelo ID, reiniciando a expansão nativa da tabela ao trocar a meta. `details/summary` oferece expansão acessível sem estado React; SVG usa IDs únicos, título/descrição, hachura futura, linhas e marcadores diferentes. Resumo financeiro tem anúncio polite. Uma superfície glass externa, sem filtros internos/animação. Componentes existentes e reducers preservados.
+
+Verificação: 59 testes, lint e build/TypeScript aprovados; JS principal 633,09 kB (191,44 kB gzip), mantendo aviso de chunk acima de 500 kB. Interação/contraste/leitor de tela não verificados no navegador. Sem infraestrutura de testes de componentes/E2E adicionada.
+
 ## Visão Geral — seção Suas metas (2026-11-12)
 
 A página Início apresenta até quatro metas, na ordem atual do estado, entre os cartões financeiros e Últimas transações. O componente independente SecaoSuasMetas mostra nome, objetivo, acumulado, percentual, barra acessível e situação; o link “Ver todas as metas” permanece disponível no estado vazio. Não há gráficos nem espaços reservados.

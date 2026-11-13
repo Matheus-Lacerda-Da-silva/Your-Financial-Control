@@ -9,6 +9,7 @@ import CartaoResumo from '../components/CartaoResumo'
 import SuperficieVidro from '../components/SuperficieVidro'
 import SecaoSuasMetas from '../components/SecaoSuasMetas'
 import SecaoEvolucaoFinanceira from '../components/SecaoEvolucaoFinanceira'
+import SecaoEvolucaoMetas from '../components/SecaoEvolucaoMetas'
 import useDataMetas from '../hooks/useDataMetas'
 import type { Aporte, Meta } from '../types/meta'
 
@@ -41,6 +42,7 @@ export default function Inicio({ transacoes, metas, aportes }: InicioProps) {
     </Box>
     <SecaoSuasMetas metas={metas} aportes={aportes} hoje={hoje} />
     <SecaoEvolucaoFinanceira transacoes={transacoes} hoje={hoje} />
+    <SecaoEvolucaoMetas metas={metas} aportes={aportes} hoje={hoje} />
     <SuperficieVidro><CardContent>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 3 }}><Box><Typography variant="h6" component="h2">Últimas transações</Typography><Typography variant="body2" color="text.secondary">Suas cinco movimentações cadastradas mais recentemente.</Typography></Box><Button component={Link} to="/transacoes" endIcon={<ArrowForward />}>Ver todas</Button></Stack>
       {transacoes.length === 0 ? <Box sx={{ textAlign: 'center', py: { xs: 3, sm: 5 }, px: 1, maxWidth: 440, mx: 'auto' }}><Box sx={{ display: 'inline-flex', p: 2, mb: 2, bgcolor: 'action.hover', borderRadius: 3 }}><AccountBalanceWalletOutlined aria-hidden="true" sx={{ fontSize: 40, color: 'primary.main' }} /></Box><Typography variant="h6" component="h3">Seu controle começa aqui</Typography><Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>Registre sua primeira receita ou despesa para acompanhar seu saldo.</Typography><Button component={Link} to="/transacoes" variant="outlined" startIcon={<Add />}>Adicionar transação</Button></Box> : <Stack divider={<Box sx={{ borderBottom: 1, borderColor: 'divider' }} />}>

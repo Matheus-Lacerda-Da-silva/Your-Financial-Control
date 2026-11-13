@@ -1,5 +1,13 @@
 # Your Financial Control
 
+## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
+
+Início apresenta a seção entre Evolução financeira e Últimas transações. Permite escolher qualquer meta, preservando o ID selecionado após renomeações/cadastros e escolhendo a primeira restante após exclusão. Mostra objetivo, reserva, acumulado, progresso e situação, SVG comparativo e tabela completa expansível de até 120 competências.
+
+Planejado acumulado usa somente o roteiro de referência das configurações atuais; edições de objetivo/prazo recalculam meses anteriores e não há versionamento histórico. Realizado inclui reserva uma vez e aportes por data civil até hoje; meses futuros permanecem null, sem projeção, identificados por hachura e texto. Mês atual é parcial; não há julgamento de atraso. Metas vencidas e concluídas antecipadamente são preservadas, sem meses após o prazo. Valores inconsistentes tornam a seção indisponível.
+
+Implementação em `utils/evolucaoMetas.ts` e `components/SecaoEvolucaoMetas.tsx`, sem novas dependências, timers, reducers ou mudanças no gráfico financeiro/página Metas. 59 testes, lint e build/TypeScript aprovados. Bundle principal: 633,09 kB (191,44 kB gzip); aviso acima de 500 kB permanece. Sem inspeção no navegador, medição de contraste ou leitor de tela; roteiro em `frontend/VALIDACAO_VISUAL.md`. Sem commit/push; aguardando aprovação visual e funcional.
+
 ## Evolução financeira — 2026-11-13 (aprovação visual/funcional pendente)
 
 Início apresenta Evolução financeira entre Suas metas e Últimas transações: SVG nativo com receitas e despesas independentes nos últimos seis meses civis, incluindo o atual, e tabela acessível com valores exatos. Usa transações cadastradas na sessão, agrupadas pela data financeira, com meses ausentes zerados. Inclui datas futuras dentro do mês atual e exclui meses posteriores. Os cartões continuam com totais gerais, sem filtro. Metas/aportes não participam do gráfico.

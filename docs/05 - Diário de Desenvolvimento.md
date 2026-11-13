@@ -1,5 +1,11 @@
 # Diário de Desenvolvimento
 
+## 2026-11-13 — Etapa 3: Evolução das metas
+
+Implementado plano aprovado com frontend-design: agregação pura, validação defensiva e testes em evolucaoMetas; seção com seleção por ID, resumo, SVG com futuro hachurado e tabela nativa expansível completa. Integração abaixo do gráfico financeiro usando metas/aportes e referência diária existentes. Sem dependências novas, timers, alterações de reducers/regras monetárias, gráfico financeiro, página Metas ou navegação. Checklist react-best-practices: props readonly, derivação no render, chaves por ID/competência, IDs acessíveis useId, sem novos efeitos ou estado duplicado; padrão MUI existente preservado.
+
+59 testes aprovados (51 existentes e oito novos casos abrangentes), lint e build/TypeScript aprovados. JS principal: 633,09 kB (191,44 kB gzip), aviso acima de 500 kB permanece. Testes cobrem referência/reserva, centavos, futuro, prazo encerrado, conclusão, calendário, limite de 120 meses, inconsistências, exclusão/edição, imutabilidade e rótulos. Git diff --check aprovado. Não houve validação no navegador, contraste medido ou leitor de tela; seleção e interação exigem roteiro manual. Comparação não preserva versões antigas do planejamento; interface explicita recálculo após edições. Sem commit/push. Aprovação visual/funcional pendente.
+
 ## 2026-11-13 — Etapa 2: Evolução financeira
 
 Implementado planejamento aprovado com `frontend-design`: agregador puro `evolucaoFinanceira.ts`, seção SVG/MUI e tabela acessível, integração abaixo de Suas metas usando a referência diária existente. Receitas e despesas separadas em seis meses civis, datas futuras somente no mês atual, datas inválidas com aviso e erros monetários/overflow com indisponibilidade. Sem dependências novas, animação, filtros internos ou mudanças em reducers, calcularResumo, Transações, Categorias, Metas e navegação. Checklist `react-best-practices` aplicada: dados derivados no render, props somente leitura, chaves por competência, IDs acessíveis com useId e nenhum novo efeito/timer.
