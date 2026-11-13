@@ -1,5 +1,14 @@
 # Your Financial Control
 
+## Visão Geral — seção Suas metas (2026-11-12)
+
+A página Início apresenta até quatro metas, na ordem atual do estado, entre os cartões financeiros e Últimas transações. O componente independente SecaoSuasMetas mostra nome, objetivo, acumulado, percentual, barra acessível e situação; o link “Ver todas as metas” permanece disponível no estado vazio. Não há gráficos nem espaços reservados.
+
+App fornece metas e aportes por props somente leitura. A apresentação reutiliza resumirMeta e formatarMoeda; useDataMetas foi extraído para frontend/src/hooks e é compartilhado por Início e Metas, preservando atualização na virada do dia, foco/visibilidade e limpeza de timer/listeners. Uma superfície glass externa adicional envolve cartões opacos, sem novos tokens. Reducer, cálculos, Transações, Categorias e navegação global não foram alterados. Dados continuam temporários e aportes independentes do saldo.
+
+Verificação desta etapa: 44 testes aprovados, incluindo independência do estado financeiro; TypeScript (npx.cmd --no-install tsc -b) e build aprovados. Bundle principal: 617,01 kB (187,03 kB gzip), com aviso acima de 500 kB. Lint não concluiu: SyntaxError no carregamento de node_modules/@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js. Dependências não foram reinstaladas. Revisão estática React: props tipadas, chaves por ID, resumo derivado sem estado duplicado, seção/títulos semânticos, progresso nomeado e hook com limpeza. Sem inspeção no navegador ou testes automatizados de componentes/hook; aprovação visual e funcional pendente. Sem commit ou push.
+
+
 ## Atualização — Metas em memória (2026-11-12)
 
 Implementada a página `/metas`, com entrada na sidebar, CRUD de metas, aportes e exclusão individual com confirmação. Metas usam reducer independente, centavos inteiros seguros, calendário civil e planejamento mensal exato. Os detalhes distinguem planejamento de referência (objetivo menos reserva inicial no período completo das configurações atuais) e restante atualizado (acumulado e meses ainda disponíveis). Aportes não alteram receitas, despesas, saldo ou transações. Dados são temporários e apagados na recarga/saída. Ver regras e diário. Validação visual/funcional pelo usuário continua pendente; testes de funções não comprovam interface.

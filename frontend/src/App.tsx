@@ -76,7 +76,7 @@ function App() {
           <Route path="/metas" element={<Metas estado={estadoMetas} onExecutar={executarAcaoMetas} />} />
           <Route
             path="/"
-            element={<Inicio transacoes={transacoes} />}
+            element={<Inicio transacoes={transacoes} metas={estadoMetas.metas} aportes={estadoMetas.aportes} />}
           />
 
 

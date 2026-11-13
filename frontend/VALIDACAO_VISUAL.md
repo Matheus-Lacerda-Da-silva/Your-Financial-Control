@@ -1,5 +1,23 @@
 # Validação visual do YFC
 
+## Suas metas na Visão Geral — 2026-11-12 (validação pendente)
+
+Usar somente dados fictícios. Este roteiro não comprova execução no navegador.
+
+- Sem metas, conferir título, orientação para “Nova meta” na página Metas e link “Ver todas as metas” para /metas. Repetir com e sem transações.
+- Criar cinco metas com nomes distintos; conferir apenas as quatro primeiras na ordem do estado, sem reordenação ou mutação. O link deve mostrar todas na página Metas. Excluir uma das quatro e conferir a entrada da quinta.
+- Conferir objetivo, acumulado (reserva inicial mais aportes vinculados), percentual e situação contra a página Metas. Testar zero, progresso parcial, 100% e meta incompleta próxima de 100% (não deve arredondar para conclusão).
+- Conferir Planejada, Em andamento, Concluída e Prazo encerrado com datas controladas. Manter a página aberta na virada do dia, retornar à aba/janela e navegar entre Início e Metas; conferir atualização e ausência de timers/listeners acumulados.
+- Criar/editar meta, registrar/excluir aporte e excluir meta; retornar ao Início e conferir atualização. Anotar receitas, despesas, saldo e últimas cinco transações antes/depois: devem permanecer iguais, inclusive com saldo negativo.
+- Repetir nos temas claro/escuro em 320, 375, 768, 1024 e 1440 px, transições 599/600, 899/900 e 1199/1200 px e zoom 200%. Conferir uma coluna abaixo de md e duas a partir de md, nomes sem espaços, valores grandes e ausência de cortes/rolagem horizontal.
+- Navegar por Tab/Shift+Tab e Enter. Conferir foco visível, alvo confortável do link, hierarquia h1/h2/h3 e leitor de tela anunciando o nome e percentual de cada barra (0 a 100). Situações devem ter rótulo textual além da cor.
+- Medir contraste composto: texto normal 4,5:1; texto grande e indicadores essenciais 3:1. Conferir trilho/barra, foco e hover nos dois temas. Não há animação de progresso adicionada.
+- Conferir cinco superfícies com blur no Início (três resumos, metas e transações), sem filtros nos cartões internos. Desativar @supports para conferir fallback opaco e avaliar rolagem no celular.
+- Conferir aviso de dados temporários e independência dos aportes; sair/entrar e recarregar devem limpar os dados, mantendo apenas a preferência de tema.
+
+Verificações executadas: 44 testes aprovados, TypeScript e build aprovados; lint bloqueado no carregamento da dependência scope-manager. Aparência, contraste medido, leitor de tela, atualização diária e interação aguardam execução e aprovação visual/funcional.
+
+
 ## Metas — entrega de 2026-11-12 (pendente de execução e aprovação)
 
 Usar somente dados fictícios. Os itens abaixo são roteiro, não comprovação de validação no navegador.
@@ -28,14 +46,14 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 - Refinamento: conferir iluminação esmeralda estática e brilho interno discretos nos dois temas, sem aparência de botão nos painéis. Somente o saldo deve ter maior destaque tipográfico.
 - Forçar saldo negativo com uma despesa fictícia maior que a receita: conferir sinal negativo, cor de erro e detalhe “Receitas menos despesas”, sem confundir a decoração esmeralda com resultado positivo.
 - Em 320/375 px, conferir o padding externo reduzido, estado vazio compacto, foco do botão e valores da lista em linha própria. Em telas maiores, conferir alinhamento dos valores à direita e que valores extensos continuam quebrando sem cortes.
-- Comparar rolagem antes/depois em dispositivo móvel: o refinamento mantém quatro filtros de 8 px; iluminação usa gradiente estático e sombras, sem animações ou filtros adicionais.
+- Comparar rolagem antes/depois em dispositivo móvel: o dashboard mantém cinco filtros de 8 px após a inclusão de Suas metas; iluminação usa gradiente estático e sombras, sem animações ou filtros adicionais.
 
 - Entrar com dados fictícios e conferir Início vazio, depois cadastrar receita e despesa em Transações e retornar ao painel. Conferir totais, saldo negativo e as cinco movimentações cadastradas mais recentemente.
 - Conferir superfícies claras e grafite, borda esmeralda no saldo e leitura de títulos, valores, detalhes e aviso de sessão nos dois temas. Os outros fluxos devem manter suas superfícies anteriores.
 - Repetir as larguras e o zoom deste roteiro, incluindo 599/600, 899/900 e 1199/1200 px. Verificar quebra de textos longos e valores grandes sem rolagem horizontal da página.
 - Conferir contraste efetivo de texto normal (4,5:1), texto grande (3:1), foco e controles (3:1), inclusive hover e seleção. Bordas dos painéis são decorativas; significado financeiro também aparece por rótulos.
 - No inspetor, desativar a regra `@supports` de cada superfície: o fundo base deve ficar opaco. Para simular apenas a retirada do blur, também restaurar o `background-color` base. Conferir leitura e composição sem suporte a filtros.
-- Conferir que há somente quatro superfícies com blur de 8 px, sem filtros internos, efeitos animados ou blur no menu/cabeçalho. Avaliar rolagem e repinturas em dispositivo móvel; não há medição de desempenho concluída.
+- Conferir que há cinco superfícies com blur de 8 px após a inclusão de Suas metas, sem filtros internos, efeitos animados ou blur no menu/cabeçalho. Avaliar rolagem e repinturas em dispositivo móvel; não há medição de desempenho concluída.
 - Usar Tab/Shift+Tab, Enter e Escape para conferir links, menu, alternador de tema e retorno de foco nos fluxos existentes.
 
 ## Telas e navegação

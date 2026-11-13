@@ -1,32 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Alert, Box, Button, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from '@mui/material'
 import FlagOutlined from '@mui/icons-material/FlagOutlined'
 import type { EstadoMetas } from '../types/meta'
 import type { AcaoMetas } from '../utils/estadoMetas'
-import { dataLocalAtual } from '../utils/formatadores'
+import useDataMetas from '../hooks/useDataMetas'
 import SuperficieVidro from '../components/SuperficieVidro'
 import CartaoMeta from '../components/CartaoMeta'
 import FormularioMeta from '../components/FormularioMeta'
 import DetalhesMeta from '../components/DetalhesMeta'
-
-function useDataMetas() {
-  const [hoje, setHoje] = useState(dataLocalAtual)
-  useEffect(() => {
-    let temporizador: ReturnType<typeof setTimeout>
-    const atualizar = () => {
-      setHoje(dataLocalAtual())
-      clearTimeout(temporizador)
-      const agora = new Date()
-      const amanha = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() + 1)
-      temporizador = setTimeout(atualizar, amanha.getTime() - agora.getTime() + 100)
-    }
-    atualizar()
-    window.addEventListener('focus', atualizar)
-    document.addEventListener('visibilitychange', atualizar)
-    return () => { clearTimeout(temporizador); window.removeEventListener('focus', atualizar); document.removeEventListener('visibilitychange', atualizar) }
-  }, [])
-  return hoje
-}
 
 export default function Metas({ estado, onExecutar }: { estado: EstadoMetas; onExecutar: (acao: AcaoMetas) => string | null }) {
   const hoje = useDataMetas()

@@ -7,8 +7,18 @@ import type { Transacao } from '../types/transacao'
 import { calcularResumo } from '../utils/transacoes'
 import CartaoResumo from '../components/CartaoResumo'
 import SuperficieVidro from '../components/SuperficieVidro'
+import SecaoSuasMetas from '../components/SecaoSuasMetas'
+import useDataMetas from '../hooks/useDataMetas'
+import type { Aporte, Meta } from '../types/meta'
 
-export default function Inicio({ transacoes }: { transacoes: Transacao[] }) {
+type InicioProps = {
+  readonly transacoes: Transacao[]
+  readonly metas: readonly Readonly<Meta>[]
+  readonly aportes: readonly Readonly<Aporte>[]
+}
+
+export default function Inicio({ transacoes, metas, aportes }: InicioProps) {
+  const hoje = useDataMetas()
   const { receitas, despesas, saldo } = calcularResumo(transacoes)
   const resumo: ComponentProps<typeof CartaoResumo>[] = [
     { titulo: 'Saldo atual', valor: saldo, detalhe: 'Receitas menos despesas', icone: AccountBalanceWalletOutlined, cor: 'primary.main' },
@@ -28,6 +38,7 @@ export default function Inicio({ transacoes }: { transacoes: Transacao[] }) {
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))' }, gap: { xs: 2, sm: 3 } }}>
       {resumo.map((item, indice) => <CartaoResumo key={item.titulo} {...item} destaque={indice === 0} />)}
     </Box>
+    <SecaoSuasMetas metas={metas} aportes={aportes} hoje={hoje} />
     <SuperficieVidro><CardContent>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 3 }}><Box><Typography variant="h6" component="h2">Últimas transações</Typography><Typography variant="body2" color="text.secondary">Suas cinco movimentações cadastradas mais recentemente.</Typography></Box><Button component={Link} to="/transacoes" endIcon={<ArrowForward />}>Ver todas</Button></Stack>
       {transacoes.length === 0 ? <Box sx={{ textAlign: 'center', py: { xs: 3, sm: 5 }, px: 1, maxWidth: 440, mx: 'auto' }}><Box sx={{ display: 'inline-flex', p: 2, mb: 2, bgcolor: 'action.hover', borderRadius: 3 }}><AccountBalanceWalletOutlined aria-hidden="true" sx={{ fontSize: 40, color: 'primary.main' }} /></Box><Typography variant="h6" component="h3">Seu controle começa aqui</Typography><Typography color="text.secondary" sx={{ mt: 1, mb: 3 }}>Registre sua primeira receita ou despesa para acompanhar seu saldo.</Typography><Button component={Link} to="/transacoes" variant="outlined" startIcon={<Add />}>Adicionar transação</Button></Box> : <Stack divider={<Box sx={{ borderBottom: 1, borderColor: 'divider' }} />}>
@@ -39,6 +50,6 @@ export default function Inicio({ transacoes }: { transacoes: Transacao[] }) {
         </Box>)}
       </Stack>}
     </CardContent></SuperficieVidro>
-    <Typography variant="caption" color="text.secondary">Os lançamentos desta versão ficam disponíveis apenas durante a sessão. Ao recarregar, os dados serão apagados.</Typography>
+    <Typography variant="caption" color="text.secondary">Transações, metas e aportes ficam apenas nesta sessão e são apagados ao recarregar ou sair. Aportes não alteram saldo, receitas ou despesas.</Typography>
   </Stack>
 }

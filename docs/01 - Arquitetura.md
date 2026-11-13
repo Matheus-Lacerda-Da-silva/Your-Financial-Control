@@ -1,5 +1,14 @@
 # Arquitetura
 
+## Visão Geral — seção Suas metas (2026-11-12)
+
+A página Início apresenta até quatro metas, na ordem atual do estado, entre os cartões financeiros e Últimas transações. O componente independente SecaoSuasMetas mostra nome, objetivo, acumulado, percentual, barra acessível e situação; o link “Ver todas as metas” permanece disponível no estado vazio. Não há gráficos nem espaços reservados.
+
+App fornece metas e aportes por props somente leitura. A apresentação reutiliza resumirMeta e formatarMoeda; useDataMetas foi extraído para frontend/src/hooks e é compartilhado por Início e Metas, preservando atualização na virada do dia, foco/visibilidade e limpeza de timer/listeners. Uma superfície glass externa adicional envolve cartões opacos, sem novos tokens. Reducer, cálculos, Transações, Categorias e navegação global não foram alterados. Dados continuam temporários e aportes independentes do saldo.
+
+Verificação desta etapa: 44 testes aprovados, incluindo independência do estado financeiro; TypeScript (npx.cmd --no-install tsc -b) e build aprovados. Bundle principal: 617,01 kB (187,03 kB gzip), com aviso acima de 500 kB. Lint não concluiu: SyntaxError no carregamento de node_modules/@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js. Dependências não foram reinstaladas. Revisão estática React: props tipadas, chaves por ID, resumo derivado sem estado duplicado, seção/títulos semânticos, progresso nomeado e hook com limpeza. Sem inspeção no navegador ou testes automatizados de componentes/hook; aprovação visual e funcional pendente. Sem commit ou push.
+
+
 ## Metas — implementação de 2026-11-12
 
 `App.tsx` mantém um segundo `useReducer`, exclusivo de Metas, sem alterar `estadoFinanceiro.ts`. `/metas` está sob `LayoutPrincipal` e a sessão demonstrativa. `Sidebar.tsx` recebeu apenas o novo item. Sair limpa ambos os estados; recarregar também perde os dados. Dashboard, Transações, Categorias, tema e superfícies compartilhadas foram preservados.
