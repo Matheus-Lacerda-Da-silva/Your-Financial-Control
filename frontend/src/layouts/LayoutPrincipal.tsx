@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Box, Button, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Button, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import LogoutOutlined from '@mui/icons-material/LogoutOutlined'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import AlternadorTema from '../components/AlternadorTema'
+import MarcaYFC from '../components/MarcaYFC'
 
 export default function LayoutPrincipal({ onSair }: { onSair: () => void }) {
   const [menuAberto, setMenuAberto] = useState(false)
@@ -16,11 +17,13 @@ export default function LayoutPrincipal({ onSair }: { onSair: () => void }) {
     <Sidebar aberta={menuAberto} onFechar={() => setMenuAberto(false)} />
     <Box sx={{ flexGrow: 1, minWidth: 0 }}>
       <Box component="header" sx={tema => ({ minHeight: 80, px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, borderBottom: `1px solid ${tema.glass.borda}`, bgcolor: tema.glass.opaca, boxShadow: tema.glass.luzInterna })}>
-        <IconButton aria-label="Abrir menu de navegação" aria-expanded={menuAberto} aria-controls={menuAberto ? 'menu-movel' : undefined} onClick={() => setMenuAberto(true)} sx={{ display: { md: 'none' }, width: 44, height: 44 }}><MenuIcon /></IconButton>
-        <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', md: 'block' } }}>Seu dinheiro, com mais clareza.</Typography>
-        <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 0.5 }}>
+          <IconButton aria-label="Abrir menu de navegação" aria-expanded={menuAberto} aria-controls={menuAberto ? 'menu-movel' : undefined} onClick={() => setMenuAberto(true)} sx={{ width: 44, height: 44, flexShrink: 0 }}><MenuIcon /></IconButton>
+          <MarcaYFC variante="compacta" />
+        </Box>
+        <Box sx={{ ml: 'auto', maxWidth: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', gap: 1 }}>
           <AlternadorTema />
-          <Button onClick={onSair} startIcon={<LogoutOutlined />} sx={{ flexShrink: 0, minHeight: 44 }}>Sair</Button>
+          <Button type="button" onClick={onSair} startIcon={<LogoutOutlined />} sx={{ flexShrink: 0, minWidth: 44, minHeight: 44, px: { xs: 1.25, sm: 2 } }}>Sair</Button>
         </Box>
       </Box>
       <Box component="main" id="conteudo" tabIndex={-1} sx={{ width: '100%', maxWidth: 1600, mx: 'auto', p: { xs: 2, sm: 3, lg: 4 }, pb: 6 }}><Outlet /></Box>

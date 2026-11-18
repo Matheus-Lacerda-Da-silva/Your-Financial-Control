@@ -62,6 +62,8 @@ Backend, banco e autenticação real serão abordados em etapas posteriores do [
 
 ## Fluxo e rotas
 
+Na Etapa 4, `LayoutPrincipal.tsx` renderiza o cabeçalho, com menu e marca compacta abaixo de `md` e ações de Tema e Sair alinhadas à direita. Os grupos podem quebrar em linhas em larguras reduzidas. `Sidebar.tsx` usa a marca completa nos Drawers permanente e temporário e mantém a ordem Visão geral, Transações, Categorias e Metas. `MarcaYFC.tsx` usa texto visível e uma caixa com dimensões definidas por variante, que pode receber o símbolo oficial em uma etapa futura. `Navbar.tsx` segue fora do fluxo de renderização.
+
 Sidebar e cabeçalho usam superfícies opacas de `theme.glass` e luz interna discreta, sem filtros novos. `AlternadorTema.tsx` é composto no cabeçalho principal e no layout compartilhado de acesso/cadastro, sem posicionamento absoluto. `ContextoTema.ts` compartilha modo e alternância; `TemaProvider` mantém o estado único, preferência inicial e persistência opcional em `yfc-tema`. A sidebar preserva NavLink e Drawer MUI, com marcador ativo, hover e foco explícitos, botão móvel de fechar e identificação do diálogo. Ao atingir `md`, o layout fecha o estado do menu móvel para evitar manter o modal aberto no desktop.
 
 No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombraDestaque` e `iluminacao`. `CartaoResumo` reutiliza a propriedade `destaque` para a hierarquia do saldo, preservando sinal monetário e usando cor de erro quando negativo. Iluminação é estática e decorativa; não representa avaliação financeira. Resultados técnicos e limitações visuais estão no [[05 - Diário de Desenvolvimento]].

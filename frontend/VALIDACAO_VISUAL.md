@@ -108,6 +108,14 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 
 ## Telas e navegação
 
+Etapa 4 — roteiro de validação manual com dados fictícios.
+
+- No desktop, conferir a assinatura completa no topo da Sidebar e Tema e Sair à direita. Abaixo de 900 px, conferir a marca compacta ao lado do acionador e a assinatura completa junto ao botão Fechar no Drawer.
+- Em 320, 375, 768, 1024 e 1440 px, nas transições 599/600 e 899/900 e com zoom de 200%, conferir se a quebra do cabeçalho mantém o rótulo Sair legível, o alternador acessível e o layout sem rolagem horizontal. Em tela baixa, rolar o Drawer até Metas.
+- Com o menu aberto, usar Tab/Shift+Tab para conferir contenção do foco e testar Escape, botão Fechar, backdrop e cada um dos quatro links. Ao fechar sem navegação, conferir retorno de foco ao acionador. Confirmar a ordem dos itens e o anúncio da página atual e do diálogo pelo leitor de tela.
+- Nos dois temas, medir o contraste do texto, ícones e foco, inclusive em seleção com hover. Comparar o foco com o marcador esmeralda da rota ativa e conferir alvos de pelo menos 44 × 44 px. Em acesso e cadastro, conferir o alternador compartilhado.
+
+
 - Conferir exatamente um alternador de tema visível em Início, Transações, Categorias, acesso e cadastro. Ele deve participar do fluxo do layout, sem sobrepor títulos ou Sair, e preservar o tema ao navegar e recarregar.
 - Conferir sidebar e cabeçalho opacos nos dois temas, sem novos filtros. Diferenciar item ativo, hover, ativo + hover e foco; o marcador lateral não deve deslocar texto. Conferir `aria-current="page"` apenas na rota correspondente, inclusive Visão geral.
 - No celular, abrir o menu por teclado: conferir `aria-expanded`, identificação do diálogo, foco contido, botão Fechar, Escape, clique no fundo e fechamento após selecionar rota. Conferir retorno do foco quando fechar sem navegar.
