@@ -108,6 +108,13 @@ Roteiro pendente de execução no navegador; não representa validação conclu�
 
 ## Telas e navegação
 
+Etapa 5 — identidade oficial, roteiro pendente de execução no navegador.
+
+- Conferir o emblema oficial com o nome ao lado na Sidebar e no Drawer, e somente o emblema no cabeçalho móvel. Nos dois temas, verificar contraste percebido, nitidez das letras e da seta, proporção e fundo grafite da arte.
+- Em 320, 375, 768, 1024 e 1440 px, na transição 899/900 px e com zoom de 200%, conferir alinhamento, espaço para Menu, Fechar, Tema e Sair e estabilidade durante o carregamento. Conferir nitidez também em tela de alta densidade.
+- Bloquear a requisição do PNG e recarregar para conferir o fallback YFC na mesma caixa. Com leitor de tela, verificar um único anúncio da marca em cada apresentação visível, tanto com a imagem quanto no fallback.
+- Repetir o roteiro de fechamento e retorno de foco do Drawer descrito abaixo.
+
 Etapa 4 — roteiro de validação manual com dados fictícios.
 
 - No desktop, conferir a assinatura completa no topo da Sidebar e Tema e Sair à direita. Abaixo de 900 px, conferir a marca compacta ao lado do acionador e a assinatura completa junto ao botão Fechar no Drawer.
