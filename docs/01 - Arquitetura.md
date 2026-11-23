@@ -87,6 +87,8 @@ Sem sessão, as rotas principais redirecionam para `/acesso`. Sair limpa sessão
 
 ## Autenticação e APIs
 
+Na Etapa 6, `LayoutAcesso.tsx` usa duas colunas iguais a partir de `md`. O painel institucional ocupa toda a coluna esquerda com o gradiente histórico `linear-gradient(145deg, #083e38, #087f68)` nos dois temas. A variante institucional de `MarcaYFC` exibe o emblema de 80 px e o nome completo. Abaixo de `md`, o layout usa uma coluna com a marca compacta junto ao alternador de tema. Os formulários compartilham uma superfície opaca com borda e sombra de `theme.glass`. O favicon `public/favicon-yfc-32.png` foi gerado do emblema oficial de 120 × 120 px com redimensionamento bicúbico em PowerShell e `System.Drawing`, preservando o canal alfa. Veja o roteiro em `frontend/VALIDACAO_VISUAL.md`.
+
 - `Acesso.tsx`: aceita e-mail sintaticamente válido e senha não vazia após trim, limpa a senha e chama `onEntrar`. Não verifica identidade ou credenciais.
 - `Cadastro.tsx` e `utils/validacaoAcesso.ts`: nome não vazio após trim, e-mail validado por expressão regular, senha com pelo menos oito caracteres após trim e confirmação exatamente igual à senha original. Redireciona para acesso com e-mail no estado de navegação; não cria conta.
 - As telas avisam explicitamente que são demonstrativas e solicitam senha fictícia. `CampoSenha.tsx` permite mostrar/ocultar a senha.

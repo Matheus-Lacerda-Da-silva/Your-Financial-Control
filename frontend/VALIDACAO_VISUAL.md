@@ -186,6 +186,15 @@ Implementação de 2026-11-11 com testes de funções/reducer e compilação exe
 
 ## Acesso e cadastro demonstrativos
 
+Etapa 6 — 59 testes, lint, build e verificação de espaços do Git passaram. O build mantém o aviso sobre o bundle principal acima de 500 kB. O favicon de 32 × 32 px tem 2.225 bytes e canal alfa. Na prévia de 16 × 16 px, a silhueta esmeralda é reconhecível e as letras perdem definição.
+
+Refinamento do painel institucional — Chrome headless verificou 28 combinações de página, tema e largura (320, 375, 768, 899, 900, 1024 e 1440 px). Em 1440 × 900 px, o painel esquerdo mediu 720 × 900 px com o gradiente histórico aplicado, sem fundo opaco nos elementos internos ou pseudo-elementos do painel. A direita mediu o fundo esperado nos dois temas. Acima ou a partir de 900 px, o emblema mediu 80 px. Abaixo disso, o painel ficou oculto e a marca compacta mediu 32 px. A aprovação visual e funcional e os demais itens manuais seguem pendentes.
+
+- Conferir a marca completa no painel desktop e a compacta no topo móvel. Em 899/900 px e com zoom de 200%, deve aparecer uma única marca e um único alternador de tema. Verificar 320, 375, 768, 1024 e 1440 px nos dois temas. A 200%, usar também janela de 640 px a 100% para chegar a cerca de 320 px efetivos. Rolar até a última ação em janelas baixas e verificar ausência de cortes, sobreposição ou rolagem horizontal a partir de 320 px efetivos.
+- Simular falha do emblema e conferir o fallback no espaço reservado. Comparar os dois temas com Sidebar e cabeçalho móvel, e medir contraste de texto normal (4,5:1), texto grande, foco e indicadores essenciais (3:1). Conferir alvos principais de 44 × 44 px e foco sem recorte.
+- Percorrer campos, controles de senha, tema e links com Tab e Shift+Tab. Enviar por Enter e acionar os botões de tema e visibilidade com Enter ou Espaço. Verificar foco e valores ao alternar o tema, preenchimento automático e associação dos erros aos campos com leitor de tela.
+- Em desenvolvimento e no preview do build, abrir uma aba num perfil novo e recarregar. Conferir o favicon na aba e a resposta do PNG com dimensões de 32 × 32 px, transparência e ausência de requisição ao ícone anterior.
+
 - Abrir `/` sem sessão e conferir o redirecionamento para `/acesso`.
 - Conferir as duas páginas em 320, 375, 768, 1024 e 1440 px e nos dois temas.
 - Usar Tab para navegar pelos campos, mostrar/ocultar senha, enviar e alternar entre acesso e cadastro.
