@@ -47,7 +47,7 @@ Relacionadas: [[00 - Visão Geral]], [[02 - Banco de Dados]], [[03 - Regras Fina
 | `frontend/src/utils/` | Validação de cadastro/e-mail, dinheiro em centavos, resumo e reducer de transações, formatação e datas |
 | `frontend/src/theme/` | Tema Material UI, preferência do sistema e localStorage |
 | `frontend/tests/` | Testes de acesso/cadastro e regras financeiras/operações em memória |
-| `backend/` | Apenas `.gitkeep`; backend não identificado |
+| `backend/` | API Hono em TypeScript, entradas Node e Workers e testes de rotas |
 | `docs/` | Raiz única do cofre, com seis notas oficiais e configurações em `.obsidian/` |
 
 ## Orientações para evolução incremental
@@ -92,7 +92,7 @@ Na Etapa 6, `LayoutAcesso.tsx` usa duas colunas iguais a partir de `md`. O paine
 - `Acesso.tsx`: aceita e-mail sintaticamente válido e senha não vazia após trim, limpa a senha e chama `onEntrar`. Não verifica identidade ou credenciais.
 - `Cadastro.tsx` e `utils/validacaoAcesso.ts`: nome não vazio após trim, e-mail validado por expressão regular, senha com pelo menos oito caracteres após trim e confirmação exatamente igual à senha original. Redireciona para acesso com e-mail no estado de navegação; não cria conta.
 - As telas avisam explicitamente que são demonstrativas e solicitam senha fictícia. `CampoSenha.tsx` permite mostrar/ocultar a senha.
-- Não foram identificados endpoints, contratos REST, cliente HTTP, emissão/verificação de JWT, hash de senha, recuperação de conta, autorização de servidor ou propriedade de transações por usuário.
+- Etapa 7.1: a API independente em `backend/` expõe `GET /health` e o envelope JSON `{ erro: { codigo, mensagem } }` para 404 e 500. As entradas Node e Workers foram verificadas por HTTP. O Worker executou localmente em workerd com a compatibilidade Node.js desativada. O frontend segue com sessão em memória. A integração de autenticação, persistência e propriedade dos dados é posterior. Veja [backend/README.md](../backend/README.md).
 - O único armazenamento persistente identificado em `src` é a preferência `yfc-tema`. Senhas permanecem transitoriamente em estado de componente, sem gravação ou transmissão identificada no código examinado. Isso não constitui garantia sobre extensões, navegador ou infraestrutura externa.
 
 ## Riscos técnicos e de segurança
@@ -101,7 +101,7 @@ Os impactos abaixo registram limites e riscos técnicos da auditoria inicial. El
 
 | Impacto | Constatação e consequência | Evidência |
 | --- | --- | --- |
-| Alto para uso real | Sessão é booleano no cliente; não existe barreira de autorização de servidor nem isolamento entre usuários. Não há backend atual a ser protegido, mas a demo não serve como mecanismo de segurança para futura API | `App.tsx`, `Acesso.tsx`, `backend/.gitkeep` |
+| Alto para uso real | Sessão é booleano no cliente. A API inicial expõe apenas saúde e ainda não autentica ou autoriza operações financeiras. | `App.tsx`, `Acesso.tsx`, `backend/src/app.ts` |
 | Alto | Transações somem ao recarregar/sair; não há recuperação ou backup financeiro identificado | `App.tsx` |
 | Corrigido | Valores e totais usam centavos inteiros seguros, sem frações de centavo; limites validados antes da atualização | `utils/dinheiro.ts`, `utils/transacoes.ts` |
 | Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `App.tsx` |

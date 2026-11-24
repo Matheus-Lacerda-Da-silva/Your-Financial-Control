@@ -46,7 +46,7 @@ O projeto está em estágio inicial e será desenvolvido progressivamente. A pri
 
 Em 2026-11-10, a primeira aplicação dessa direção foi implementada em Início: tokens tipados `theme.glass`, superfícies translúcidas com fallback opaco e cartões de resumo reutilizáveis. Em 2026-11-11, Transações passou a reutilizar `SuperficieVidro` nos painéis de cadastro e histórico, com refinamentos de tabela, cartões móveis e diálogos. Tema e superfície compartilhada não foram alterados nessa extensão. A validação visual no navegador e a aprovação visual de Transações continuam pendentes; a evolução deve permanecer gradual nos dois temas e em diferentes tamanhos de tela.
 
-O README raiz descreve uma aplicação full stack e cita Node.js, Express, PostgreSQL, REST e JWT. Essas declarações não comprovam implementação: `backend/` contém somente `.gitkeep`; não foram identificados servidor, endpoints, esquema ou integração de autenticação. Node.js é utilizado pelo comando de testes, não por um backend identificado.
+Na Etapa 7.1, `backend/` ganhou uma API inicial em Hono e TypeScript com execução local em Node.js e rota `GET /health`. O frontend demonstrativo continua independente. PostgreSQL, Supabase Auth e rotas financeiras seguem planejados. Os comandos estão em [backend/README.md](../backend/README.md).
 
 ## Tecnologias confirmadas
 
@@ -63,7 +63,8 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Acesso e cadastro | Parcial: formulários demonstrativos e validação local; nenhuma conta criada | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
 | Categorias de Receita/Despesa | CRUD em memória com IDs, normalização, duplicidade por nome/tipo e contagem de vínculos; validação interativa pendente | `frontend/src/pages/Categorias.tsx`, `frontend/src/utils/categorias.ts` |
 | Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
-| Backend, API, banco, JWT e isolamento por usuário | Não identificados no código | `backend/.gitkeep`, `frontend/src/App.tsx` |
+| Backend REST | API inicial com rota de saúde e erros JSON | `backend/src/app.ts`, `backend/src/node.ts` |
+| Banco, JWT e isolamento por usuário | Planejados | `frontend/src/App.tsx`, [[04 - Roadmap]] |
 
 ## Qualidade e limites
 

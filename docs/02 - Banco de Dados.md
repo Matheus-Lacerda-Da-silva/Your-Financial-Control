@@ -12,7 +12,7 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[03 - Regras Finance
 
 ## Estado confirmado
 
-Não foi identificado banco de dados implementado. `backend/` contém apenas `.gitkeep`. Não foram encontrados esquema SQL, migrations, ORM, repositório de dados, conexão ou tabelas. PostgreSQL é citado no README raiz, mas sua adoção efetiva não é confirmada pelo código.
+A API inicial da Etapa 7.1 expõe uma rota de saúde e ainda não usa banco de dados. Esquema SQL, migrations, persistência e conexão ao PostgreSQL ficam para etapas posteriores.
 
 ## Modelo existente em memória
 
