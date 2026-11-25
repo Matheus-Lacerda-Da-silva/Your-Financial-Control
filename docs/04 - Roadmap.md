@@ -1,5 +1,10 @@
 # Roadmap
 
+## Etapa 7.2 — banco de desenvolvimento
+
+- **7.2.3 concluída em 2026-11-24.** Migration inicial aplicada no YFC-Development e históricos sincronizados. O catálogo, os privilégios e a exposição da Data API foram conferidos manualmente. Ver [[02 - Banco de Dados]].
+- **7.2.4 é a próxima etapa e aguarda aprovação.** Definir e validar autorização por usuário, superfície de gravação e invariantes que exigem atomicidade. Usar dados fictícios para testar constraints, acesso direto, concorrência e o contrato de centavos.
+
 ## Atualização de Metas — 2026-11-12
 
 Metas e aportes independentes foram implementados em memória, com planejamento de referência e restante atualizado, exclusão individual de aportes, testes e integração de navegação. Aguardam aprovação visual/funcional do usuário conforme `frontend/VALIDACAO_VISUAL.md`. Não há autorização para commit/push nesta entrega.
@@ -25,15 +30,15 @@ Direção atualizada em 2026-11-09: o projeto está em estágio inicial e será 
 | P1 parcial | Ampliar testes de interação, sessão demo e rotas; CRUD financeiro e resumo já cobertos pelo reducer | Alto | Médio | Testar campos, diálogos, cartões/dashboard e navegação no navegador, além das regras já automatizadas |
 | P1 | Executar roteiro visual e verificar teclado/acessibilidade; há checklist sem resultado desta auditoria | Médio | Médio | Evidências em larguras/temas previstos e correção de falhas verificadas |
 | P1 | Reconciliar README com o estágio inicial e a stack efetivamente implementada | Médio | Baixo | Intenção futura e implementação atual claramente diferenciadas; cofre já consolidado em `docs/` |
-| P2 | Definir backend/API e sua integração, após estabilizar os fluxos e levantar necessidades de persistência | Alto | Alto | Contratos documentados, validação no servidor e tratamento de erros testados; tecnologia a decidir |
-| P2 | Definir banco e persistência com propriedade por usuário, junto ao desenho da API | Alto | Alto | Esquema revisado, integridade e backup/restauração testados em ambiente de teste |
+| P2 | Evoluir a API Hono inicial e definir sua integração, após estabilizar os fluxos e levantar necessidades de persistência | Alto | Alto | Contratos documentados, validação no servidor e tratamento de erros testados |
+| P2 | Integrar o modelo PostgreSQL com persistência por usuário | Alto | Alto | Esquema revisado, integridade e backup/restauração testados em ambiente de teste |
 | P2 | Implementar autenticação e autorização reais na preparação para uso real; hoje somente demo | Alto | Alto | Identidade validada no servidor e testes negativos de acesso entre usuários, com isolamento integrado ao banco/API |
 | Implementado em memória; validação manual pendente | Gerenciamento de categorias com IDs, duplicidade e vínculos por tipo; sem persistência | Médio | Médio | Regras cobertas por testes de funções/reducer; validar interface, teclado e integração no navegador antes de concluir a entrega |
 | P2 | Definir automação de qualidade e ambiente reproduzível; CI não identificada | Médio | Médio | Versão suportada do Node documentada e testes, lint e build validados em automação |
 
 ## Dependências e decisões
 
-Autenticação, banco e API precisam ser desenhados juntos para preservar isolamento. A seleção de tecnologias do servidor/banco ainda precisa de confirmação; Express/PostgreSQL/JWT citados no README não são implementações verificadas nem decisão ratificada por esta auditoria.
+Autenticação, banco e API precisam ser desenhados juntos para preservar isolamento. A API inicial usa Hono e o banco de desenvolvimento usa PostgreSQL no Supabase Cloud. Integração de identidade e acesso aos dados seguem no roadmap.
 
 A evolução do frontend pode continuar antes dessas etapas, mantendo explícitos os limites da demonstração. A direção glassmorphism é provisória e pode ser ajustada conforme testes de usabilidade, acessibilidade e desempenho; cinza e verde orientam a exploração, sem fixar tokens ou valores de cor nesta documentação.
 

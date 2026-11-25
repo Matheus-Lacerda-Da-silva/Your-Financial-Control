@@ -58,7 +58,7 @@ A direção visual provisória é glassmorphism em cinza e verde, conforme [[00 
 
 Em Transações, o cadastro continua visível e mantém ordem de campos e handlers. A tabela tem contêiner de rolagem focável, quebra de textos e valores tabulares; cartões móveis usam superfície opaca sem filtro. Diálogos têm títulos associados, exclusão com descrição associada e foco inicial em Cancelar, edição com foco inicial na descrição e alerta interno persistente enquanto aberta. Escape e restauração de foco seguem o MUI; após exclusão há fallback para o título do histórico quando o foco fica no body. Cálculos, conversão, datas, reducer e ordem dos registros não foram alterados. Esses comportamentos foram inspecionados no código e ainda exigem validação interativa conforme `frontend/VALIDACAO_VISUAL.md`.
 
-Backend, banco e autenticação real serão abordados em etapas posteriores do [[04 - Roadmap]]. A ausência atual é compatível com o estágio demonstrativo; os requisitos de persistência e isolamento devem ser atendidos antes da transição para uso real com dados pessoais e financeiros.
+A API Hono inicial e o modelo PostgreSQL em desenvolvimento já existem. O frontend segue demonstrativo, com integração de autenticação, persistência e testes de isolamento pendentes no [[04 - Roadmap]]. As evidências do banco estão em [[02 - Banco de Dados]].
 
 ## Fluxo e rotas
 

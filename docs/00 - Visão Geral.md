@@ -35,7 +35,7 @@ Auditoria inicial: 2026-11-09. Escopo: código e arquivos locais; sem consulta a
 
 Aplicação web para gerenciamento de finanças pessoais: registrar receitas e despesas e acompanhar saldo e histórico. A versão encontrada é um frontend demonstrativo, sem persistência financeira nem autenticação real. Não deve ser tratada como sistema financeiro pronto para uso real.
 
-O projeto está em estágio inicial e será desenvolvido progressivamente. A prioridade é preservar o código e os fluxos existentes, entregando melhorias pequenas e verificáveis. Backend, banco de dados e autenticação real são etapas futuras do [[04 - Roadmap]], sem exigência de implementação imediata para continuar a evolução da demonstração.
+O projeto está em estágio inicial e será desenvolvido progressivamente. A prioridade é preservar o código e os fluxos existentes, entregando melhorias pequenas e verificáveis. O [[04 - Roadmap]] acompanha a API inicial, o banco de desenvolvimento e as etapas de integração e autenticação.
 
 ## Direção de evolução e visual provisório
 
@@ -46,7 +46,7 @@ O projeto está em estágio inicial e será desenvolvido progressivamente. A pri
 
 Em 2026-11-10, a primeira aplicação dessa direção foi implementada em Início: tokens tipados `theme.glass`, superfícies translúcidas com fallback opaco e cartões de resumo reutilizáveis. Em 2026-11-11, Transações passou a reutilizar `SuperficieVidro` nos painéis de cadastro e histórico, com refinamentos de tabela, cartões móveis e diálogos. Tema e superfície compartilhada não foram alterados nessa extensão. A validação visual no navegador e a aprovação visual de Transações continuam pendentes; a evolução deve permanecer gradual nos dois temas e em diferentes tamanhos de tela.
 
-Na Etapa 7.1, `backend/` ganhou uma API inicial em Hono e TypeScript com execução local em Node.js e rota `GET /health`. O frontend demonstrativo continua independente. PostgreSQL, Supabase Auth e rotas financeiras seguem planejados. Os comandos estão em [backend/README.md](../backend/README.md).
+Na Etapa 7.1, `backend/` ganhou uma API inicial em Hono e TypeScript com execução local em Node.js e rota `GET /health`. O frontend demonstrativo continua independente. A migration inicial PostgreSQL foi aplicada no Supabase Cloud de desenvolvimento na Etapa 7.2.3. A integração com Supabase Auth e as rotas financeiras seguem planejadas. Os comandos estão em [backend/README.md](../backend/README.md).
 
 ## Tecnologias confirmadas
 
@@ -64,7 +64,8 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Categorias de Receita/Despesa | CRUD em memória com IDs, normalização, duplicidade por nome/tipo e contagem de vínculos; validação interativa pendente | `frontend/src/pages/Categorias.tsx`, `frontend/src/utils/categorias.ts` |
 | Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
 | Backend REST | API inicial com rota de saúde e erros JSON | `backend/src/app.ts`, `backend/src/node.ts` |
-| Banco, JWT e isolamento por usuário | Planejados | `frontend/src/App.tsx`, [[04 - Roadmap]] |
+| Banco PostgreSQL | Modelo inicial aplicado no Supabase Cloud de desenvolvimento | [[02 - Banco de Dados]] |
+| JWT e isolamento por usuário na aplicação | Integração e testes pendentes | [[04 - Roadmap]] |
 
 ## Qualidade e limites
 
@@ -79,7 +80,7 @@ Os valores financeiros agora usam `valorCentavos` com inteiros seguros, rejeiç�
 ## Mapa das notas
 
 - [[01 - Arquitetura]]: estrutura, rotas, segurança e testes.
-- [[02 - Banco de Dados]]: modelo em memória e lacunas de persistência.
+- [[02 - Banco de Dados]]: modelo PostgreSQL, evidências da aplicação e modelo em memória.
 - [[03 - Regras Financeiras]]: cálculos e validações efetivamente encontrados.
 - [[04 - Roadmap]]: propostas priorizadas, sem compromisso de entrega.
 - [[05 - Diário de Desenvolvimento]]: registro e limites da auditoria.

@@ -1,8 +1,21 @@
 # Banco de Dados
 
-## Etapa 7.2.3 — Supabase Cloud e migration inicial
+## Etapa 7.2.3 — Supabase Cloud e migration inicial concluída em 2026-11-24
 
-O ambiente de desenvolvimento do banco é exclusivamente o projeto **YFC-Development** no Supabase Cloud, plano gratuito, região São Paulo (`sa-east-1`). A configuração informada é PostgreSQL 17.12, banco `postgres`, schema padrão `public` e fuso UTC. Esta etapa preparou os arquivos no repositório sem conectar ao serviço, aplicar SQL ou usar Docker.
+O ambiente de desenvolvimento é o projeto **YFC-Development**, no Supabase Cloud, região São Paulo (`sa-east-1`). O responsável pelo projeto confirmou manualmente o PostgreSQL 17.12, a inicialização e o vínculo da Supabase CLI 2.116.0, o dry-run, a aplicação da migration `20261124000000_cria_modelo_financeiro.sql` e a sincronização dos históricos local e remoto. Esta revisão conferiu os arquivos locais e registrou as evidências fornecidas.
+
+### Verificações manuais no Cloud
+
+| Verificação | Resultado informado |
+| --- | --- |
+| Estrutura de `yfc_privado` | Quatro tabelas e quatro sequências de ordenação de cadastro |
+| Colunas | 32: aportes 7, categorias 7, metas 9 e transacoes 9 |
+| Índices | 14: aportes 3, categorias 4, metas 3 e transacoes 4 |
+| Restrições | 4 PRIMARY KEY, 6 FOREIGN KEY, 7 UNIQUE e 10 CHECK explícitos confirmados em `pg_constraint` |
+| RLS | Habilitada nas quatro tabelas, com zero políticas |
+| Schema privado | `USAGE` e `CREATE` negados a `anon` e `authenticated` |
+| Privilégios dos papéis clientes | 56 verificações de tabelas, 32 de colunas e 24 de sequências retornaram `false` |
+| Data API | Somente `public` e `graphql_public` em **Exposed schemas** |
 
 - [Migration 20261124000000](../supabase/migrations/20261124000000_cria_modelo_financeiro.sql) cria `yfc_privado` e as quatro tabelas. [Consultas de verificação](../supabase/tests/verifica_modelo_financeiro.sql) inspecionam metadados e permissões após aplicação autorizada.
 - As FKs compostas exigem o mesmo usuário e, em transações, o mesmo tipo da categoria. A exclusão de categoria vinculada é bloqueada, a de meta remove os aportes relacionados e a exclusão de usuário com registros depende de uma política explícita de descarte.
@@ -10,24 +23,30 @@ O ambiente de desenvolvimento do banco é exclusivamente o projeto **YFC-Develop
 - PKs e restrições de unicidade fornecem os índices de identidade, busca e ordenação por usuário. Os três índices adicionais dão suporte ao vínculo transação–categoria, às consultas por data financeira e ao histórico de aportes por meta.
 - RLS começa sem políticas e a migration revoga privilégios de `PUBLIC`, `anon` e `authenticated` no schema, nas tabelas e nas sequências. A revogação dos defaults locais ao schema não cancela defaults globais. Por isso, a migration também revoga explicitamente os privilégios dos objetos criados e as consultas verificam o acesso efetivo dos papéis. Mantenha `yfc_privado` fora de **Exposed schemas** no Dashboard do Supabase. A lista de exposição é configuração da Data API e deve ser conferida separadamente.
 
-### Fluxo remoto proposto, após aprovação
+### Configuração da CLI e vínculo por computador
 
-Use a Supabase CLI v2 via `npx`, a partir da raiz, sem instalação global. Para repetibilidade entre máquinas, registre a versão exata testada e use esse número no lugar de `2` nas próximas execuções. Se a CLI exigir configuração local e ainda não houver `supabase/config.toml`, use `npx supabase@2 init` e revise os arquivos gerados. Os comandos de link, histórico e push abaixo usam o projeto remoto e dispensam iniciar a stack local.
+`supabase/config.toml` é adequado para versionamento como configuração compartilhada da CLI. A revisão encontrou PostgreSQL major 17, schemas locais `public` e `graphql_public`, URLs de loopback nos campos de desenvolvimento e campos de segredo vazios ou referenciados por `env(...)`. As opções de serviços locais e o seed padrão apontando para `./seed.sql` pertencem ao template. O arquivo de seed está ausente e esse fluxo está fora do uso atual, exclusivamente Cloud. A exposição remota é confirmada separadamente no Dashboard.
+
+Cada computador mantém seu próprio vínculo para o ambiente de desenvolvimento. `supabase/.temp/` e `supabase/.branches/` são ignorados, assim como `.env` e suas variantes, com exceção de `.env.example` para exemplos sem credenciais. Tokens de login e senhas devem permanecer no armazenamento local da CLI ou em variáveis de ambiente. O vínculo local inclui metadados do projeto e do pooler.
+
+O fluxo abaixo usa a versão confirmada e documenta operações remotas para execução somente quando autorizadas. O dry-run lista migrations pendentes. A confirmação da execução do DDL vem da aplicação e das consultas posteriores.
 
 ```powershell
-npx supabase@2 --version
-npx supabase@2 login
-npx supabase@2 link --project-ref REF_DO_YFC_DEVELOPMENT
-npx supabase@2 migration list --linked
-npx supabase@2 db push --linked --dry-run
+npx supabase@2.116.0 --version
+npx supabase@2.116.0 login
+npx supabase@2.116.0 link --project-ref REF_DO_YFC_DEVELOPMENT
+npx supabase@2.116.0 migration list --linked
+npx supabase@2.116.0 db push --linked --dry-run
 # Execute a linha seguinte apenas após conferir o alvo e as versões pendentes.
-npx supabase@2 db push --linked
-npx supabase@2 migration list --linked
+npx supabase@2.116.0 db push --linked
+npx supabase@2.116.0 migration list --linked
 ```
 
 Use o fluxo de login da CLI e mantenha tokens, senhas e strings de conexão fora do Git. Antes de aplicar, confirme que o histórico e o schema de destino condizem com uma primeira migration e que o dry-run lista somente `20261124000000`. O dry-run lista o plano e não valida o DDL em PostgreSQL. O push registra a versão em `supabase_migrations.schema_migrations`. Depois de aplicar, execute as consultas de verificação no editor SQL e registre a versão aplicada, o ambiente e os resultados. Use uma nova migration para correções após aplicação. Evite aplicar o arquivo pelo editor SQL como fluxo normal, pois isso não atualiza automaticamente o histórico da CLI.
 
-### Regras reservadas para a próxima etapa
+### Etapa 7.2.4 — verificações e controles pendentes
+
+A inspeção manual cobriu estrutura, privilégios e exposição. Em PostgreSQL real, ainda faltam testes com dados fictícios de PK, FK, UNIQUE e CHECK, incluindo vínculos cruzados e cascata. Após definir as políticas e a superfície de acesso, validar leitura, criação, edição e exclusão com dois usuários e acesso anônimo, inclusive troca de proprietário e chamadas diretas à Data API.
 
 - Derivar `nome_chave` em um caminho de gravação confiável e testar sua paridade com TypeScript para NFC, espaços Unicode, minúsculas `pt-BR` e acentos. O `CHECK` atual só faz uma checagem básica de texto e a unicidade compara a chave fornecida.
 - Implementar operações atômicas com controle de concorrência para os totais independentes de receitas e despesas, a reserva somada aos aportes e a validação de datas contra o período da meta. Preservar a imutabilidade de início e reserva na edição, e permitir a exclusão individual, sem edição de aportes. Usar a referência civil configurável proposta (`America/Sao_Paulo`) para “hoje”, sem mudar o fuso UTC do banco.
@@ -35,7 +54,7 @@ Use o fluxo de login da CLI e mantenha tokens, senhas e strings de conexão fora
 
 ## Modelo adicional em memória — Metas (2026-11-12)
 
-Não há banco novo. `Meta` armazena `id` string, `nome`, `valorObjetivoCentavos`, `valorInicialCentavos`, `dataInicio` e `dataLimite`. `Aporte` armazena `id` string, `metaId`, `valorCentavos` positivo e `data`. `EstadoMetas` contém os dois arrays e erro transitório. Progresso, situação e roteiros são derivados; não são campos persistidos. Reserva inicial não é duplicada como aporte.
+No fluxo demonstrativo, `Meta` armazena `id` string, `nome`, `valorObjetivoCentavos`, `valorInicialCentavos`, `dataInicio` e `dataLimite`. `Aporte` armazena `id` string, `metaId`, `valorCentavos` positivo e `data`. `EstadoMetas` contém os dois arrays e erro transitório. Progresso, situação e roteiros são derivados; não são campos persistidos. Reserva inicial não é duplicada como aporte.
 
 Arrays ficam no App, separados do estado de categorias/transações, e são apagados ao recarregar/sair. IDs são aleatórios criptográficos com recusa de colisões no respectivo conjunto. O reducer valida referência ao excluir aporte; excluir meta remove somente seus aportes. Edição preserva o histórico e os campos imutáveis.
 
@@ -45,7 +64,7 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[03 - Regras Finance
 
 ## Estado confirmado
 
-A API inicial da Etapa 7.1 expõe uma rota de saúde e ainda não usa banco de dados. A primeira migration está preparada para revisão e ainda não foi aplicada ou validada em PostgreSQL nesta etapa.
+A API inicial da Etapa 7.1 expõe uma rota de saúde e ainda não usa banco de dados. A migration inicial já está aplicada no ambiente Cloud de desenvolvimento.
 
 ## Modelo existente em memória
 
@@ -72,6 +91,4 @@ O tipo armazenado é `TransacaoRegistrada`, um contrato TypeScript, não uma tab
 
 ## Decisões pendentes
 
-Antes de implementar persistência, definir tecnologia, esquema e propriedade dos dados; unicidade de IDs de transações; integridade de categorias no servidor; semântica de datas; retenção/exclusão; backup e restauração; migrations e ambientes. A representação monetária atual foi aprovada como centavos inteiros seguros, com limites e integridade de sinal/tipo descritos em [[03 - Regras Financeiras]]; o armazenamento futuro deverá preservar essas regras. Não há dados persistidos a migrar nesta etapa. Isolamento por usuário deve ser aplicado e testado no servidor, não por filtro de interface.
-
-Os dados do ambiente Cloud nesta nota foram informados pelo responsável pelo projeto. Nenhuma conexão remota ou migration foi executada nesta etapa.
+A integração da aplicação com o banco, a política de retenção/exclusão e os testes de backup e restauração seguem pendentes. A persistência deve preservar as regras monetárias e de datas de [[03 - Regras Financeiras]].

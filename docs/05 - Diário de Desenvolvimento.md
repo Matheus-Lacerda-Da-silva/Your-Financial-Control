@@ -1,5 +1,21 @@
 # Diário de Desenvolvimento
 
+## 2026-11-24 — Etapa 7.2.3 concluída
+
+- O responsável confirmou a aplicação da migration inicial no YFC-Development (PostgreSQL 17.12), após dry-run com a Supabase CLI 2.116.0, e a sincronização dos históricos. O inventário de catálogo, os privilégios efetivos e a exposição da Data API estão em [[02 - Banco de Dados]].
+- Revisados o SQL versionado, o roteiro de inspeção, a configuração da CLI e as regras de exclusão do Git. O TOML pode ser versionado para compartilhar a configuração entre computadores. Os metadados de vínculo ficam em `supabase/.temp/`, ignorado pelo Git.
+- Frontend com Node.js 26.7.0: 59 testes passaram. TypeScript e build passaram. O Vite emitiu aviso de chunk acima de 500 kB (632,53 kB, 191,24 kB gzip). O lint parou com erro de sintaxe ao carregar `@typescript-eslint/scope-manager`.
+- Backend: a suíte parou ao importar Hono. Typecheck e build pararam por ausência do executável TypeScript. O diretório de dependências do backend está ausente e o manifesto não oferece script de lint.
+- A etapa 7.2.4 é a próxima e aguarda aprovação. Os testes de integridade relacional, isolamento por usuário, chamadas diretas à Data API e concorrência em PostgreSQL real continuam pendentes.
+
+### Revisão final do ambiente antes do commit
+
+- Node.js 26.7.0 e npm 11.19.0 em Windows x64 atenderam aos requisitos declarados para este ambiente. A única divergência no lockfile foi de um pacote opcional do Sharp para Windows ia32, ausente nesta instalação x64. `npm ls --all` passou nos dois projetos.
+- No frontend, `node --check` reproduziu o erro no arquivo instalado `@typescript-eslint/scope-manager/dist/lib/es2015.iterable.js`, que continha 27 bytes nulos. A instalação limpa com `npm ci --prefer-offline --no-audit --no-fund` instalou 224 pacotes, restaurou o arquivo e resolveu o erro. Os hashes dos dois manifestos e dos dois lockfiles permaneceram idênticos.
+- Frontend: 59 testes passaram, assim como TypeScript (`tsc -b`), lint e build. O build manteve o aviso de tamanho do chunk principal (632,53 kB, 191,24 kB gzip).
+- Backend: as dependências já estavam disponíveis nesta revisão. Os três testes passaram, assim como typecheck e build. O manifesto não oferece script de lint.
+- O TOML gerado pela CLI está apto a versionamento. As regras do Git excluem os metadados do vínculo, os temporários e os caminhos de ambiente conferidos. A etapa 7.2.4 segue aguardando aprovação.
+
 ## 2026-11-13 — Etapa 3: Evolução das metas
 
 Implementado plano aprovado com frontend-design: agregação pura, validação defensiva e testes em evolucaoMetas; seção com seleção por ID, resumo, SVG com futuro hachurado e tabela nativa expansível completa. Integração abaixo do gráfico financeiro usando metas/aportes e referência diária existentes. Sem dependências novas, timers, alterações de reducers/regras monetárias, gráfico financeiro, página Metas ou navegação. Checklist react-best-practices: props readonly, derivação no render, chaves por ID/competência, IDs acessíveis useId, sem novos efeitos ou estado duplicado; padrão MUI existente preservado.
