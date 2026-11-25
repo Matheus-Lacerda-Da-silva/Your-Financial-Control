@@ -1,5 +1,13 @@
 # Arquitetura
 
+## Fronteira de confiança financeira — etapa 7.2.4.2
+
+O desenho aprovado mantém `yfc_privado` fora da Data API e prevê que o Hono chame funções PostgreSQL privadas com um login dedicado. As futuras funções `SECURITY DEFINER` pertencem ao executor restrito e têm ACL por assinatura e `search_path` seguro. A primeira migration de segurança prepara os papéis, os privilégios e as políticas. Acesso às funções fica para a ativação operacional. Ver [[02 - Banco de Dados]].
+
+Na integração futura, o Hono verifica o JWT e instala apenas os claims verificados em contexto transacional na mesma conexão. `auth.uid()` lê o contexto que recebe e não verifica a assinatura do JWT. Um Hono comprometido, uma injeção que permita controlar a sessão SQL ou o uso indevido da futura credencial podem falsificar a identidade; a RLS então aplica o isolamento ao identificador falsificado. O login restrito limita as operações a funções aprovadas, mas não resolve essa falsificação. Validar a limpeza de contexto em commit, rollback e reúso de conexões. Se o banco precisar desconfiar do próprio backend, será necessário outro desenho de verificação de identidade, com aprovação separada.
+
+A conectividade real com Workers, Hyperdrive, drivers e planos gratuitos segue pendente. A rota de saúde e os testes de Node confirmam somente a API atual.
+
 ## Evolução das metas — 2026-11-13
 
 `utils/evolucaoMetas.ts` valida meta/aportes vinculados e produz competências acumuladas com `resumirMeta.referencia`, `somarCentavos` e calendário civil existentes. Não chama a validação de criação que rejeitaria metas vencidas. Não altera entrada nem depende de transações. `indicesRotulosMeta` reduz apenas rótulos, preservando extremos; todos os pontos permanecem no SVG e na tabela (até 120 meses).

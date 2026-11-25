@@ -1,5 +1,16 @@
 # Diário de Desenvolvimento
 
+## 2026-11-25 — Etapa 7.2.4.2 preparada no computador corporativo
+
+- Após a segunda revisão, foram ajustados localmente o verificador e o roteiro de ensaio para o YFC-Sandbox. As duas migrations foram preservadas. A leitura da tag 2.116.0 da CLI confirmou o enfileiramento do DDL e do histórico no mesmo lote no caminho Go do push remoto. A execução e o rollback no Sandbox seguem pendentes de autorização. Ver [[06 - Ensaio de Papéis e RLS]].
+
+- A pré-validação somente leitura no SQL Editor do YFC-Development confirmou que `postgres` tem `USAGE` em `auth` sem poder concedê-lo e que `PUBLIC` tem `EXECUTE` em `auth.uid()`. A revisão estática apontou o bloqueio de Auth, lacunas do verificador e a necessidade de ensaiar o rollback. A correção local verifica apenas `EXECUTE` efetivo, amplia o verificador e prepara o roteiro descartável. A sessão da CLI e a avaliação real das políticas sem `USAGE` ainda precisam de validação. Ver [[02 - Banco de Dados]] e [[06 - Ensaio de Papéis e RLS]].
+- Na validação da correção local, passaram 59 testes do frontend, TypeScript, lint e build. O build registrou o aviso do chunk principal de 632,53 kB. Passaram os três testes, o typecheck e o build do backend. A checagem do diff passou e a migration inicial coincide com `6526db7`. O SQL foi revisado estaticamente e segue pendente de ensaio em PostgreSQL.
+
+- Primeira migration de segurança e consultas de catálogo preparadas localmente. A migration inicial permanece intacta. A aplicação, a conferência de privilégios no Supabase Cloud e os testes de isolamento com dados fictícios aguardam autorização.
+- Node.js 24.18.0. Frontend com 59 testes aprovados, TypeScript, lint e build aprovados. O Vite manteve o aviso do chunk principal acima de 500 kB (632,53 kB, 191,24 kB gzip). Backend com três testes, typecheck e build aprovados. O backend não possui script de lint.
+- A viabilidade de acesso PostgreSQL pelo Worker e o comportamento efetivo de papéis, ACLs e RLS seguem pendentes. Ver [[01 - Arquitetura]] e [[02 - Banco de Dados]].
+
 ## 2026-11-24 — Etapa 7.2.3 concluída
 
 - O responsável confirmou a aplicação da migration inicial no YFC-Development (PostgreSQL 17.12), após dry-run com a Supabase CLI 2.116.0, e a sincronização dos históricos. O inventário de catálogo, os privilégios efetivos e a exposição da Data API estão em [[02 - Banco de Dados]].

@@ -3,7 +3,7 @@
 ## Etapa 7.2 — banco de desenvolvimento
 
 - **7.2.3 concluída em 2026-11-24.** Migration inicial aplicada no YFC-Development e históricos sincronizados. O catálogo, os privilégios e a exposição da Data API foram conferidos manualmente. Ver [[02 - Banco de Dados]].
-- **7.2.4 é a próxima etapa e aguarda aprovação.** Definir e validar autorização por usuário, superfície de gravação e invariantes que exigem atomicidade. Usar dados fictícios para testar constraints, acesso direto, concorrência e o contrato de centavos.
+- **7.2.4.2 corrigida localmente após revisão estática, com ensaio e aplicação em Cloud pendentes.** A primeira migration de segurança prepara papéis, privilégios e políticas por usuário. A etapa 7.2.4 segue aberta para normalização, funções financeiras atômicas, concorrência e ativação operacional. Ver [[02 - Banco de Dados]] e [[06 - Ensaio de Papéis e RLS]].
 
 ## Atualização de Metas — 2026-11-12
 
