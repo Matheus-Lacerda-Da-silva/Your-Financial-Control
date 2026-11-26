@@ -1,12 +1,12 @@
 # Arquitetura
 
-## Fronteira de confiança financeira — etapa 7.2.4.2
+## Arquitetura aprovada para o MVP
 
-O desenho aprovado mantém `yfc_privado` fora da Data API e prevê que o Hono chame funções PostgreSQL privadas com um login dedicado. As futuras funções `SECURITY DEFINER` pertencem ao executor restrito e têm ACL por assinatura e `search_path` seguro. A primeira migration de segurança prepara os papéis, os privilégios e as políticas. Acesso às funções fica para a ativação operacional. Ver [[02 - Banco de Dados]].
+O frontend React, TypeScript, Vite e Material UI será publicado no Cloudflare Pages. A API REST Hono em TypeScript usa Node.js localmente e Cloudflare Workers na publicação.
 
-Na integração futura, o Hono verifica o JWT e instala apenas os claims verificados em contexto transacional na mesma conexão. `auth.uid()` lê o contexto que recebe e não verifica a assinatura do JWT. Um Hono comprometido, uma injeção que permita controlar a sessão SQL ou o uso indevido da futura credencial podem falsificar a identidade; a RLS então aplica o isolamento ao identificador falsificado. O login restrito limita as operações a funções aprovadas, mas não resolve essa falsificação. Validar a limpeza de contexto em commit, rollback e reúso de conexões. Se o banco precisar desconfiar do próprio backend, será necessário outro desenho de verificação de identidade, com aprovação separada.
+Na primeira integração, o frontend obtém a sessão pelo Supabase Auth e envia o JWT à API. O Hono valida o token e encaminha o mesmo JWT à Data API por HTTPS usando `@supabase/supabase-js` e uma chave publicável. Cada requisição usa seu próprio contexto autenticado. O PostgreSQL protege propriedade e integridade com grants, RLS e constraints, inclusive quando a Data API é chamada diretamente.
 
-A conectividade real com Workers, Hyperdrive, drivers e planos gratuitos segue pendente. A rota de saúde e os testes de Node confirmam somente a API atual.
+O schema `yfc_privado` é selecionado explicitamente no SDK. A exposição remota e a integração no Workers aguardam validação autorizada. O CRUD comum usa `authenticated`. A primeira entrega integrada será autenticação e categorias. Ver [[02 - Banco de Dados]].
 
 ## Evolução das metas — 2026-11-13
 

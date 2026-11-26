@@ -1,3 +1,5 @@
+> Histórico da arquitetura substituída. O procedimento abaixo foi desativado.
+
 # Ensaio de papéis, RLS e privilégios
 
 Roteiro preparado para um projeto Supabase Cloud descartável com PostgreSQL 17.12. Toda execução em Cloud depende de autorização específica. Use somente identidades fictícias e um alvo descartável. A etapa permanece pendente até os resultados serem registrados.
@@ -5,9 +7,9 @@ Roteiro preparado para um projeto Supabase Cloud descartável com PostgreSQL 17.
 ## Consultas somente leitura
 
 1. Pela mesma conexão e identidade configuradas para a CLI, registre banco, versão, `session_user`, `current_user`, atributos em `pg_roles` e `current_setting('createrole_self_grant')`. Se possível, registre esses valores também por `RAISE NOTICE` na cópia de ensaio executada pelo runner. Compare com a sessão do SQL Editor.
-2. Confira o histórico em `supabase_migrations.schema_migrations`. O ponto de partida contém somente `20261124000000`. Confira a ausência de `yfc_hono` e `yfc_executor` no cluster, o dono `postgres` e as quatro tabelas com RLS e zero políticas com o [verificador inicial](../supabase/tests/verifica_modelo_financeiro.sql). Capture as ACLs originais de schema, tabelas, colunas, sequências e rotinas e o estado dos dois papéis. Confira os schemas expostos no Dashboard.
+2. Confira o histórico em `supabase_migrations.schema_migrations`. O ponto de partida contém somente `20261124000000`. Confira a ausência de `yfc_hono` e `yfc_executor` no cluster, o dono `postgres` e as quatro tabelas com RLS e zero políticas com o [verificador inicial](../../supabase/tests/verifica_modelo_financeiro.sql). Capture as ACLs originais de schema, tabelas, colunas, sequências e rotinas e o estado dos dois papéis. Confira os schemas expostos no Dashboard.
 3. Sob o implantador, confira `USAGE` em `auth` para a resolução do nome e a ACL de `auth.uid()` via `pg_proc`, `aclexplode` e beneficiário zero. Registre separadamente os resultados de `WITH GRANT OPTION`.
-4. Após a aplicação de ensaio, execute o [verificador de segurança](../supabase/tests/verifica_papeis_rls_financeiros.sql) na identidade administrativa do runner. Confira a linha de estado da sessão, ACLs, políticas, o grafo e os inventários. A concessão implícita ao criador com apenas `ADMIN` é esperada. Compare o catálogo antes e depois e revise outros administradores explicitamente. `pg_roles` não verifica a senha. A regra `PASSWORD NULL` é conferida no DDL e a ausência de conexão é uma verificação separada.
+4. Após a aplicação de ensaio, execute o `verifica_papeis_rls_financeiros.sql` na identidade administrativa do runner. Confira a linha de estado da sessão, ACLs, políticas, o grafo e os inventários. A concessão implícita ao criador com apenas `ADMIN` é esperada. Compare o catálogo antes e depois e revise outros administradores explicitamente. `pg_roles` não verifica a senha. A regra `PASSWORD NULL` é conferida no DDL e a ausência de conexão é uma verificação separada.
 5. Revise objetos expostos marcados por dependência ou menção textual e as demais rotinas acessíveis que possam intermediar acesso. O catálogo rastreia dependências registradas, inclusive views aninhadas e corpos SQL analisados na criação. Corpos textuais, nomes montados por SQL dinâmico, chamadas indiretas via extensões e configurações de sessão podem escapar. Confirme a superfície por inspeção das definições e chamadas negativas de REST, GraphQL e RPC no alvo descartável.
 
 ## Identificação do YFC-Sandbox e preparação no Windows

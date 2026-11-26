@@ -1,10 +1,16 @@
 # Diário de Desenvolvimento
 
-## 2026-11-25 — Etapa 7.2.4.2 preparada no computador corporativo
+## 2026-11-25 — Arquitetura do MVP simplificada
 
-- Após a segunda revisão, foram ajustados localmente o verificador e o roteiro de ensaio para o YFC-Sandbox. As duas migrations foram preservadas. A leitura da tag 2.116.0 da CLI confirmou o enfileiramento do DDL e do histórico no mesmo lote no caminho Go do push remoto. A execução e o rollback no Sandbox seguem pendentes de autorização. Ver [[06 - Ensaio de Papéis e RLS]].
+O projeto aprovou Cloudflare Pages e Workers, Hono, Supabase Auth e Data API com o JWT do usuário. A migration inicial foi preservada. A versão de segurança pendente passou a preparar somente categorias com RLS convencional e normalização no PostgreSQL. O roteiro anterior foi arquivado. Validação do SQL em PostgreSQL e aplicação dependem de autorização posterior. Ver [[01 - Arquitetura]], [[02 - Banco de Dados]] e [[04 - Roadmap]].
 
-- A pré-validação somente leitura no SQL Editor do YFC-Development confirmou que `postgres` tem `USAGE` em `auth` sem poder concedê-lo e que `PUBLIC` tem `EXECUTE` em `auth.uid()`. A revisão estática apontou o bloqueio de Auth, lacunas do verificador e a necessidade de ensaiar o rollback. A correção local verifica apenas `EXECUTE` efetivo, amplia o verificador e prepara o roteiro descartável. A sessão da CLI e a avaliação real das políticas sem `USAGE` ainda precisam de validação. Ver [[02 - Banco de Dados]] e [[06 - Ensaio de Papéis e RLS]].
+Verificação local da simplificação: 59 testes, lint e build com TypeScript no frontend. No backend, três testes, typecheck e build. O Vite emitiu o aviso de tamanho do bundle. O SQL foi revisado estaticamente.
+
+## 2026-11-25 — Etapa 7.2.4.2 no computador corporativo (histórico da arquitetura substituída)
+
+- Após a segunda revisão, foram ajustados localmente o verificador e o roteiro de ensaio para o YFC-Sandbox. As duas migrations foram preservadas. A leitura da tag 2.116.0 da CLI confirmou o enfileiramento do DDL e do histórico no mesmo lote no caminho Go do push remoto. A execução e o rollback no Sandbox seguem pendentes de autorização. Ver [[arquivo/06 - Ensaio de Papéis e RLS|roteiro arquivado]].
+
+- A pré-validação somente leitura no SQL Editor do YFC-Development confirmou que `postgres` tem `USAGE` em `auth` sem poder concedê-lo e que `PUBLIC` tem `EXECUTE` em `auth.uid()`. A revisão estática apontou o bloqueio de Auth, lacunas do verificador e a necessidade de ensaiar o rollback. A correção local verifica apenas `EXECUTE` efetivo, amplia o verificador e prepara o roteiro descartável. A sessão da CLI e a avaliação real das políticas sem `USAGE` ainda precisam de validação. Ver [[02 - Banco de Dados]] e [[arquivo/06 - Ensaio de Papéis e RLS|roteiro arquivado]].
 - Na validação da correção local, passaram 59 testes do frontend, TypeScript, lint e build. O build registrou o aviso do chunk principal de 632,53 kB. Passaram os três testes, o typecheck e o build do backend. A checagem do diff passou e a migration inicial coincide com `6526db7`. O SQL foi revisado estaticamente e segue pendente de ensaio em PostgreSQL.
 
 - Primeira migration de segurança e consultas de catálogo preparadas localmente. A migration inicial permanece intacta. A aplicação, a conferência de privilégios no Supabase Cloud e os testes de isolamento com dados fictícios aguardam autorização.

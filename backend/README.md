@@ -1,6 +1,6 @@
 # API do Your Financial Control
 
-A Etapa 7.1 disponibiliza uma API Hono em TypeScript com uma rota de saúde. O frontend demonstrativo funciona de forma independente. PostgreSQL, Supabase Auth e operações financeiras ficam para etapas posteriores.
+A API Hono em TypeScript oferece `GET /health`. A primeira integração prevista reúne login via Supabase Auth e CRUD de categorias. O Hono usará `@supabase/supabase-js` por HTTPS e encaminhará o JWT do usuário à Data API, com RLS no PostgreSQL. O ambiente local usa Node.js e a publicação será no Cloudflare Workers.
 
 ## Instalação e execução local em Node.js
 

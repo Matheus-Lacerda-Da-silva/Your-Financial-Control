@@ -1,5 +1,7 @@
 # YFC — Frontend
 
+A interface React, TypeScript, Vite e Material UI está em modo demonstrativo. A publicação está prevista no Cloudflare Pages. Na primeira integração, o frontend usará Supabase Auth para a sessão e enviará o JWT à API Hono para operar categorias.
+
 Interface de controle financeiro com React, TypeScript, Material UI e Vite.
 
 ## Executar

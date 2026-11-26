@@ -1,5 +1,9 @@
 # Regras Financeiras
 
+## Referência civil do MVP integrado
+
+As regras persistidas que dependem de “hoje” usarão `America/Sao_Paulo`. A demonstração ainda usa a data civil local do navegador. As regras entre transações, metas e aportes entram no banco na etapa de integração de cada funcionalidade, antes da liberação de escrita.
+
 ## Evolução das metas — 2026-11-13
 
 - Janela completa entre início e prazo da meta, de uma a 120 competências civis, sem meses posteriores ao prazo. Calendário validado sem conversão UTC.

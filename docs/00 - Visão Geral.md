@@ -1,5 +1,9 @@
 # Your Financial Control
 
+## Direção atual do MVP
+
+O Your Financial Control é um projeto de portfólio Full Stack Júnior. Use KISS e YAGNI para entregar uma interface funcional e publicada. A primeira integração será autenticação e categorias. O SQL dessa etapa está versionado localmente, e o frontend e a API continuam em seus estados demonstrativo e inicial. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
+
 ## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
 
 Início apresenta a seção entre Evolução financeira e Últimas transações. Permite escolher qualquer meta, preservando o ID selecionado após renomeações/cadastros e escolhendo a primeira restante após exclusão. Mostra objetivo, reserva, acumulado, progresso e situação, SVG comparativo e tabela completa expansível de até 120 competências.

@@ -23,59 +23,16 @@ O ambiente de desenvolvimento é o projeto **YFC-Development**, no Supabase Clou
 - PKs e restrições de unicidade fornecem os índices de identidade, busca e ordenação por usuário. Os três índices adicionais dão suporte ao vínculo transação–categoria, às consultas por data financeira e ao histórico de aportes por meta.
 - RLS começa sem políticas e a migration revoga privilégios de `PUBLIC`, `anon` e `authenticated` no schema, nas tabelas e nas sequências. A revogação dos defaults locais ao schema não cancela defaults globais. Por isso, a migration também revoga explicitamente os privilégios dos objetos criados e as consultas verificam o acesso efetivo dos papéis. Mantenha `yfc_privado` fora de **Exposed schemas** no Dashboard do Supabase. A lista de exposição é configuração da Data API e deve ser conferida separadamente.
 
-### Configuração da CLI e vínculo por computador
+## Preparação de categorias — 2026-11-25
 
-`supabase/config.toml` é adequado para versionamento como configuração compartilhada da CLI. A revisão encontrou PostgreSQL major 17, schemas locais `public` e `graphql_public`, URLs de loopback nos campos de desenvolvimento e campos de segredo vazios ou referenciados por `env(...)`. As opções de serviços locais e o seed padrão apontando para `./seed.sql` pertencem ao template. O arquivo de seed está ausente e esse fluxo está fora do uso atual, exclusivamente Cloud. A exposição remota é confirmada separadamente no Dashboard.
+A [migration de categorias](../supabase/migrations/20261125000000_protege_crud_categorias.sql) substitui localmente a versão pendente `20261125000000`. Confirme o histórico do ambiente autorizado antes de aplicar. Se essa versão já constar no histórico, preserve o SQL aplicado e prepare uma migration posterior. A inicial permanece como foi aplicada, com seu [verificador de baseline](../supabase/tests/verifica_modelo_financeiro.sql).
 
-Cada computador mantém seu próprio vínculo para o ambiente de desenvolvimento. `supabase/.temp/` e `supabase/.branches/` são ignorados, assim como `.env` e suas variantes, com exceção de `.env.example` para exemplos sem credenciais. Tokens de login e senhas devem permanecer no armazenamento local da CLI ou em variáveis de ambiente. O vínculo local inclui metadados do projeto e do pooler.
+- As quatro tabelas continuam em `yfc_privado`. O `config.toml` expõe o schema em ambiente local. A exposição no Supabase Cloud é uma configuração separada.
+- `authenticated` recebe `USAGE` no schema e CRUD em categorias próprias. O dono vem de `auth.uid()`. Na criação podem ser enviados nome, tipo e UUID opcional. Na edição, nome e tipo. Nome, chave e metadados são protegidos conforme seus grants e defaults.
+- Um trigger com privilégio do chamador normaliza `nome` e deriva `nome_chave` em NFC, com espaços equivalentes aos do JavaScript e minúsculas usando a collation ICU `pt-BR`. O banco aplica a unicidade por dono, tipo e chave. Eventuais categorias existentes são normalizadas na migration. Se houver conflito, revise os registros antes de tentar novamente.
+- Transações, metas e aportes permanecem com RLS ativa, sem políticas ou grants de acesso para o aplicativo. UUIDs, FKs, centavos, constraints e datas civis existentes são preservados. A referência civil para regras novas de “hoje” é `America/Sao_Paulo`.
 
-O fluxo abaixo usa a versão confirmada e documenta operações remotas para execução somente quando autorizadas. O dry-run lista migrations pendentes. A confirmação da execução do DDL vem da aplicação e das consultas posteriores.
-
-```powershell
-npx supabase@2.116.0 --version
-npx supabase@2.116.0 login
-npx supabase@2.116.0 link --project-ref REF_DO_YFC_DEVELOPMENT
-npx supabase@2.116.0 migration list --linked
-npx supabase@2.116.0 db push --linked --dry-run
-# Execute a linha seguinte apenas após conferir o alvo e as versões pendentes.
-npx supabase@2.116.0 db push --linked
-npx supabase@2.116.0 migration list --linked
-```
-
-Use o fluxo de login da CLI e mantenha tokens, senhas e strings de conexão fora do Git. Antes de aplicar, confirme que o histórico e o schema de destino condizem com uma primeira migration e que o dry-run lista somente `20261124000000`. O dry-run lista o plano e não valida o DDL em PostgreSQL. O push registra a versão em `supabase_migrations.schema_migrations`. Depois de aplicar, execute as consultas de verificação no editor SQL e registre a versão aplicada, o ambiente e os resultados. Use uma nova migration para correções após aplicação. Evite aplicar o arquivo pelo editor SQL como fluxo normal, pois isso não atualiza automaticamente o histórico da CLI.
-
-### Etapa 7.2.4.2 — papéis, RLS e privilégios implementados localmente
-
-A [migration de papéis e RLS](../supabase/migrations/20261125000000_configura_papeis_rls_financeiros.sql) aguarda aprovação para aplicação. A Data API segue habilitada na arquitetura aprovada, com `yfc_privado` fora de **Exposed schemas**. A migration inicial e seu [verificador da etapa 7.2.3](../supabase/tests/verifica_modelo_financeiro.sql) continuam sendo o retrato daquela etapa. Para a nova migration, usar o [verificador de papéis e RLS](../supabase/tests/verifica_papeis_rls_financeiros.sql).
-
-| Papel | Schema financeiro | Tabelas financeiras |
-| --- | --- | --- |
-| `PUBLIC`, `anon`, `authenticated`, `authenticator`, `service_role` e `yfc_hono` | Sem `USAGE` ou `CREATE` esperado | Sem acesso direto esperado |
-| `yfc_executor` | `USAGE` | `SELECT` e `DELETE` nas quatro tabelas; `INSERT` e `UPDATE` por coluna |
-| Proprietários e papel administrativo | Conforme propriedade e ACL do ambiente | Administração e recuperação, fora do caminho da aplicação |
-
-- `yfc_hono` tem o atributo `LOGIN`, senha nula, limite de conexões zero e nenhum grant financeiro. `yfc_executor` é `NOLOGIN`. Ambos são `NOINHERIT`, sem `BYPASSRLS` ou atributos administrativos. Nenhum membership é concedido ao runtime pela migration. Verificar opções `SET`, `INHERIT` e `ADMIN` reais, inclusive o membership administrativo que o PG17 pode atribuir ao criador de um papel. `NOINHERIT` sozinho não impede `SET ROLE`.
-- Cada tabela tem políticas de leitura e exclusão com `USING`, e inserção com `WITH CHECK`. A atualização usa ambos em categorias, transações e metas. Todas usam `usuario_id = (select auth.uid())` e se aplicam ao executor. Sem identidade, a comparação produz `NULL` e fica fora das linhas autorizadas. Aportes têm três políticas e nenhum grant de atualização.
-- Em inserções, o executor pode definir UUID, proprietário e campos de negócio. A RLS exige o proprietário do contexto. `ordem_cadastro` e `criado_em` usam defaults. Em edições, categorias permitem nome, chave e tipo; transações permitem categoria, tipo, descrição, centavos e data; metas permitem nome, objetivo e prazo. ID, dono, ordem e criação ficam fora de todas as edições. Início e reserva ficam fora das edições de metas.
-- O implantador resolve `auth.uid()` ao criar a política. A primeira migration de segurança verifica o `EXECUTE` efetivo do executor e preserva as ACLs gerenciadas de Auth. O uso da expressão armazenada sem `USAGE` em `auth` é hipótese técnica a testar em Cloud descartável. Uma chamada direta em futura função privada depende de resolução de nomes e precisa de revisão própria. A identidade de cadastro é preenchida pelo INSERT, sem grant na sequência. Confirmar por ensaio.
-- A RLS permanece habilitada. Adiou-se `FORCE ROW LEVEL SECURITY` para preservar manutenção e recuperação do dono das tabelas. O executor está sujeito à RLS por ser distinto dos donos e não ter `BYPASSRLS`. O proprietário pode ignorar RLS por padrão. Papéis com `BYPASSRLS` também a ignoram; suas ACLs financeiras devem ser verificadas.
-- As revogações explícitas incluem privilégios de tabela como `TRUNCATE` e `MAINTAIN`. O verificador inventaria ACL efetiva de tabelas, colunas, sequências e rotinas, além de defaults. A migration não muda defaults globais do papel de implantação para evitar efeitos em outros schemas. Nas etapas seguintes, criar cada rotina e revogar `EXECUTE` padrão na mesma transação, antes do grant por assinatura. Defaults locais são aditivos em relação aos globais.
-
-**Pré-validação no YFC-Development em 25/11/2026.** As consultas de leitura no SQL Editor mostraram banco `postgres`, PostgreSQL 17.12, `session_user` e `current_user` iguais a `postgres` e `createrole_self_grant` vazio. O papel tinha `LOGIN`, limite `-1`, `INHERIT`, `CREATEDB`, `CREATEROLE`, `REPLICATION` e `BYPASSRLS`, sem `SUPERUSER`. Tinha `USAGE` em `auth` e `EXECUTE` em `auth.uid()`, ambos sem opção de concessão. A função tinha `EXECUTE` para `PUBLIC`, `dashboard_user` e `supabase_auth_admin`, sem opção de concessão. `PUBLIC` não tinha `USAGE` em `auth`.
-
-Os dois papéis dedicados estavam ausentes e apenas a migration inicial constava no histórico. O schema, as quatro tabelas e as quatro sequências pertenciam a `postgres`. As tabelas tinham RLS, sem `FORCE` e sem políticas. O Dashboard mostrava Data API habilitada com `public` e `graphql_public`, deixando `yfc_privado` fora. Essas evidências descrevem a sessão e a configuração consultadas. A identidade, autoridade e configuração da sessão da CLI ainda precisam ser verificadas.
-
-**Revisão e pendências.** A revisão identificou a concessão inviável em Auth, lacunas em memberships, propriedade, ACLs e inventário, e a necessidade de demonstrar atomicidade do runner. A correção local remove as concessões em Auth e amplia as consultas de desvios. Após autorização, seguir [[06 - Ensaio de Papéis e RLS]] para validar CLI 2.116.0, rollback, RLS, ACLs e Data API em ambiente descartável. A aplicação no YFC-Development e a integração Workers/Hyperdrive seguem pendentes.
-
-A segunda revisão levou à conferência explícita dos seis papéis, à matriz de escrita e leitura das views expostas e ao inventário de triggers e regras. O roteiro do YFC-Sandbox distingue as cópias do SQL por diretório e SHA-256, verifica o destino antes de cada push e documenta a evidência do código da CLI 2.116.0 para o lote do DDL com o histórico. As negativas da Data API e a limpeza das fixtures fazem parte do ensaio. A ativação temporária do login Hono fica fora do escopo.
-
-### Etapa 7.2.4 — demais controles pendentes
-
-A inspeção manual cobriu estrutura, privilégios e exposição. Em PostgreSQL real, ainda faltam testes com dados fictícios de PK, FK, UNIQUE e CHECK, incluindo vínculos cruzados e cascata. Após definir as políticas e a superfície de acesso, validar leitura, criação, edição e exclusão com dois usuários e acesso anônimo, inclusive troca de proprietário e chamadas diretas à Data API.
-
-- Derivar `nome_chave` em um caminho de gravação confiável e testar sua paridade com TypeScript para NFC, espaços Unicode, minúsculas `pt-BR` e acentos. O `CHECK` atual só faz uma checagem básica de texto e a unicidade compara a chave fornecida.
-- Implementar operações atômicas com controle de concorrência para os totais independentes de receitas e despesas, a reserva somada aos aportes e a validação de datas contra o período da meta. Preservar a imutabilidade de início e reserva na edição, e permitir a exclusão individual, sem edição de aportes. Usar a referência civil configurável proposta (`America/Sao_Paulo`) para “hoje”, sem mudar o fuso UTC do banco.
-- Definir reenvio por UUID estável, privilégios das funções SQL, políticas por usuário e contrato de serialização exata de centavos pela Data API. Validar chamadas diretas, testes de concorrência e limites em PostgreSQL real antes de liberar gravações.
+Após autorização, valide a migration e o [verificador de RLS e permissões](../supabase/tests/verifica_rls_categorias.sql) em um ambiente descartável. Use dois usuários fictícios e chamadas diretas à Data API, além de uma chamada anônima. Confira defaults, isolamento, colunas protegidas, unicidade de nomes compostos e decompostos, espaços Unicode, minúsculas e acentos significativos. Teste também que o papel de aplicação não pode acessar as outras tabelas.
 
 ## Modelo adicional em memória — Metas (2026-11-12)
 

@@ -5,6 +5,10 @@ description: Revisar código React e TypeScript do Your Financial Control, com a
 
 # Revisão de código
 
+## Arquitetura e prioridades do MVP
+
+Use KISS, YAGNI e o escopo do MVP como critérios de revisão. Em fluxos integrados, siga React → Hono → Supabase Auth/Data API por HTTPS → PostgreSQL. Confira a propagação do JWT, os grants e a RLS de `authenticated` e o acesso direto à Data API. Priorize testes de isolamento e de regras efetivamente habilitadas. A primeira entrega integrada é autenticação e categorias.
+
 ## Escopo e limites
 
 - Leia `AGENTS.md` e `docs/00 - Visão Geral.md`, a partir da raiz do repositório. Para arquitetura e finanças, consulte `docs/01 - Arquitetura.md` e `docs/03 - Regras Financeiras.md`; leia `docs/02 - Banco de Dados.md` quando houver persistência ou propriedade de dados envolvida.

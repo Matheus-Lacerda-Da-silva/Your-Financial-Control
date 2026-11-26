@@ -5,6 +5,10 @@ description: Modelar e revisar o PostgreSQL do Your Financial Control, incluindo
 
 # Database Design & Review do Your Financial Control
 
+## Arquitetura e prioridades do MVP
+
+O MVP utiliza Supabase PostgreSQL, Supabase Auth e Data API por HTTPS. O Hono usa o SDK oficial com chave publicável e JWT do usuário. Use RLS convencional para `authenticated`, grants mínimos e `America/Sao_Paulo` como referência civil. Siga KISS, YAGNI e a ordem do MVP. Entregue autenticação e categorias primeiro. Libere escrita nas outras tabelas junto das respectivas garantias no banco. Dimensione testes de concorrência para cada regra entre linhas quando ela entrar no escopo.
+
 ## Contexto e escopo
 
 Leia `AGENTS.md` e `docs/00 - Visão Geral.md`. Consulte `docs/01 - Arquitetura.md`, `docs/02 - Banco de Dados.md` e `docs/03 - Regras Financeiras.md` conforme a tarefa. Confirme as regras no código e nos testes de categorias, transações, metas e aportes. Confira as migrations e a configuração do backend quando existirem. Identifique o que está planejado, implementado ou validado no banco. Planejamento e revisão são somente leitura, salvo autorização explícita para implementar.
