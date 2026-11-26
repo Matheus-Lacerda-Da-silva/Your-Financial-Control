@@ -1,5 +1,11 @@
 # Diário de Desenvolvimento
 
+## 2026-11-26 — Integração inicial do backend com Supabase Auth
+
+O Hono passou a validar o token de acesso via `auth.getUser(token)` com a chave publicável e a devolver apenas o ID em `GET /api/v1/me`. O middleware retorna 401 quando a autenticação está ausente ou é rejeitada, 500 quando a configuração local é inválida e 502 quando a consulta ao Supabase falha. `GET /health` continua pública e independente da configuração.
+
+Oito testes com o runner nativo do Node passaram, incluindo chamadas de autenticação simuladas. Typecheck e build passaram. O Wrangler local retornou 200 em `/health`, 404 para rota inexistente e 401, 500 e 502 nos cenários de falha de `/api/v1/me`. A validação com uma sessão real do Supabase pode ocorrer independentemente da migration de categorias.
+
 ## 2026-11-25 — Arquitetura do MVP simplificada
 
 O projeto aprovou Cloudflare Pages e Workers, Hono, Supabase Auth e Data API com o JWT do usuário. A migration inicial foi preservada. A versão de segurança pendente passou a preparar somente categorias com RLS convencional e normalização no PostgreSQL. O roteiro anterior foi arquivado. Validação do SQL em PostgreSQL e aplicação dependem de autorização posterior. Ver [[01 - Arquitetura]], [[02 - Banco de Dados]] e [[04 - Roadmap]].

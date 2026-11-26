@@ -2,7 +2,7 @@
 
 ## Direção atual do MVP
 
-O Your Financial Control é um projeto de portfólio Full Stack Júnior. Use KISS e YAGNI para entregar uma interface funcional e publicada. A primeira integração será autenticação e categorias. O SQL dessa etapa está versionado localmente, e o frontend e a API continuam em seus estados demonstrativo e inicial. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
+O Your Financial Control é um projeto de portfólio Full Stack Júnior. Use KISS e YAGNI para entregar uma interface funcional e publicada. A API já oferece uma rota protegida pelo Supabase Auth. O frontend continua em modo demonstrativo e a migration de categorias aguarda aplicação. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
 
 ## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
 
@@ -50,7 +50,7 @@ O projeto está em estágio inicial e será desenvolvido progressivamente. A pri
 
 Em 2026-11-10, a primeira aplicação dessa direção foi implementada em Início: tokens tipados `theme.glass`, superfícies translúcidas com fallback opaco e cartões de resumo reutilizáveis. Em 2026-11-11, Transações passou a reutilizar `SuperficieVidro` nos painéis de cadastro e histórico, com refinamentos de tabela, cartões móveis e diálogos. Tema e superfície compartilhada não foram alterados nessa extensão. A validação visual no navegador e a aprovação visual de Transações continuam pendentes; a evolução deve permanecer gradual nos dois temas e em diferentes tamanhos de tela.
 
-Na Etapa 7.1, `backend/` ganhou uma API inicial em Hono e TypeScript com execução local em Node.js e rota `GET /health`. O frontend demonstrativo continua independente. A migration inicial PostgreSQL foi aplicada no Supabase Cloud de desenvolvimento na Etapa 7.2.3. A integração com Supabase Auth e as rotas financeiras seguem planejadas. Os comandos estão em [backend/README.md](../backend/README.md).
+Na Etapa 7.1, `backend/` ganhou uma API inicial em Hono e TypeScript com execução local em Node.js e rota `GET /health`. Agora, `GET /api/v1/me` valida tokens do Supabase Auth e devolve o ID autenticado. A migration inicial PostgreSQL foi aplicada no Supabase Cloud de desenvolvimento na Etapa 7.2.3. Os comandos estão em [backend/README.md](../backend/README.md).
 
 ## Tecnologias confirmadas
 
@@ -69,7 +69,7 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
 | Backend REST | API inicial com rota de saúde e erros JSON | `backend/src/app.ts`, `backend/src/node.ts` |
 | Banco PostgreSQL | Modelo inicial aplicado no Supabase Cloud de desenvolvimento | [[02 - Banco de Dados]] |
-| JWT e isolamento por usuário na aplicação | Integração e testes pendentes | [[04 - Roadmap]] |
+| JWT e isolamento por usuário na aplicação | Validação do JWT implementada em `/api/v1/me`. Isolamento das rotas financeiras pendente | `backend/src/autenticacao.ts`, [[04 - Roadmap]] |
 
 ## Qualidade e limites
 

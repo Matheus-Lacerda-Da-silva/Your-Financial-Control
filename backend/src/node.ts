@@ -7,8 +7,14 @@ if (!Number.isInteger(porta) || porta < 1 || porta > 65535) {
   throw new Error('PORT deve ser um número inteiro entre 1 e 65535.')
 }
 
+const app = criarApp()
+const configuracaoSupabase = {
+  SUPABASE_URL: process.env.SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
+}
+
 serve({
-  fetch: criarApp().fetch,
+  fetch: requisicao => app.fetch(requisicao, configuracaoSupabase),
   hostname: '127.0.0.1',
   port: porta,
 }, endereco => {

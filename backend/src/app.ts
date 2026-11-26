@@ -1,9 +1,16 @@
 import { Hono } from 'hono'
+import { autenticar } from './autenticacao.ts'
+import type { AmbienteApi } from './autenticacao.ts'
 
-export function criarApp() {
-  const app = new Hono()
+export function criarApp(fetchAuth?: typeof fetch) {
+  const app = new Hono<AmbienteApi>()
 
   app.get('/health', contexto => contexto.json({ status: 'ok' }))
+
+  app.get('/api/v1/me', autenticar(fetchAuth), contexto => {
+    contexto.header('Cache-Control', 'no-store')
+    return contexto.json({ id: contexto.get('usuarioId') })
+  })
 
   app.notFound(contexto => contexto.json({
     erro: {

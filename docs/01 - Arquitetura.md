@@ -4,7 +4,9 @@
 
 O frontend React, TypeScript, Vite e Material UI será publicado no Cloudflare Pages. A API REST Hono em TypeScript usa Node.js localmente e Cloudflare Workers na publicação.
 
-Na primeira integração, o frontend obtém a sessão pelo Supabase Auth e envia o JWT à API. O Hono valida o token e encaminha o mesmo JWT à Data API por HTTPS usando `@supabase/supabase-js` e uma chave publicável. Cada requisição usa seu próprio contexto autenticado. O PostgreSQL protege propriedade e integridade com grants, RLS e constraints, inclusive quando a Data API é chamada diretamente.
+O backend já valida o JWT de `GET /api/v1/me` com `auth.getUser(token)` por HTTPS, usando `@supabase/supabase-js` e a chave publicável. Cada requisição guarda o ID autenticado em seu próprio contexto Hono. O Node lê a configuração do ambiente e o Worker recebe os mesmos campos por bindings. `GET /health` é pública e independente do Supabase.
+
+Na integração futura, o frontend obterá a sessão pelo Supabase Auth e enviará o JWT à API. As rotas de categorias encaminharão o JWT à Data API, onde grants, RLS e constraints protegerão propriedade e integridade.
 
 O schema `yfc_privado` é selecionado explicitamente no SDK. A exposição remota e a integração no Workers aguardam validação autorizada. O CRUD comum usa `authenticated`. A primeira entrega integrada será autenticação e categorias. Ver [[02 - Banco de Dados]].
 
