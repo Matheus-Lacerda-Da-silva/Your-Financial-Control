@@ -6,7 +6,9 @@ O frontend React, TypeScript, Vite e Material UI será publicado no Cloudflare P
 
 O backend já valida o JWT de `GET /api/v1/me` com `auth.getUser(token)` por HTTPS, usando `@supabase/supabase-js` e a chave publicável. Cada requisição guarda o ID autenticado em seu próprio contexto Hono. O Node lê a configuração do ambiente e o Worker recebe os mesmos campos por bindings. `GET /health` é pública e independente do Supabase.
 
-Na integração futura, o frontend obterá a sessão pelo Supabase Auth e enviará o JWT à API. As rotas de categorias encaminharão o JWT à Data API, onde grants, RLS e constraints protegerão propriedade e integridade.
+O frontend usa o SDK do Supabase para restaurar e renovar a sessão. O painel envia o access token ao Hono e compara o ID da resposta de `GET /api/v1/me` com o ID da sessão. As futuras rotas de categorias encaminharão o JWT à Data API, onde grants, RLS e constraints protegerão propriedade e integridade.
+
+O primeiro acesso ao painel exige confirmação da API. Durante a revalidação de uma conta já confirmada, as páginas permanecem montadas e os formulários preservam os rascunhos. Uma sessão rejeitada bloqueia o conteúdo. Logout e troca de conta desmontam o painel e cancelam a consulta anterior. O frontend exige HTTPS para enviar o JWT a destinos remotos e aceita HTTP apenas em endereços de loopback.
 
 O schema `yfc_privado` é selecionado explicitamente no SDK. A exposição remota e a integração no Workers aguardam validação autorizada. O CRUD comum usa `authenticated`. A primeira entrega integrada será autenticação e categorias. Ver [[02 - Banco de Dados]].
 
@@ -50,7 +52,8 @@ Relacionadas: [[00 - Visão Geral]], [[02 - Banco de Dados]], [[03 - Regras Fina
 | --- | --- |
 | `frontend/` | Aplicação React/TypeScript e ferramentas locais |
 | `frontend/src/main.tsx` | Montagem com React StrictMode e TemaProvider |
-| `frontend/src/App.tsx` | Rotas, sessão demo, estado de transações e operações CRUD |
+| `frontend/src/App.tsx` | Rotas públicas e controle de acesso ao painel |
+| `frontend/src/Painel.tsx` | Verificação da identidade na API e estado financeiro em memória por conta |
 | `frontend/src/pages/` | Início, transações, categorias, acesso e cadastro |
 | `frontend/src/layouts/` | Layout de acesso e layout principal com Outlet |
 | `frontend/src/components/` | Menu, campo de senha, cartão de transação; Navbar existe mas não é utilizada pelo fluxo principal inspecionado |
@@ -68,7 +71,7 @@ A direção visual provisória é glassmorphism em cinza e verde, conforme [[00 
 
 Em Transações, o cadastro continua visível e mantém ordem de campos e handlers. A tabela tem contêiner de rolagem focável, quebra de textos e valores tabulares; cartões móveis usam superfície opaca sem filtro. Diálogos têm títulos associados, exclusão com descrição associada e foco inicial em Cancelar, edição com foco inicial na descrição e alerta interno persistente enquanto aberta. Escape e restauração de foco seguem o MUI; após exclusão há fallback para o título do histórico quando o foco fica no body. Cálculos, conversão, datas, reducer e ordem dos registros não foram alterados. Esses comportamentos foram inspecionados no código e ainda exigem validação interativa conforme `frontend/VALIDACAO_VISUAL.md`.
 
-A API Hono inicial e o modelo PostgreSQL em desenvolvimento já existem. O frontend segue demonstrativo, com integração de autenticação, persistência e testes de isolamento pendentes no [[04 - Roadmap]]. As evidências do banco estão em [[02 - Banco de Dados]].
+A autenticação do frontend está integrada à API Hono. A persistência financeira e os testes de isolamento em PostgreSQL seguem no [[04 - Roadmap]]. As evidências do banco estão em [[02 - Banco de Dados]].
 
 ## Fluxo e rotas
 
@@ -78,7 +81,7 @@ Sidebar e cabeçalho usam superfícies opacas de `theme.glass` e luz interna dis
 
 No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombraDestaque` e `iluminacao`. `CartaoResumo` reutiliza a propriedade `destaque` para a hierarquia do saldo, preservando sinal monetário e usando cor de erro quando negativo. Iluminação é estática e decorativa; não representa avaliação financeira. Resultados técnicos e limitações visuais estão no [[05 - Diário de Desenvolvimento]].
 
-`main.tsx` monta `TemaProvider → App → BrowserRouter`. `App` coordena categorias e transações em `useReducer` com `utils/estadoFinanceiro.ts`. A operação pura `aplicarAcaoFinanceira` pré-valida callbacks para manter formulários abertos em caso de recusa; o reducer revalida sobre o estado mais recente e preserva ambos os arrays em erros. Operações financeiras reutilizam `aplicarOperacao` de `utils/transacoes.ts`, com tipagem genérica para preservar `categoriaId`; o algoritmo monetário não foi alterado. Não há camada de serviços ou chamada HTTP identificada em `src`.
+`main.tsx` monta `TemaProvider → App`. Após a leitura inicial da sessão, o `BrowserRouter` decide entre as rotas públicas e o painel. `Painel` coordena categorias e transações em `useReducer` com `utils/estadoFinanceiro.ts`. A operação pura `aplicarAcaoFinanceira` pré-valida callbacks para manter formulários abertos em caso de recusa. O reducer revalida sobre o estado mais recente e preserva ambos os arrays em erros. As operações reutilizam `aplicarOperacao` de `utils/transacoes.ts`.
 
 `Categoria` contém ID string, nome e tipo. `TransacaoRegistrada` armazena `categoriaId`; `selecionarTransacoes` produz `TransacaoExibicao` com nome derivado, compatível com Início e TransacaoCard existentes, sem alterar esses componentes. O estado não duplica o nome da categoria. IDs são gerados fora do reducer por `crypto.randomUUID()`, com alternativa baseada em `crypto.getRandomValues`; colisões são recusadas no cadastro. Normalização e validação de vínculos ficam em `utils/categorias.ts`. Categorias não recebem valores financeiros e não criam lançamentos automaticamente.
 
@@ -86,24 +89,24 @@ Categorias usa dois painéis `SuperficieVidro`, formulário visível e lista res
 
 | Rota | Comportamento em `App.tsx` |
 | --- | --- |
-| `/acesso` | Formulário demo; com sessão redireciona para `/` |
-| `/cadastro` | Validação demo; com sessão redireciona para `/` |
-| `/` | Resumo financeiro sob LayoutPrincipal, condicionado à sessão demo |
+| `/acesso` | Login com Supabase Auth. Com sessão, redireciona para `/` |
+| `/cadastro` | Cadastro com Supabase Auth. Aguarda confirmação por e-mail quando exigida |
+| `/` | Resumo financeiro sob LayoutPrincipal, condicionado à identidade confirmada |
 | `/transacoes` | CRUD local sob LayoutPrincipal |
 | `/categorias` | CRUD local de categorias sob LayoutPrincipal |
-| Outras | Redirecionamento conforme sessão demo |
+| `/metas` | Metas e aportes em memória sob LayoutPrincipal |
+| Outras | Redirecionamento conforme a sessão |
 
-Sem sessão, as rotas principais redirecionam para `/acesso`. Sair limpa sessão e transações. Recarregar recria ambos os estados vazios. BrowserRouter exige suporte a fallback para `index.html` ao acessar rotas diretamente em uma hospedagem; essa configuração não foi identificada ou testada. `vite.config.ts` configura somente o plugin React, sem proxy de API.
+As rotas principais aguardam a sessão inicial e redirecionam para `/acesso` se ela estiver ausente. Sair e trocar de conta descartam o estado financeiro. Recarregar restaura a sessão quando válida e recria os registros em memória vazios. BrowserRouter exige suporte a fallback para `index.html` para rotas diretas na hospedagem.
 
 ## Autenticação e APIs
 
 Na Etapa 6, `LayoutAcesso.tsx` usa duas colunas iguais a partir de `md`. O painel institucional ocupa toda a coluna esquerda com o gradiente histórico `linear-gradient(145deg, #083e38, #087f68)` nos dois temas. A variante institucional de `MarcaYFC` exibe o emblema de 80 px e o nome completo. Abaixo de `md`, o layout usa uma coluna com a marca compacta junto ao alternador de tema. Os formulários compartilham uma superfície opaca com borda e sombra de `theme.glass`. O favicon `public/favicon-yfc-32.png` foi gerado do emblema oficial de 120 × 120 px com redimensionamento bicúbico em PowerShell e `System.Drawing`, preservando o canal alfa. Veja o roteiro em `frontend/VALIDACAO_VISUAL.md`.
 
-- `Acesso.tsx`: aceita e-mail sintaticamente válido e senha não vazia após trim, limpa a senha e chama `onEntrar`. Não verifica identidade ou credenciais.
-- `Cadastro.tsx` e `utils/validacaoAcesso.ts`: nome não vazio após trim, e-mail validado por expressão regular, senha com pelo menos oito caracteres após trim e confirmação exatamente igual à senha original. Redireciona para acesso com e-mail no estado de navegação; não cria conta.
-- As telas avisam explicitamente que são demonstrativas e solicitam senha fictícia. `CampoSenha.tsx` permite mostrar/ocultar a senha.
-- Etapa 7.1: a API independente em `backend/` expõe `GET /health` e o envelope JSON `{ erro: { codigo, mensagem } }` para 404 e 500. As entradas Node e Workers foram verificadas por HTTP. O Worker executou localmente em workerd com a compatibilidade Node.js desativada. O frontend segue com sessão em memória. A integração de autenticação, persistência e propriedade dos dados é posterior. Veja [backend/README.md](../backend/README.md).
-- O único armazenamento persistente identificado em `src` é a preferência `yfc-tema`. Senhas permanecem transitoriamente em estado de componente, sem gravação ou transmissão identificada no código examinado. Isso não constitui garantia sobre extensões, navegador ou infraestrutura externa.
+- Acesso e cadastro mantêm as validações locais e usam `signInWithPassword` e `signUp`. Quando o cadastro retorna sem sessão, a tela orienta a confirmar o e-mail. A saída usa `signOut` no escopo local.
+- `useSessao` acompanha a sessão inicial e as mudanças publicadas pelo SDK. O painel refaz a consulta à API ao renovar o token e cancela a consulta anterior. A versão da conta controla o ciclo de vida dos reducers, preservados na renovação de token da mesma conta.
+- A API responde separadamente a uma sessão rejeitada e a uma falha de consulta. O CORS de `/api/v1/me` autoriza somente origens em `FRONTEND_ORIGINS`. Consulte [backend/README.md](../backend/README.md).
+- O SDK gerencia a persistência da sessão. A senha permanece no estado do formulário até o envio ao Supabase Auth por HTTPS. Os dados financeiros continuam em memória e a preferência de tema usa `yfc-tema`.
 
 ## Riscos técnicos e de segurança
 
@@ -111,13 +114,12 @@ Os impactos abaixo registram limites e riscos técnicos da auditoria inicial. El
 
 | Impacto | Constatação e consequência | Evidência |
 | --- | --- | --- |
-| Alto para uso real | Sessão é booleano no cliente. A API inicial expõe apenas saúde e ainda não autentica ou autoriza operações financeiras. | `App.tsx`, `Acesso.tsx`, `backend/src/app.ts` |
-| Alto | Transações somem ao recarregar/sair; não há recuperação ou backup financeiro identificado | `App.tsx` |
+| Alto para uso real | A API autentica a consulta de identidade. Operações financeiras ainda executam em memória e aguardam autorização por usuário na Data API | `Painel.tsx`, `backend/src/app.ts` |
+| Alto | Transações somem ao recarregar/sair; não há recuperação ou backup financeiro identificado | `Painel.tsx` |
 | Corrigido | Valores e totais usam centavos inteiros seguros, sem frações de centavo; limites validados antes da atualização | `utils/dinheiro.ts`, `utils/transacoes.ts` |
-| Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `App.tsx` |
+| Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `Painel.tsx` |
 | Médio | Validação concentrada na interface; data só é verificada como não vazia nos handlers; tipo usa cast, não validação de execução | `Transacoes.tsx` |
 | Corrigido no estado financeiro | Operações validam coerência de sinal e tipo antes de aceitar o estado | `utils/transacoes.ts` |
-| Médio | README anuncia stack não implementada; distinguir a intenção full stack do estágio demonstrativo atual | `README.md` |
 
 Não foram identificadas configurações de CI, monitoramento, políticas de backup ou infraestrutura de produção nos arquivos examinados. Não houve auditoria de dependências contra bases de vulnerabilidades, análise do histórico Git ou validação de TLS, headers, CORS e ambiente publicado; não se afirma ausência de vulnerabilidades ou segredos no histórico. `.gitignore` exclui `.env` e variantes, mas isso não comprova ausência de segredos já versionados.
 

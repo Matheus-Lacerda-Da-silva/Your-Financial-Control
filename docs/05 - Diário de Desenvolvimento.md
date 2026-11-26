@@ -1,5 +1,17 @@
 # Diário de Desenvolvimento
 
+## 2026-11-26 — Autenticação do frontend com Supabase
+
+Os formulários existentes passaram a usar cadastro e login reais, com mensagem de confirmação de e-mail quando o cadastro retorna sem sessão. O SDK restaura a sessão e renova o token. O frontend consulta `GET /api/v1/me` antes de exibir o conteúdo do painel, descarta consultas anteriores ao trocar de token ou conta e mantém mensagens distintas para sessão rejeitada e API indisponível. O CORS usa a lista `FRONTEND_ORIGINS`.
+
+O painel descarta os registros em memória ao sair ou trocar de conta e os preserva ao renovar o token da mesma conta. Passaram 62 testes no frontend e 10 no backend, além do lint do frontend, typecheck e build de ambos. O Vite avisou que o bundle principal tem 516,30 kB.
+
+Na validação manual relatada pelo usuário, passaram o cadastro real, o recebimento do e-mail e a confirmação da conta, o bloqueio com senha incorreta, o login com senha correta, o acesso ao dashboard e o logout. Uma transação fictícia criada antes do logout foi descartada ao entrar novamente, conforme esperado para dados em memória.
+
+A primeira tentativa de cadastro retornou `ERR_NAME_NOT_RESOLVED` devido à URL ilustrativa do Supabase. A correção em `frontend/.env.local` e o reinício do Vite resolveram o problema sem alteração de código.
+
+Na revisão final, a revalidação do token passou a preservar os formulários da conta já confirmada. O envio do JWT agora exige HTTPS fora de loopback. Passaram 64 testes do frontend, 10 do backend e a regressão em Chrome headless com respostas simuladas. Para repetir a regressão em `frontend/`, execute `node --test tests/renovacao.browser.mjs`. Defina `YFC_CHROME_PATH` se o Chrome estiver em outro caminho.
+
 ## 2026-11-26 — Integração inicial do backend com Supabase Auth
 
 O Hono passou a validar o token de acesso via `auth.getUser(token)` com a chave publicável e a devolver apenas o ID em `GET /api/v1/me`. O middleware retorna 401 quando a autenticação está ausente ou é rejeitada, 500 quando a configuração local é inválida e 502 quando a consulta ao Supabase falha. `GET /health` continua pública e independente da configuração.

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>Regressão de renovação da sessão</title>
+<div id="root"></div>
+<script type="module">
+  import { createElement as h } from 'react'
+  import { flushSync } from 'react-dom'
+  import { createRoot } from 'react-dom/client'
+  import { MemoryRouter } from 'react-router-dom'
+  import Painel from '../src/Painel'
+  import TemaProvider from '../src/theme/TemaProvider'
+
+  const requisicoes = new Map()
+  const fetchOriginal = window.fetch
+  window.fetch = (url, opcoes) => {
+    if (url.pathname !== '/api/v1/me') return fetchOriginal(url, opcoes)
+    const token = opcoes.headers.Authorization
+    return new Promise(resolve => requisicoes.set(token, resolve))
+  }
+
+  const root = createRoot(document.querySelector('#root'))
+  const auth = { signOut: async () => ({ error: null }) }
+  const campoDescricao = () => document.querySelector('form[aria-labelledby="nova-transacao"] input[type="text"]')
+  const renderizar = versaoToken => flushSync(() => root.render(
+    h(TemaProvider, null, h(MemoryRouter, { initialEntries: ['/transacoes'] },
+      h(Painel, { auth, sessao: { access_token: String(versaoToken), user: { id: 'conta-teste' } }, versaoToken }),
+    )),
+  ))
+
+  async function aguardar(condicao) {
+    for (let tentativa = 0; tentativa < 200; tentativa++) {
+      const resultado = condicao()
+      if (resultado) return resultado
+      await new Promise(resolve => setTimeout(resolve, 20))
+    }
+    throw new Error('Condição esperada não ocorreu.')
+  }
+
+  function conferir(condicao, mensagem) {
+    if (!condicao) throw new Error(mensagem)
+  }
+
+  const confirmar = versao => requisicoes.get(`Bearer ${versao}`)(Response.json({ id: 'conta-teste' }))
+  const relatar = mensagem => fetchOriginal('/__resultado-renovacao', { method: 'POST', body: mensagem })
+
+  try {
+    renderizar(1)
+    conferir(!campoDescricao(), 'O primeiro acesso deve aguardar a API.')
+    confirmar(1)
+    const campo = await aguardar(campoDescricao)
+    const rascunho = 'Rascunho de teste'
+    flushSync(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(campo, rascunho)
+      campo.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+
+    renderizar(2)
+    conferir(campoDescricao() === campo && campo.value === rascunho, 'O formulário mudou durante a renovação.')
+    confirmar(2)
+    await aguardar(() => !document.body.textContent.includes('Verificando sua sessão'))
+    conferir(campoDescricao() === campo && campo.value === rascunho, 'O rascunho sumiu após a renovação.')
+
+    renderizar(3)
+    requisicoes.get('Bearer 3')(new Response(null, { status: 401 }))
+    await aguardar(() => !campoDescricao())
+    await relatar('ok')
+  } catch (erro) {
+    await relatar(erro.message)
+  }
+</script>
+</html>

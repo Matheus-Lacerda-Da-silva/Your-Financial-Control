@@ -72,7 +72,7 @@ Verificações executadas: 44 testes aprovados, TypeScript e build aprovados; li
 
 Usar somente dados fictícios. Os itens abaixo são roteiro, não comprovação de validação no navegador.
 
-- Entrar na demonstração, acessar Metas pela sidebar e diretamente `/metas`; sem sessão, conferir redirecionamento ao acesso. Conferir item ativo e fechamento do menu móvel.
+- Entrar com a conta de teste, acessar Metas pela sidebar e diretamente `/metas`. Sem sessão, conferir o redirecionamento ao acesso. Conferir item ativo e fechamento do menu móvel.
 - Conferir estado vazio. Criar Viagem, objetivo R$ 12.000, reserva zero, 01/01/2027–31/12/2027: referência deve mostrar 12 meses de R$ 1.000. Se a data atual já ultrapassou o prazo, usar outro ano futuro.
 - Para aportes, criar outra meta com início hoje e prazo alguns meses adiante. Registrar valores menores que o restante, conferir acumulado, percentual e planejamento restante; referência deve permanecer igual. Os títulos/descrições devem explicar claramente quanto guardar desde o início e quanto falta guardar agora.
 - Testar R$ 100 em três meses, dois centavos em três meses, reserva inicial, conclusão integral e valores longos. Conferir soma exata, centavos extras nos primeiros meses e parcelas zero.
@@ -172,7 +172,7 @@ Os dados financeiros continuam apenas em memória. Recarregar apaga as transaç�
 
 Implementação de 2026-11-11 com testes de funções/reducer e compilação executados. Este roteiro de interação ainda não foi executado no navegador e depende da validação visual e funcional do usuário.
 
-- Iniciar sessão fictícia e abrir Categorias: lista vazia, sem categorias padrão, formulário Nome → Tipo → Cadastrar sempre visível. Conferir estado vazio e aviso de dados temporários.
+- Entrar com a conta de teste e abrir Categorias. Conferir lista vazia, formulário Nome → Tipo → Cadastrar e aviso de dados temporários.
 - Criar “Salário” como Receita e “Alimentação” como Despesa. Nome vazio ou somente espaços deve ser recusado; espaços externos e internos repetidos devem ser normalizados. “ SALÁRIO ” deve duplicar “Salário” no mesmo tipo; o mesmo nome no outro tipo pode existir. Acentos permanecem significativos.
 - Editar uma categoria sem vínculos: mudar nome e tipo; tentar duplicar outra categoria do tipo de destino. Em recusa, conferir alerta dentro do diálogo, campos preservados e lista intacta. Cancelar e Escape não devem salvar.
 - Criar receita e despesa em Transações: conferir que somente as categorias compatíveis aparecem. Trocar o tipo deve limpar a categoria sem selecionar outra, inclusive ao editar. Sem categorias do tipo escolhido, conferir orientação e link para Categorias, sem aceitar envio inválido. O link da edição deve informar que o rascunho será descartado.
@@ -184,7 +184,18 @@ Implementação de 2026-11-11 com testes de funções/reducer e compilação exe
 - Conferir contraste composto de texto normal (4,5:1), texto grande/controles essenciais (3:1), alvos de ação de pelo menos 44 px e fallback opaco ao desativar `@supports`. Categorias deve ter dois painéis com blur de 8 px, sem filtros internos ou animações novas.
 - Sair e entrar de novo, depois recarregar: categorias e transações devem iniciar vazias. Preferência de tema continua independente. Usar apenas dados fictícios.
 
-## Acesso e cadastro demonstrativos
+## Acesso e cadastro com Supabase
+
+**Resultados confirmados pelo usuário no navegador**
+
+- [x] Cadastro real, recebimento do e-mail e confirmação da conta.
+- [x] Login bloqueado com senha incorreta e concluído com senha correta.
+- [x] Acesso ao dashboard após login e logout concluído.
+- [x] Transação fictícia descartada após logout e novo login.
+
+A primeira tentativa de cadastro apresentou `ERR_NAME_NOT_RESOLVED` porque o frontend usava a URL ilustrativa do Supabase. Corrigir `frontend/.env.local` e reiniciar o Vite resolveu o problema sem alteração de código.
+
+**Histórico visual e verificações complementares**
 
 Etapa 6 — 59 testes, lint, build e verificação de espaços do Git passaram. O build mantém o aviso sobre o bundle principal acima de 500 kB. O favicon de 32 × 32 px tem 2.225 bytes e canal alfa. Na prévia de 16 × 16 px, a silhueta esmeralda é reconhecível e as letras perdem definição.
 
@@ -201,8 +212,10 @@ Refinamento do painel institucional — Chrome headless verificou 28 combinaçõ
 - Enviar acesso vazio ou com e-mail inválido e conferir mensagens nos campos.
 - Conferir que mostrar/ocultar senha não envia o formulário.
 - No cadastro, testar nome vazio, e-mail inválido, senha curta, somente espaços e confirmação diferente.
-- Validar um cadastro fictício e conferir o retorno ao acesso com o e-mail preenchido e a mensagem de demonstração.
-- Entrar com dados fictícios válidos e conferir o painel e suas rotas.
+- Conferir o aviso de confirmação e o destino do link de e-mail. Em ambiente sem confirmação obrigatória, conferir a entrada imediata.
+- Conferir `GET /api/v1/me` com status 200 na aba Rede, sem copiar o token.
+- Abrir uma rota interna diretamente e recarregar. A restauração deve manter a conta conectada e os dados financeiros devem começar vazios.
+- Testar a troca de conta e conferir que transações, categorias, metas e aportes começam vazios.
+- Parar a API local e recarregar o painel autenticado. Conferir o aviso de indisponibilidade. Reiniciar a API e usar **Tentar novamente** para voltar ao painel.
 - Clicar em Sair e conferir o retorno ao acesso. Voltar pelo navegador não deve reabrir o painel sem sessão.
-- Recarregar o painel e conferir que volta ao acesso sem transações ou sessão.
 - Conferir que nenhuma senha é adicionada a localStorage, sessionStorage ou à URL.

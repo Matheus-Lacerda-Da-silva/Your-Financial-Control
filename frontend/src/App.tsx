@@ -1,115 +1,33 @@
-import { useReducer, useState } from 'react'
+import { Alert } from '@mui/material'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-
-import LayoutPrincipal from './layouts/LayoutPrincipal'
-
-import Inicio from './pages/Inicio'
-import Transacoes from './pages/Transacoes'
-import Categorias from './pages/Categorias'
+import LayoutAcesso from './layouts/LayoutAcesso'
 import Acesso from './pages/Acesso'
 import Cadastro from './pages/Cadastro'
-import Metas from './pages/Metas'
-import { aplicarAcaoMetas, criarEstadoMetas, reduzirMetas } from './utils/estadoMetas'
-import type { AcaoMetas } from './utils/estadoMetas'
+import Painel from './Painel'
+import { useSessao } from './hooks/useSessao'
+import { supabase } from './services/supabase'
 
-import type { TransacaoRegistrada } from './types/transacao'
-import { aplicarAcaoFinanceira, criarEstadoFinanceiro, reduzirEstadoFinanceiro, selecionarTransacoes } from './utils/estadoFinanceiro'
-import type { AcaoFinanceira } from './utils/estadoFinanceiro'
+export default function App() {
+  const { sessao, versaoConta, versaoToken } = useSessao()
 
-
-function App() {
-  const [sessaoDemo, setSessaoDemo] = useState(false)
-  const [estadoMetas, dispatchMetas] = useReducer(reduzirMetas, undefined, criarEstadoMetas)
-  const executarAcaoMetas = (acao: AcaoMetas): string | null => {
-    try {
-      aplicarAcaoMetas(estadoMetas, acao)
-      dispatchMetas(acao)
-      return null
-    } catch (erro) {
-      return erro instanceof Error ? erro.message : 'Não foi possível concluir a operação.'
-    }
-  }
-  const [estado, dispatch] = useReducer(reduzirEstadoFinanceiro, undefined, criarEstadoFinanceiro)
-  const transacoes = selecionarTransacoes(estado)
-
-  // Pré-valida para manter formulários abertos em caso de recusa.
-  // O reducer também valida a ação sobre o estado mais recente.
-  const executarAcao = (acao: AcaoFinanceira): string | null => {
-    try {
-      aplicarAcaoFinanceira(estado, acao)
-      dispatch(acao)
-      return null
-    } catch (erro) {
-      return erro instanceof Error ? erro.message : 'Não foi possível concluir a operação.'
-    }
+  if (!supabase) {
+    return <LayoutAcesso><Alert severity="error">O serviço de acesso precisa ser configurado.</Alert></LayoutAcesso>
   }
 
-  const cadastrarTransacao = (
-    novaTransacao: Omit<TransacaoRegistrada, 'id'>,
-  ) => {
-    const transacaoComId: TransacaoRegistrada = {
-      ...novaTransacao,
-      id: Date.now(),
-    }
-
-    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'cadastrar', transacao: transacaoComId } })
-  }
-
-  const excluirTransacao = (id: number) => {
-    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'excluir', id } })
-  }
-
-  const editarTransacao = (transacaoEditada: TransacaoRegistrada) => {
-    return executarAcao({ tipo: 'transacao', operacao: { tipo: 'editar', transacao: transacaoEditada } })
+  if (sessao === undefined) {
+    return <LayoutAcesso><Alert severity="info" role="status">Carregando sua sessão…</Alert></LayoutAcesso>
   }
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/acesso" element={sessaoDemo ? <Navigate to="/" replace /> : <Acesso onEntrar={() => setSessaoDemo(true)} />} />
-        <Route path="/cadastro" element={sessaoDemo ? <Navigate to="/" replace /> : <Cadastro />} />
-        <Route element={sessaoDemo ? <LayoutPrincipal onSair={() => {
-          setSessaoDemo(false)
-          dispatch({ tipo: 'limpar' })
-          dispatchMetas({ tipo: 'limpar' })
-        }} /> : <Navigate to="/acesso" replace />}>
-          <Route path="/metas" element={<Metas estado={estadoMetas} onExecutar={executarAcaoMetas} />} />
-          <Route
-            path="/"
-            element={<Inicio transacoes={transacoes} metas={estadoMetas.metas} aportes={estadoMetas.aportes} />}
-          />
-
-
-          <Route
-            path="/transacoes"
-            element={
-              <Transacoes
-                transacoes={transacoes}
-                categorias={estado.categorias}
-                erroFinanceiro={estado.erro}
-                onLimparErro={() => dispatch({ tipo: 'limparErro' })}
-                onCadastrarTransacao={cadastrarTransacao}
-                onExcluirTransacao={excluirTransacao}
-                onEditarTransacao={editarTransacao}
-              />
-            }
-          />
-
-
-          <Route path="/categorias" element={<Categorias
-            categorias={estado.categorias}
-            transacoes={estado.transacoes}
-            erro={estado.erro}
-            onLimparErro={() => dispatch({ tipo: 'limparErro' })}
-            onCadastrar={categoria => executarAcao({ tipo: 'categoria/cadastrar', categoria })}
-            onEditar={categoria => executarAcao({ tipo: 'categoria/editar', categoria })}
-            onExcluir={id => executarAcao({ tipo: 'categoria/excluir', id })}
-          />} />
-        </Route>
-        <Route path="*" element={<Navigate to={sessaoDemo ? '/' : '/acesso'} replace />} />
+        <Route path="/acesso" element={sessao ? <Navigate to="/" replace /> : <Acesso auth={supabase.auth} />} />
+        <Route path="/cadastro" element={sessao ? <Navigate to="/" replace /> : <Cadastro auth={supabase.auth} />} />
+        <Route path="*" element={sessao
+          ? <Painel key={versaoConta} sessao={sessao} versaoToken={versaoToken} auth={supabase.auth} />
+          : <Navigate to="/acesso" replace />}
+        />
       </Routes>
     </BrowserRouter>
   )
 }
-
-export default App

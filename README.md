@@ -4,8 +4,8 @@ Projeto de portfólio Full Stack Júnior para organização de finanças pessoai
 
 - Frontend em React, TypeScript, Vite e Material UI, com publicação prevista no Cloudflare Pages.
 - API REST em Hono e TypeScript, com Node.js no desenvolvimento e Cloudflare Workers na publicação.
-- Supabase PostgreSQL, Auth e Data API por HTTPS. Na integração, o Hono usará o SDK oficial e o JWT do usuário. A RLS protege os registros por conta.
+- Supabase Auth por HTTPS com o SDK oficial no frontend e no Hono. PostgreSQL e Data API com RLS fazem parte da integração financeira prevista.
 
-A interface atual funciona em modo demonstrativo. O Hono oferece `GET /health`. O SQL de categorias está preparado localmente e aguarda validação e aplicação autorizadas.
+O frontend usa autenticação real e confirma a identidade em `GET /api/v1/me`. O Hono também oferece `GET /health`. Os dados financeiros ficam em memória e a migration de categorias aguarda aplicação autorizada.
 
 Consulte [frontend](frontend/README.md), [backend](backend/README.md) e [visão geral](docs/00%20-%20Vis%C3%A3o%20Geral.md) para executar o projeto e acompanhar o MVP.

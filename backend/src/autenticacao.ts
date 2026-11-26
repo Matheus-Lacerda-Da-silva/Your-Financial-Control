@@ -4,7 +4,7 @@ import { criarClienteSupabase } from './supabase.ts'
 import type { ConfiguracaoSupabase } from './supabase.ts'
 
 export type AmbienteApi = {
-  Bindings: ConfiguracaoSupabase
+  Bindings: ConfiguracaoSupabase & { FRONTEND_ORIGINS?: string }
   Variables: { usuarioId: string }
 }
 

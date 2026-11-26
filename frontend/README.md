@@ -1,10 +1,18 @@
 # YFC — Frontend
 
-A interface React, TypeScript, Vite e Material UI está em modo demonstrativo. A publicação está prevista no Cloudflare Pages. Na primeira integração, o frontend usará Supabase Auth para a sessão e enviará o JWT à API Hono para operar categorias.
-
-Interface de controle financeiro com React, TypeScript, Material UI e Vite.
+Interface de controle financeiro com React, TypeScript, Vite e Material UI. O Supabase Auth gerencia cadastro, acesso e sessão. A API Hono confirma a identidade em `GET /api/v1/me`. A publicação está prevista no Cloudflare Pages.
 
 ## Executar
+
+Copie `.env.example` para `.env.local` e configure:
+
+| Variável | Valor |
+| --- | --- |
+| `VITE_SUPABASE_URL` | URL HTTPS do mesmo projeto Supabase configurado no backend |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Chave publicável do projeto, com prefixo `sb_publishable_` |
+| `VITE_API_URL` | Origem da API, por exemplo `http://127.0.0.1:3000` |
+
+Inicie o backend com a origem exata do Vite em `FRONTEND_ORIGINS`. O cadastro usa `/acesso` na origem atual como destino de confirmação. Para testar o link de e-mail, a configuração existente do projeto Supabase deve permitir esse endereço, por exemplo `http://localhost:5173/acesso`.
 
 ```sh
 npm ci
@@ -21,7 +29,7 @@ npm run lint
 npm test
 ```
 
-O roteiro de conferência de telas, temas e operações está em [VALIDACAO_VISUAL.md](./VALIDACAO_VISUAL.md). Os testes das validações de cadastro usam o runner nativo do Node.js com suporte a TypeScript (Node 22.6 ou superior).
+O roteiro de conferência de telas, temas e operações está em [VALIDACAO_VISUAL.md](./VALIDACAO_VISUAL.md). Os testes usam o runner nativo do Node.js com suporte a TypeScript. Os testes de identidade da API usam respostas simuladas.
 
 ## Organização
 
@@ -29,13 +37,15 @@ O roteiro de conferência de telas, temas e operações está em [VALIDACAO_VISU
 - `src/layouts`: estrutura responsiva, cabeçalho e área principal.
 - `src/components`: navegação e componentes reutilizáveis.
 - `src/pages`: acesso, cadastro, visão geral, transações e página informativa de categorias.
+- `src/hooks/useSessao.ts` e `src/services`: sessão do SDK e consulta de identidade ao Hono.
+- `src/Painel.tsx`: validação da identidade e estado financeiro da conta ativa.
 - `src/types`: modelo compartilhado de transação.
 - `src/utils`: formatação e data local.
 
 A navegação usa menu temporário abaixo de 900 px e barra lateral permanente em telas maiores. Os formulários usam colunas adaptáveis; as transações são cartões abaixo de 600 px e tabela nas demais larguras.
 
-## Limites atuais
+## Sessão e dados financeiros
 
-O acesso inicial direciona para `/acesso`, com link para `/cadastro`. O cadastro apenas valida os campos e retorna ao acesso; não cria uma conta. O acesso aceita um e-mail válido e uma senha fictícia não vazia para abrir a demonstração. Senhas não são gravadas em armazenamento nem enviadas pela rede.
+O SDK restaura a sessão ao recarregar e renova o token. Se o cadastro exigir confirmação, a tela orienta a conferir o e-mail. O painel aguarda a sessão inicial e verifica o token na API. Um `401` orienta a entrar novamente. Em caso de falha temporária, o painel oferece uma nova tentativa e mantém a sessão do Supabase ativa.
 
-A sessão demonstrativa e as transações ficam apenas na memória e são apagadas ao recarregar ou sair. As rotas do painel exigem essa sessão local, mas isso não representa uma proteção de autenticação real. Não há API, autenticação ou banco de dados implementados. O gerenciamento de categorias ainda não está disponível.
+Transações, categorias, metas e aportes ficam em memória. Os registros são descartados ao recarregar, sair ou trocar de conta e são preservados durante a renovação do token da mesma conta.

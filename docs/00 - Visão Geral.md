@@ -2,7 +2,7 @@
 
 ## Direção atual do MVP
 
-O Your Financial Control é um projeto de portfólio Full Stack Júnior. Use KISS e YAGNI para entregar uma interface funcional e publicada. A API já oferece uma rota protegida pelo Supabase Auth. O frontend continua em modo demonstrativo e a migration de categorias aguarda aplicação. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
+O Your Financial Control é um projeto de portfólio Full Stack Júnior. O frontend usa Supabase Auth e confirma a identidade em uma rota protegida da API Hono. Os registros financeiros ficam em memória e a migration de categorias aguarda aplicação. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
 
 ## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
 
@@ -37,7 +37,7 @@ Auditoria inicial: 2026-11-09. Escopo: código e arquivos locais; sem consulta a
 
 ## Objetivo e estado atual
 
-Aplicação web para gerenciamento de finanças pessoais: registrar receitas e despesas e acompanhar saldo e histórico. A versão encontrada é um frontend demonstrativo, sem persistência financeira nem autenticação real. Não deve ser tratada como sistema financeiro pronto para uso real.
+Aplicação web para registrar receitas e despesas e acompanhar saldo e histórico. A autenticação usa o Supabase Auth e o estado financeiro é temporário.
 
 O projeto está em estágio inicial e será desenvolvido progressivamente. A prioridade é preservar o código e os fluxos existentes, entregando melhorias pequenas e verificáveis. O [[04 - Roadmap]] acompanha a API inicial, o banco de desenvolvimento e as etapas de integração e autenticação.
 
@@ -60,16 +60,16 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 
 | Recurso | Estado | Evidência |
 | --- | --- | --- |
-| Criar, listar, editar e excluir transações em memória | Implementado no escopo demonstrativo | `frontend/src/App.tsx`, `frontend/src/pages/Transacoes.tsx` |
+| Criar, listar, editar e excluir transações em memória | Implementado no escopo demonstrativo | `frontend/src/Painel.tsx`, `frontend/src/pages/Transacoes.tsx` |
 | Receitas, despesas, saldo e cinco registros mais recentemente cadastrados | Implementado | `frontend/src/pages/Inicio.tsx` |
 | Layout responsivo, menu lateral, cartões no celular e tabela em telas maiores | Implementado no código; validação visual não executada nesta auditoria | `frontend/src/layouts/LayoutPrincipal.tsx`, `frontend/src/components/Sidebar.tsx`, `frontend/src/pages/Transacoes.tsx` |
 | Tema claro/escuro com preferência salva | Implementado | `frontend/src/theme/TemaProvider.tsx` |
-| Acesso e cadastro | Parcial: formulários demonstrativos e validação local; nenhuma conta criada | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
+| Acesso e cadastro | Integrados ao Supabase Auth, com restauração de sessão e suporte à confirmação por e-mail | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
 | Categorias de Receita/Despesa | CRUD em memória com IDs, normalização, duplicidade por nome/tipo e contagem de vínculos; validação interativa pendente | `frontend/src/pages/Categorias.tsx`, `frontend/src/utils/categorias.ts` |
 | Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
 | Backend REST | API inicial com rota de saúde e erros JSON | `backend/src/app.ts`, `backend/src/node.ts` |
 | Banco PostgreSQL | Modelo inicial aplicado no Supabase Cloud de desenvolvimento | [[02 - Banco de Dados]] |
-| JWT e isolamento por usuário na aplicação | Validação do JWT implementada em `/api/v1/me`. Isolamento das rotas financeiras pendente | `backend/src/autenticacao.ts`, [[04 - Roadmap]] |
+| JWT e isolamento por usuário na aplicação | Identidade verificada em `/api/v1/me` e estado em memória vinculado à conta ativa. Isolamento das futuras rotas financeiras pendente | `frontend/src/Painel.tsx`, `backend/src/autenticacao.ts` |
 
 ## Qualidade e limites
 

@@ -13,6 +13,8 @@ npm.cmd run dev
 
 Para usar a rota protegida, copie `.env.example` para `.env` antes de iniciar. Preencha `SUPABASE_URL` com a URL HTTPS do projeto e `SUPABASE_PUBLISHABLE_KEY` com a chave publicável, que começa com `sb_publishable_`. Os scripts `dev` e `start` carregam o arquivo quando presente.
 
+Para chamadas do frontend no navegador, informe em `FRONTEND_ORIGINS` as origens exatas separadas por vírgulas, sem barra final. Por exemplo, use `FRONTEND_ORIGINS=http://localhost:5173` se o Vite for aberto nesse endereço. Reinicie o backend após mudar o arquivo. O CORS de `GET /api/v1/me` permite o cabeçalho `Authorization` para as origens configuradas. A lista vazia deixa o acesso via CORS desabilitado. No Wrangler local, use a mesma variável em `.dev.vars`.
+
 O servidor escuta em `127.0.0.1:3000`. Para mudar a porta, defina `$env:PORT` antes de iniciar. O modo de desenvolvimento reinicia o servidor quando os arquivos mudam.
 
 ```powershell

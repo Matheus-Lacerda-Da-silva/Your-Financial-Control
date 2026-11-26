@@ -8,13 +8,14 @@ if (!Number.isInteger(porta) || porta < 1 || porta > 65535) {
 }
 
 const app = criarApp()
-const configuracaoSupabase = {
+const configuracao = {
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
+  FRONTEND_ORIGINS: process.env.FRONTEND_ORIGINS,
 }
 
 serve({
-  fetch: requisicao => app.fetch(requisicao, configuracaoSupabase),
+  fetch: requisicao => app.fetch(requisicao, configuracao),
   hostname: '127.0.0.1',
   port: porta,
 }, endereco => {
