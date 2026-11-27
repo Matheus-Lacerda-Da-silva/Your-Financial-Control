@@ -5,7 +5,7 @@ export type ConfiguracaoSupabase = {
   SUPABASE_PUBLISHABLE_KEY?: string
 }
 
-export function criarClienteSupabase(config: ConfiguracaoSupabase, fetchAuth?: typeof fetch) {
+export function criarClienteSupabase(config: ConfiguracaoSupabase, buscar?: typeof fetch, token?: string) {
   const url = config.SUPABASE_URL?.trim()
   const chave = config.SUPABASE_PUBLISHABLE_KEY?.trim()
 
@@ -19,6 +19,7 @@ export function criarClienteSupabase(config: ConfiguracaoSupabase, fetchAuth?: t
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-    global: { fetch: fetchAuth },
+    global: { fetch: buscar },
+    ...(token ? { accessToken: async () => token } : {}),
   })
 }

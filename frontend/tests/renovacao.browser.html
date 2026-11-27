@@ -12,19 +12,23 @@
   import TemaProvider from '../src/theme/TemaProvider'
 
   const requisicoes = new Map()
+  const requisicoesCategorias = []
   const fetchOriginal = window.fetch
   window.fetch = (url, opcoes) => {
-    if (url.pathname !== '/api/v1/me') return fetchOriginal(url, opcoes)
     const token = opcoes.headers.Authorization
-    return new Promise(resolve => requisicoes.set(token, resolve))
+    if (url.pathname === '/api/v1/me') return new Promise(resolve => requisicoes.set(token, resolve))
+    if (url.pathname.startsWith('/api/v1/categorias')) {
+      return new Promise(resolve => requisicoesCategorias.push({ token, ...opcoes, resolve }))
+    }
+    throw new Error('Requisição inesperada para ' + url.pathname)
   }
 
   const root = createRoot(document.querySelector('#root'))
   const auth = { signOut: async () => ({ error: null }) }
   const campoDescricao = () => document.querySelector('form[aria-labelledby="nova-transacao"] input[type="text"]')
-  const renderizar = versaoToken => flushSync(() => root.render(
-    h(TemaProvider, null, h(MemoryRouter, { initialEntries: ['/transacoes'] },
-      h(Painel, { auth, sessao: { access_token: String(versaoToken), user: { id: 'conta-teste' } }, versaoToken }),
+  const renderizar = (versaoToken, id = 'conta-teste', pagina = '/transacoes') => flushSync(() => root.render(
+    h(TemaProvider, null, h(MemoryRouter, { key: pagina, initialEntries: [pagina] },
+      h(Painel, { key: id, auth, sessao: { access_token: String(versaoToken), user: { id } }, versaoToken }),
     )),
   ))
 
@@ -41,29 +45,142 @@
     if (!condicao) throw new Error(mensagem)
   }
 
-  const confirmar = versao => requisicoes.get(`Bearer ${versao}`)(Response.json({ id: 'conta-teste' }))
+  const confirmar = (versao, id = 'conta-teste') => requisicoes.get(`Bearer ${versao}`)(Response.json({ id }))
   const relatar = mensagem => fetchOriginal('/__resultado-renovacao', { method: 'POST', body: mensagem })
+  const buscarChamada = (versao, method = 'GET', indice = 0) => aguardar(() =>
+    requisicoesCategorias.filter(r => r.token === `Bearer ${versao}` && r.method === method)[indice])
+  const categoria = (id, nome) => ({ id, nome, tipo: 'receita' })
+  const formularioCategoria = () => document.querySelector('form[aria-labelledby="nova-categoria"]')
+  const preencher = (campo, valor) => flushSync(() => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(campo, valor)
+    campo.dispatchEvent(new Event('input', { bubbles: true }))
+  })
 
   try {
     renderizar(1)
     conferir(!campoDescricao(), 'O primeiro acesso deve aguardar a API.')
     confirmar(1)
+    const leituraInicial = await buscarChamada(1)
+    leituraInicial.resolve(Response.json({ categorias: [] }))
     const campo = await aguardar(campoDescricao)
     const rascunho = 'Rascunho de teste'
-    flushSync(() => {
-      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(campo, rascunho)
-      campo.dispatchEvent(new Event('input', { bubbles: true }))
-    })
+    preencher(campo, rascunho)
 
     renderizar(2)
     conferir(campoDescricao() === campo && campo.value === rascunho, 'O formulário mudou durante a renovação.')
     confirmar(2)
+    const leituraRenovada = await buscarChamada(2)
+    leituraRenovada.resolve(Response.json({ categorias: [] }))
     await aguardar(() => !document.body.textContent.includes('Verificando sua sessão'))
     conferir(campoDescricao() === campo && campo.value === rascunho, 'O rascunho sumiu após a renovação.')
 
     renderizar(3)
     requisicoes.get('Bearer 3')(new Response(null, { status: 401 }))
     await aguardar(() => !campoDescricao())
+
+    renderizar(4, 'a', '/categorias')
+    confirmar(4, 'a')
+    const leituraA = await buscarChamada(4)
+    renderizar(5, 'b', '/categorias')
+    confirmar(5, 'b')
+    const leituraB = await buscarChamada(5)
+    conferir(leituraA.signal.aborted, 'A leitura de A não foi cancelada.')
+    leituraB.resolve(Response.json({ categorias: [categoria('b1', 'Categoria B')] }))
+    leituraA.resolve(Response.json({ categorias: [categoria('a1', 'Categoria A')] }))
+    const texto = () => document.body.textContent
+    await aguardar(() => texto().includes('Categoria B'))
+    conferir(!texto().includes('Categoria A'), 'A resposta tardia de A apareceu em B.')
+
+    const campoNome = () => formularioCategoria().querySelector('input[type="text"]')
+    const botaoCadastrar = () => formularioCategoria().querySelector('button[type="submit"]')
+    const enviarCategoria = () => flushSync(() => formularioCategoria().requestSubmit())
+    const rascunhoCategoria = 'Gravação incerta'
+    preencher(campoNome(), rascunhoCategoria)
+    enviarCategoria()
+    const gravacao = await buscarChamada(5, 'POST')
+    conferir(botaoCadastrar().disabled, 'Cadastro ficou disponível durante a gravação.')
+    gravacao.resolve(new Response(null, { status: 502 }))
+    const reconciliacao = await buscarChamada(5, 'GET', 1)
+    conferir(botaoCadastrar().disabled, 'Cadastro liberado antes da reconciliação.')
+    reconciliacao.resolve(new Response(null, { status: 502 }))
+    await aguardar(() => texto().includes('Não foi possível confirmar a gravação'))
+    conferir(botaoCadastrar().disabled && campoNome().value === rascunhoCategoria,
+      'A falha de reconciliação liberou a gravação ou descartou o rascunho.')
+    const botaoTentar = [...document.querySelectorAll('button')].find(b => b.textContent === 'Tentar novamente')
+    botaoTentar.click()
+    const novaLeitura = await buscarChamada(5, 'GET', 2)
+    novaLeitura.resolve(Response.json({ categorias: [categoria('b2', rascunhoCategoria)] }))
+    await aguardar(() => !botaoCadastrar().disabled)
+    conferir(texto().includes(rascunhoCategoria), 'A nova leitura não aplicou o estado confirmado.')
+
+    preencher(campoNome(), 'Gravação antiga')
+    enviarCategoria()
+    const gravacaoAntiga = await buscarChamada(5, 'POST', 1)
+    renderizar(6, 'b', '/categorias')
+    confirmar(6, 'b')
+    const leituraAtual = await buscarChamada(6)
+    conferir(!gravacaoAntiga.signal.aborted, 'A renovação cancelou a espera pela gravação da mesma conta.')
+    const catalogo = [categoria('b3', 'Lista atualizada'), categoria('b5', 'Nome liberado')]
+    leituraAtual.resolve(Response.json({ categorias: catalogo }))
+    gravacaoAntiga.resolve(Response.json(categoria('b4', 'Resposta antiga'), { status: 201 }))
+    const depoisDaGravacao = await buscarChamada(6, 'GET', 1)
+    depoisDaGravacao.resolve(Response.json({ categorias: catalogo }))
+    await aguardar(() => texto().includes('Lista atualizada'))
+    conferir(!texto().includes('Resposta antiga') && campoNome().value === 'Gravação antiga',
+      'A resposta da sessão antiga alterou a lista ou o rascunho.')
+
+    const editarCategoria = await aguardar(() => document.querySelector('button[aria-label^="Editar categoria: Lista atualizada"]:enabled'))
+    editarCategoria.click()
+    const dialogo = await aguardar(() => document.querySelector('[role="dialog"]'))
+    preencher(dialogo.querySelector('input[type="text"]'), 'Nome liberado')
+    dialogo.querySelector('form').requestSubmit()
+    const edicao = await buscarChamada(6, 'PATCH')
+    conferir(JSON.parse(edicao.body).nome === 'Nome liberado', 'A duplicata local bloqueou o PATCH.')
+    edicao.resolve(Response.json(categoria('b3', 'Nome liberado')))
+    await aguardar(() => !document.querySelector('[role="dialog"]'))
+    conferir(!texto().includes('Lista atualizada'), 'A edição confirmada não foi aplicada.')
+
+    renderizar(7, 'b', '/categorias')
+    confirmar(7, 'b')
+    const leituraParaExcluir = await buscarChamada(7)
+    leituraParaExcluir.resolve(Response.json({ categorias: [catalogo[0]] }))
+    const excluirCategoria = await aguardar(() => document.querySelector('button[aria-label^="Excluir categoria: Lista atualizada"]:enabled'))
+    excluirCategoria.click()
+    const excluir = await aguardar(() => [...document.querySelectorAll('[role="dialog"] button')].find(b => b.textContent === 'Excluir'))
+    excluir.click()
+    const exclusaoPendente = await buscarChamada(7, 'DELETE')
+    renderizar(8, 'b', '/categorias')
+    confirmar(8, 'b')
+    const leituraAntesDaExclusao = await buscarChamada(8)
+    leituraAntesDaExclusao.resolve(Response.json({ categorias: [catalogo[0]] }))
+    document.querySelector('a[href="/transacoes"]').click()
+    const descricao = await aguardar(campoDescricao)
+    const formularioTransacao = descricao.closest('form')
+    preencher(descricao, 'Tentativa durante exclusão')
+    preencher(formularioTransacao.querySelector('input[type="number"]'), '10')
+    const seletor = formularioTransacao.querySelectorAll('[role="combobox"]')[1]
+    seletor.dispatchEvent(new MouseEvent('mousedown', { button: 0, bubbles: true }))
+    const opcao = await aguardar(() => [...document.querySelectorAll('[role="option"]')].find(o => o.textContent === 'Lista atualizada'))
+    opcao.click()
+    await aguardar(() => seletor.textContent === 'Lista atualizada')
+    flushSync(() => formularioTransacao.requestSubmit())
+    await aguardar(() => texto().includes('Aguarde a operação pendente nesta categoria.'))
+    conferir(!texto().includes('Transação cadastrada com sucesso!'), 'Um lançamento foi vinculado durante a exclusão.')
+    exclusaoPendente.resolve(new Response(null, { status: 502 }))
+    const leituraDepoisDaExclusao = await buscarChamada(8, 'GET', 1)
+    leituraDepoisDaExclusao.resolve(Response.json({ categorias: [catalogo[0]] }))
+    await aguardar(() => !formularioTransacao.querySelector('button[type="submit"]').disabled)
+    preencher(descricao, 'Tentativa após resultado incerto')
+    flushSync(() => formularioTransacao.requestSubmit())
+    await aguardar(() => texto().includes('Aguarde a operação pendente nesta categoria.'))
+    conferir(descricao.value === 'Tentativa após resultado incerto' && !texto().includes('Transação cadastrada com sucesso!'),
+      'A leitura inconclusiva liberou um vínculo ou apagou o rascunho.')
+
+    renderizar(9, 'b', '/categorias')
+    confirmar(9, 'b')
+    const leituraConfirmandoExclusao = await buscarChamada(9)
+    leituraConfirmandoExclusao.resolve(Response.json({ categorias: [] }))
+    await aguardar(() => seletor.textContent !== 'Lista atualizada')
     await relatar('ok')
   } catch (erro) {
     await relatar(erro.message)

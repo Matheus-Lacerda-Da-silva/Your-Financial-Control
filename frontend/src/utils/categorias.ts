@@ -31,10 +31,3 @@ export function validarVinculoCategoria(transacao: TransacaoRegistrada, categori
 export function contarVinculosCategoria(id: string, transacoes: readonly TransacaoRegistrada[]): number {
   return transacoes.filter(t => t.categoriaId === id).length
 }
-
-// Gerado no evento de cadastro, nunca durante a redução ou renderização.
-export function criarIdCategoria(): string {
-  if (typeof globalThis.crypto?.randomUUID === 'function') return globalThis.crypto.randomUUID()
-  if (!globalThis.crypto?.getRandomValues) throw new Error('Não foi possível gerar o identificador da categoria neste navegador.')
-  return Array.from(globalThis.crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('')
-}

@@ -1,13 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { contarVinculosCategoria, criarIdCategoria, normalizarNomeCategoria } from '../src/utils/categorias.ts'
+import { contarVinculosCategoria, normalizarNomeCategoria, validarCategoria } from '../src/utils/categorias.ts'
 import { aplicarAcaoFinanceira, criarEstadoFinanceiro, reduzirEstadoFinanceiro, selecionarTransacoes } from '../src/utils/estadoFinanceiro.ts'
 import { calcularResumo } from '../src/utils/transacoes.ts'
 import { LIMITE_CENTAVOS } from '../src/utils/dinheiro.ts'
 
 const categoria = (id = 'r', nome = 'Salário', tipo = 'receita') => ({ id, nome, tipo })
 const transacao = (id = 1, categoriaId = 'r', tipo = 'receita', valorCentavos = 100) => ({ id, categoriaId, tipo, valorCentavos, descricao: 'Teste', data: '2026-11-11' })
-const cadastrar = (estado, c = categoria()) => aplicarAcaoFinanceira(estado, { tipo: 'categoria/cadastrar', categoria: c })
+const cadastrar = (estado, c = categoria()) => aplicarAcaoFinanceira(estado, { tipo: 'categoria/confirmar', categoria: validarCategoria(c, estado.categorias) })
 const lancar = (estado, t = transacao()) => aplicarAcaoFinanceira(estado, { tipo: 'transacao', operacao: { tipo: 'cadastrar', transacao: t } })
 function recusada(estado, acao) {
   const proximo = reduzirEstadoFinanceiro(estado, acao)
@@ -17,25 +17,24 @@ function recusada(estado, acao) {
   return proximo
 }
 
-test('normaliza espaços e Unicode, gera IDs distintos e inicia sem categorias padrão', () => {
+test('normaliza espaços e Unicode e inicia sem categorias padrão', () => {
   assert.equal(normalizarNomeCategoria('  Salário \n extra  '), 'Salário extra')
   assert.equal(normalizarNomeCategoria('Cafe\u0301'), 'Café')
-  assert.notEqual(criarIdCategoria(), criarIdCategoria())
   assert.deepEqual(criarEstadoFinanceiro(), { categorias: [], transacoes: [], erro: null })
 })
 
 test('cadastro valida nome, tipo, ID e duplicidade por nome normalizado e tipo', () => {
   let estado = cadastrar(criarEstadoFinanceiro(), categoria('r', '  Salário   extra '))
   assert.equal(estado.categorias[0].nome, 'Salário extra')
-  for (const c of [categoria('a', ' '), categoria('a', 'SALÁRIO extra'), categoria('r', 'Outro'), categoria('', 'Outro'), categoria('a', 'Outro', 'inválido')]) {
-    recusada(estado, { tipo: 'categoria/cadastrar', categoria: c })
+  for (const c of [categoria('a', ' '), categoria('a', 'SALÁRIO extra'), categoria('', 'Outro'), categoria('a', 'Outro', 'inválido')]) {
+    assert.throws(() => validarCategoria(c, estado.categorias))
   }
   estado = cadastrar(estado, categoria('d', 'Salário extra', 'despesa'))
   assert.equal(estado.categorias.length, 2)
   estado = cadastrar(estado, categoria('a', 'Avó'))
   estado = cadastrar(estado, categoria('b', 'Avô'))
   estado = cadastrar(estado, categoria('c', 'Café'))
-  recusada(estado, { tipo: 'categoria/cadastrar', categoria: categoria('e', 'Cafe\u0301') })
+  assert.throws(() => validarCategoria(categoria('e', 'Cafe\u0301'), estado.categorias))
 })
 
 test('edição preserva ID, aceita o próprio nome e valida duplicidade no tipo de destino', () => {
@@ -121,5 +120,20 @@ test('ações sequenciais revalidam vínculos novos antes de excluir ou mudar ti
   estado = reduzirEstadoFinanceiro(estado, { tipo: 'transacao', operacao: { tipo: 'cadastrar', transacao: transacao() } })
   recusada(estado, { tipo: 'categoria/excluir', id: 'r' })
   recusada(estado, { tipo: 'categoria/editar', categoria: categoria('r', 'Outro', 'despesa') })
-  assert.throws(() => selecionarTransacoes({ ...estado, categorias: [] }), /Vínculo/)
+})
+
+test('catálogo remoto sem categoria compatível preserva transações e totais até reclassificar', () => {
+  const inicial = lancar(cadastrar(criarEstadoFinanceiro()))
+  for (const categorias of [[], [categoria('r', 'Salário', 'despesa')]]) {
+    const estado = reduzirEstadoFinanceiro(inicial, {
+      tipo: 'categorias/carregar', categorias: [...categorias, categoria('r2', 'Extra')],
+    })
+    assert.strictEqual(estado.transacoes, inicial.transacoes)
+    assert.deepEqual(calcularResumo(selecionarTransacoes(estado)), { receitas: 100, despesas: 0, saldo: 100 })
+    assert.equal(selecionarTransacoes(estado)[0].categoria, 'Categoria indisponível')
+    const reclassificado = aplicarAcaoFinanceira(estado, {
+      tipo: 'transacao', operacao: { tipo: 'editar', transacao: transacao(1, 'r2') },
+    })
+    assert.equal(selecionarTransacoes(reclassificado)[0].categoria, 'Extra')
+  }
 })

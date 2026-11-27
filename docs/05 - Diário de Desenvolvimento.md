@@ -1,5 +1,13 @@
 # Diário de Desenvolvimento
 
+## 2026-11-27 — CRUD de categorias com validação local
+
+O React passou a carregar e gravar categorias pela API Hono depois de confirmar a sessão. O Hono encaminha a chave publicável e o JWT validado à Data API. A aba descarta respostas de sessões anteriores e relê o catálogo antes de liberar uma nova tentativa após gravação de resultado incerto. Transações locais preservam valores e totais quando uma alteração externa torna a categoria indisponível.
+
+Na revisão final, a renovação do token passou a preservar o bloqueio de novos vínculos durante uma gravação na mesma conta, inclusive após uma releitura inconclusiva. A paginação passou a usar um cursor `bigint` em texto. Na edição, a decisão de duplicidade passou a vir do PostgreSQL, com o conflito HTTP 409 preservado.
+
+No computador corporativo, passaram 68 testes do frontend, 16 do backend e a regressão de sessão e categorias no Chrome headless com mocks. A integração com PostgreSQL real aguarda ensaio autorizado no computador pessoal, com duas contas fictícias, chamadas diretas à Data API e validação pelo Worker. Ver [[02 - Banco de Dados]].
+
 ## 2026-11-26 — Autenticação do frontend com Supabase
 
 Os formulários existentes passaram a usar cadastro e login reais, com mensagem de confirmação de e-mail quando o cadastro retorna sem sessão. O SDK restaura a sessão e renova o token. O frontend consulta `GET /api/v1/me` antes de exibir o conteúdo do painel, descarta consultas anteriores ao trocar de token ou conta e mantém mensagens distintas para sessão rejeitada e API indisponível. O CORS usa a lista `FRONTEND_ORIGINS`.

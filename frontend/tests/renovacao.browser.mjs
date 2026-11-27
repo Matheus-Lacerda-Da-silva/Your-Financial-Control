@@ -6,7 +6,7 @@ import { dirname, join, resolve } from 'node:path'
 import { test } from 'node:test'
 import { createServer } from 'vite'
 
-test('o formulário permanece montado durante a renovação da mesma conta', { timeout: 60_000 }, async () => {
+test('renovação preserva rascunhos, isola categorias e reconcilia gravações incertas', { timeout: 60_000 }, async () => {
   const chrome = process.env.YFC_CHROME_PATH ?? (process.platform === 'win32'
     ? 'C:/Program Files/Google/Chrome/Application/chrome.exe'
     : 'google-chrome')
@@ -39,7 +39,7 @@ test('o formulário permanece montado durante a renovação da mesma conta', { t
     await servidor.listen()
     const { port } = servidor.httpServer.address()
     navegador = spawn(chrome, [
-      '--headless', '--disable-gpu', '--no-first-run',
+      '--headless', '--disable-gpu', '--no-first-run', '--window-size=1280,900',
       `--user-data-dir=${perfil}`,
       `http://127.0.0.1:${port}/tests/renovacao.browser.html`,
     ], { stdio: 'ignore', windowsHide: true })

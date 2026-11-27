@@ -21,7 +21,7 @@ O ambiente de desenvolvimento é o projeto **YFC-Development**, no Supabase Clou
 - As FKs compostas exigem o mesmo usuário e, em transações, o mesmo tipo da categoria. A exclusão de categoria vinculada é bloqueada, a de meta remove os aportes relacionados e a exclusão de usuário com registros depende de uma política explícita de descarte.
 - Os centavos são `bigint` com limites do inteiro seguro do JavaScript por valor. Datas de negócio são `date` e ficam entre os anos 0001 e 9999. O prazo de metas tem até 120 competências inclusivas. `criado_em` é `timestamptz` e `ordem_cadastro` é uma identidade separada, estável para ordenação, com lacunas permitidas. Use ordem decrescente nas transações e crescente em categorias e metas. No histórico de aportes, desempate a data por ordem decrescente.
 - PKs e restrições de unicidade fornecem os índices de identidade, busca e ordenação por usuário. Os três índices adicionais dão suporte ao vínculo transação–categoria, às consultas por data financeira e ao histórico de aportes por meta.
-- RLS começa sem políticas e a migration revoga privilégios de `PUBLIC`, `anon` e `authenticated` no schema, nas tabelas e nas sequências. A revogação dos defaults locais ao schema não cancela defaults globais. Por isso, a migration também revoga explicitamente os privilégios dos objetos criados e as consultas verificam o acesso efetivo dos papéis. Mantenha `yfc_privado` fora de **Exposed schemas** no Dashboard do Supabase. A lista de exposição é configuração da Data API e deve ser conferida separadamente.
+- No baseline, a RLS começa sem políticas e a migration revoga privilégios de `PUBLIC`, `anon` e `authenticated` no schema, nas tabelas e nas sequências. A revogação dos defaults locais ao schema não cancela defaults globais. Por isso, a migration também revoga explicitamente os privilégios dos objetos criados. O baseline registrado mantinha `yfc_privado` fora de **Exposed schemas**.
 
 ## Preparação de categorias — 2026-11-25
 
@@ -33,6 +33,10 @@ A [migration de categorias](../supabase/migrations/20261125000000_protege_crud_c
 - Transações, metas e aportes permanecem com RLS ativa, sem políticas ou grants de acesso para o aplicativo. UUIDs, FKs, centavos, constraints e datas civis existentes são preservados. A referência civil para regras novas de “hoje” é `America/Sao_Paulo`.
 
 Após autorização, valide a migration e o [verificador de RLS e permissões](../supabase/tests/verifica_rls_categorias.sql) em um ambiente descartável. Use dois usuários fictícios e chamadas diretas à Data API, além de uma chamada anônima. Confira defaults, isolamento, colunas protegidas, unicidade de nomes compostos e decompostos, espaços Unicode, minúsculas e acentos significativos. Teste também que o papel de aplicação não pode acessar as outras tabelas.
+
+O CRUD implementado no Hono seleciona `yfc_privado` com chave publicável e JWT do usuário. O ambiente de ensaio precisa expor esse schema na Data API, como previsto no `supabase/config.toml` local. A lista de exposição é configuração do ambiente. A migration controla quais objetos e linhas ficam acessíveis. A validação local usou mocks, com o SQL versionado e as configurações remotas preservados.
+
+A listagem do Hono usa `ordem_cadastro` como cursor crescente. A Data API devolve o cursor como texto para preservar o `bigint` inteiro, e o Hono o usa apenas no filtro da próxima consulta. Uma exclusão entre lotes deixa de deslocar o ponto de início da leitura. A resposta HTTP conserva apenas `id`, `nome` e `tipo`.
 
 ## Modelo adicional em memória — Metas (2026-11-12)
 
@@ -46,7 +50,7 @@ Relacionadas: [[00 - Visão Geral]], [[01 - Arquitetura]], [[03 - Regras Finance
 
 ## Estado confirmado
 
-A API inicial da Etapa 7.1 expõe uma rota de saúde e ainda não usa banco de dados. A migration inicial já está aplicada no ambiente Cloud de desenvolvimento.
+A migration inicial já está aplicada no ambiente Cloud de desenvolvimento conforme o registro da Etapa 7.2.3. O CRUD de categorias está implementado na API. A execução real da migration de categorias, da RLS e dos vínculos em PostgreSQL aguarda o ensaio autorizado.
 
 ## Modelo existente em memória
 
@@ -54,22 +58,23 @@ O tipo armazenado é `TransacaoRegistrada`, um contrato TypeScript, não uma tab
 
 | Campo | Tipo confirmado | Uso |
 | --- | --- | --- |
-| `id` | `number` | Criado por `Date.now()` em `App.tsx` |
+| `id` | `number` | Criado por `Date.now()` em `Painel.tsx` |
 | `descricao` | `string` | Texto informado no formulário |
 | `tipo` | `'receita'` ou `'despesa'` | Seleção da natureza do lançamento |
 | `valorCentavos` | `number` inteiro seguro | Receita positiva e despesa negativa, em centavos; limites e sinal validados pelas operações |
-| `categoriaId` | `string` | Referência a uma Categoria em memória, validada pelo reducer |
+| `categoriaId` | `string` | Referência ao UUID do catálogo, validada pelo reducer |
 | `data` | `string` | Input de data; formato esperado `YYYY-MM-DD` |
 
-`Categoria` contém `id: string`, `nome: string` normalizado e `tipo: 'receita' | 'despesa'`. IDs usam UUID ou bytes aleatórios criptográficos e duplicações são recusadas. Nome é único por tipo na comparação normalizada, sem diferenciar maiúsculas/minúsculas e preservando acentos. Categorias não possuem contagem armazenada; vínculos são contados a partir dos lançamentos.
+`Categoria` contém `id: string`, `nome: string` normalizado e `tipo: 'receita' | 'despesa'`. O PostgreSQL gera o UUID, normaliza o nome e garante unicidade por proprietário e tipo, ignorando diferenças de caixa e preservando acentos. A aba deriva a contagem de vínculos dos lançamentos em memória.
 
-`App.tsx` mantém arrays inicialmente vazios de categorias e transações, coordenados por `reduzirEstadoFinanceiro` em `utils/estadoFinanceiro.ts`. Cadastro de transação insere no início; edição substitui objetos pelo ID; exclusão filtra pelo ID. As operações monetárias existentes são reutilizadas. Erros monetários ou de vínculo preservam os arrays anteriores. Categorias usadas não podem ser excluídas ou mudar de tipo. Nomes são derivados por `selecionarTransacoes` para o formato de exibição `TransacaoExibicao`; não são duplicados no registro armazenado. Não existem transações de banco, chaves estrangeiras, índices ou constraints de servidor. IDs numéricos dos lançamentos continuam com o risco de colisão de `Date.now()`. Não há `usuarioId`, conta financeira, timestamps de auditoria ou exclusão lógica no tipo atual.
+`Painel.tsx` coordena o catálogo retornado pela API e as transações locais com `reduzirEstadoFinanceiro`. A criação insere uma transação no início, a edição substitui pelo ID e a exclusão filtra pelo ID. As operações monetárias existentes são reutilizadas. `selecionarTransacoes` deriva o nome e sinaliza um vínculo indisponível sem retirar o lançamento dos totais. IDs numéricos de lançamentos ainda usam `Date.now()`. A FK do PostgreSQL só alcança as transações gravadas no banco.
 
 ## Persistência e ciclo de vida
 
-- Categorias, transações e sessão: somente memória React; recarga ou saída apaga os dados. Não há categorias padrão automáticas.
+- Categorias vêm do catálogo da conta. A lista do React é descartada ao sair, trocar de conta ou recarregar. Uma conta sem registros recebe um catálogo vazio.
+- Transações, metas e aportes ficam em memória e são descartados ao sair, trocar de conta ou recarregar. O SDK do Supabase gerencia a sessão.
 - Tema: `localStorage`, chave `yfc-tema`, com valores `light`/`dark` e tratamento de indisponibilidade (`frontend/src/theme/TemaProvider.tsx`). Não é um banco financeiro.
-- Cadastro: não persiste usuário; e-mail segue ao acesso no estado de navegação (`Cadastro.tsx`).
+- Cadastro de usuário usa Supabase Auth, com confirmação por e-mail quando habilitada.
 
 ## Decisões pendentes
 

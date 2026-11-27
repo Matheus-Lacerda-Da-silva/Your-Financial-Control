@@ -42,6 +42,8 @@ type TransacaoNova = Omit<TransacaoRegistrada, 'id'>
 type TransacoesProps = {
   transacoes: TransacaoExibicao[]
   categorias: Categoria[]
+  categoriasProntas: boolean
+  erroCategorias: string | null
   erroFinanceiro: string | null
   onLimparErro: () => void
   onCadastrarTransacao: (transacao: TransacaoNova) => string | null
@@ -52,6 +54,8 @@ type TransacoesProps = {
 function Transacoes({
   transacoes,
   categorias,
+  categoriasProntas,
+  erroCategorias,
   erroFinanceiro,
   onLimparErro,
   onCadastrarTransacao,
@@ -74,6 +78,11 @@ function Transacoes({
   const [dataEdicao, setDataEdicao] = useState('')
   const categoriasCadastro = categorias.filter(c => c.tipo === tipo)
   const categoriasEdicao = categorias.filter(c => c.tipo === tipoEdicao)
+  const categoriaCadastroValida = categoriasCadastro.some(c => c.id === categoriaId)
+  const categoriaEdicaoValida = categoriasEdicao.some(c => c.id === categoriaIdEdicao)
+  const avisoCategorias = erroCategorias
+    ? 'Categorias indisponíveis. Acesse Categorias para tentar novamente.'
+    : 'Aguarde a atualização das categorias.'
 
   const cadastrarTransacao = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault()
@@ -88,7 +97,7 @@ function Transacoes({
 
     if (
       !descricao.trim() ||
-      !categoriaId.trim() ||
+      !categoriaCadastroValida ||
       !data ||
       !Number.isFinite(valorCentavos) ||
       valorCentavos <= 0
@@ -152,7 +161,7 @@ function Transacoes({
 
     if (
       !descricaoEdicao.trim() ||
-      !categoriaIdEdicao.trim() ||
+      !categoriaEdicaoValida ||
       !dataEdicao ||
       !Number.isFinite(valorCentavos) ||
       valorCentavos <= 0
@@ -243,11 +252,12 @@ function Transacoes({
             <TextField
               select
               label="Categoria"
-              value={categoriaId}
+              value={categoriaCadastroValida ? categoriaId : ''}
+              disabled={!categoriasProntas}
               onChange={(evento) => setCategoriaId(evento.target.value)}
               required
               fullWidth
-              helperText={categoriasCadastro.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
+              helperText={!categoriasProntas ? avisoCategorias : categoriasCadastro.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
               slotProps={{ select: { MenuProps: { slotProps: { paper: { sx: { maxWidth: 'calc(100vw - 32px)' } } } } } }}
             >
               <MenuItem value="" disabled>Selecione uma categoria</MenuItem>
@@ -268,11 +278,11 @@ function Transacoes({
               fullWidth
             />
 
-            <Button variant="contained" type="submit" sx={{ minHeight: 48, alignSelf: 'end', justifySelf: { xs: 'stretch', sm: 'start' } }}>
+            <Button variant="contained" type="submit" disabled={!categoriasProntas} sx={{ minHeight: 48, alignSelf: 'end', justifySelf: { xs: 'stretch', sm: 'start' } }}>
               Cadastrar transação
             </Button>
           </Box>
-          {categoriasCadastro.length === 0 && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>Cadastrar categorias</Button>}
+          {(erroCategorias || (categoriasProntas && categoriasCadastro.length === 0)) && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>{erroCategorias ? 'Ir para Categorias' : 'Cadastrar categorias'}</Button>}
         </CardContent>
       </SuperficieVidro>
       <SuperficieVidro sx={{ mt: 3 }}>
@@ -462,11 +472,12 @@ function Transacoes({
             <TextField
               select
               label="Categoria"
-              value={categoriaIdEdicao}
+              value={categoriaEdicaoValida ? categoriaIdEdicao : ''}
+              disabled={!categoriasProntas}
               required
               onChange={(evento) => setCategoriaIdEdicao(evento.target.value)}
               fullWidth
-              helperText={categoriasEdicao.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
+              helperText={!categoriasProntas ? avisoCategorias : categoriasEdicao.length ? 'Selecione uma categoria do tipo escolhido.' : 'Nenhuma categoria para este tipo. Cadastre uma em Categorias.'}
               slotProps={{ select: { MenuProps: { slotProps: { paper: { sx: { maxWidth: 'calc(100vw - 32px)' } } } } } }}
             >
               <MenuItem value="" disabled>Selecione uma categoria</MenuItem>
@@ -483,12 +494,12 @@ function Transacoes({
               fullWidth
             />
           </Box>
-          {categoriasEdicao.length === 0 && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>Ir para Categorias (descarta esta edição)</Button>}
+          {(erroCategorias || (categoriasProntas && categoriasEdicao.length === 0)) && <Button component={Link} to="/categorias" sx={{ mt: 1, minHeight: 44 }}>Ir para Categorias (descarta esta edição)</Button>}
         </DialogContent>
 
         <DialogActions>
           <Button onClick={() => setTransacaoEmEdicao(null)}>Cancelar</Button>
-          <Button variant="contained" onClick={salvarEdicao}>
+          <Button variant="contained" disabled={!categoriasProntas} onClick={salvarEdicao}>
             Salvar
           </Button>
         </DialogActions>

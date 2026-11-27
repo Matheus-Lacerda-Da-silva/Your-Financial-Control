@@ -5,7 +5,7 @@ import type { ConfiguracaoSupabase } from './supabase.ts'
 
 export type AmbienteApi = {
   Bindings: ConfiguracaoSupabase & { FRONTEND_ORIGINS?: string }
-  Variables: { usuarioId: string }
+  Variables: { usuarioId: string; token: string }
 }
 
 const errosDeAutenticacao = new Set([
@@ -46,6 +46,7 @@ export function autenticar(fetchAuth?: typeof fetch) {
     }
 
     contexto.set('usuarioId', data.user.id)
+    contexto.set('token', token)
     await next()
   })
 }

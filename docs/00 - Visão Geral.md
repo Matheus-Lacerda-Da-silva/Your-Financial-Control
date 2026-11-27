@@ -2,7 +2,7 @@
 
 ## Direção atual do MVP
 
-O Your Financial Control é um projeto de portfólio Full Stack Júnior. O frontend usa Supabase Auth e confirma a identidade em uma rota protegida da API Hono. Os registros financeiros ficam em memória e a migration de categorias aguarda aplicação. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
+O Your Financial Control é um projeto de portfólio Full Stack Júnior. O frontend usa Supabase Auth e confirma a identidade em uma rota protegida da API Hono. O CRUD de categorias está implementado no React e no Hono e foi verificado com mocks. Persistência e isolamento reais aguardam ensaio autorizado. Transações, metas e aportes ficam em memória. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
 
 ## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
 
@@ -37,7 +37,7 @@ Auditoria inicial: 2026-11-09. Escopo: código e arquivos locais; sem consulta a
 
 ## Objetivo e estado atual
 
-Aplicação web para registrar receitas e despesas e acompanhar saldo e histórico. A autenticação usa o Supabase Auth e o estado financeiro é temporário.
+Aplicação web para registrar receitas e despesas e acompanhar saldo e histórico. A autenticação usa o Supabase Auth e o catálogo de categorias vem da API Hono.
 
 O projeto está em estágio inicial e será desenvolvido progressivamente. A prioridade é preservar o código e os fluxos existentes, entregando melhorias pequenas e verificáveis. O [[04 - Roadmap]] acompanha a API inicial, o banco de desenvolvimento e as etapas de integração e autenticação.
 
@@ -65,15 +65,15 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Layout responsivo, menu lateral, cartões no celular e tabela em telas maiores | Implementado no código; validação visual não executada nesta auditoria | `frontend/src/layouts/LayoutPrincipal.tsx`, `frontend/src/components/Sidebar.tsx`, `frontend/src/pages/Transacoes.tsx` |
 | Tema claro/escuro com preferência salva | Implementado | `frontend/src/theme/TemaProvider.tsx` |
 | Acesso e cadastro | Integrados ao Supabase Auth, com restauração de sessão e suporte à confirmação por e-mail | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
-| Categorias de Receita/Despesa | CRUD em memória com IDs, normalização, duplicidade por nome/tipo e contagem de vínculos; validação interativa pendente | `frontend/src/pages/Categorias.tsx`, `frontend/src/utils/categorias.ts` |
-| Associação de categorias | Seleção por tipo no cadastro/edição de transações; renomeação refletida por projeção; exclusão e mudança de tipo bloqueadas enquanto houver vínculos | `frontend/src/App.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
-| Backend REST | API inicial com rota de saúde e erros JSON | `backend/src/app.ts`, `backend/src/node.ts` |
+| Categorias de Receita/Despesa | CRUD pela API com normalização e previsão de unicidade pela constraint do banco. Verificado com mocks | `frontend/src/pages/Categorias.tsx`, `backend/src/categorias.ts` |
+| Associação de categorias | Seleção por tipo em transações. Renomeação refletida por projeção. Exclusão e mudança de tipo bloqueadas para categorias usadas na aba | `frontend/src/Painel.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
+| Backend REST | Rotas de saúde, identidade e CRUD de categorias com erros JSON | `backend/src/app.ts`, `backend/src/categorias.ts` |
 | Banco PostgreSQL | Modelo inicial aplicado no Supabase Cloud de desenvolvimento | [[02 - Banco de Dados]] |
-| JWT e isolamento por usuário na aplicação | Identidade verificada em `/api/v1/me` e estado em memória vinculado à conta ativa. Isolamento das futuras rotas financeiras pendente | `frontend/src/Painel.tsx`, `backend/src/autenticacao.ts` |
+| JWT e isolamento por usuário na aplicação | Identidade verificada em `/api/v1/me`, catálogo por conta e JWT encaminhado à Data API. RLS real pendente de ensaio | `frontend/src/Painel.tsx`, `backend/src/autenticacao.ts` |
 
 ## Qualidade e limites
 
-Em 2026-11-11, Categorias passou a reutilizar dois painéis `SuperficieVidro` e `theme.glass`, sem mudanças nos componentes compartilhados. Categorias começam vazias e desaparecem junto das transações ao recarregar/sair. O estado coordenado armazena `categoriaId`; nomes são derivados para exibição, preservando o dashboard. Foram executados 32 testes, TypeScript e build com sucesso; lint segue bloqueado pela dependência local. Aparência e interação ainda aguardam validação do usuário conforme `frontend/VALIDACAO_VISUAL.md`.
+Categorias reutiliza os painéis `SuperficieVidro` e `theme.glass`. A interface distingue carregamento, erro e catálogo vazio. As transações guardam `categoriaId`; o nome é derivado para exibição e um vínculo indisponível preserva histórico e totais. Consulte [[05 - Diário de Desenvolvimento]] para os testes e `frontend/VALIDACAO_VISUAL.md` para o roteiro visual.
 
 Os valores financeiros agora usam `valorCentavos` com inteiros seguros, rejeição de frações de centavo e limites por lançamento e total. Operações monetárias inválidas preservam os dados anteriores. Ver [[03 - Regras Financeiras]]. A suíte reúne testes de acesso/cadastro e testes financeiros das funções e reducer utilizados pela aplicação. Ela não comprova interação visual ou autenticação real. O roteiro `frontend/VALIDACAO_VISUAL.md` é uma lista manual, não um relatório de execução. Resultados e limitações estão em [[01 - Arquitetura]] e [[05 - Diário de Desenvolvimento]].
 

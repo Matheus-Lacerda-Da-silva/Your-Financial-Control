@@ -130,7 +130,7 @@ test('exclusão de meta remove só seus aportes e saída limpa domínio', () => 
 })
 
 test('ações de metas não alteram o estado financeiro nem seu saldo', () => {
-  const financeiro = reduzirEstadoFinanceiro(criarEstadoFinanceiro(), { tipo: 'categoria/cadastrar', categoria: { id: 'r', nome: 'Renda', tipo: 'receita' } })
+  const financeiro = reduzirEstadoFinanceiro(criarEstadoFinanceiro(), { tipo: 'categoria/confirmar', categoria: { id: 'r', nome: 'Renda', tipo: 'receita' } })
   const comTransacao = reduzirEstadoFinanceiro(financeiro, { tipo: 'transacao', operacao: { tipo: 'cadastrar', transacao: { id: 1, descricao: 'Fictícia', tipo: 'receita', valorCentavos: 50000, categoriaId: 'r', data: hoje } } })
   const snapshot = structuredClone(comTransacao)
   Object.freeze(comTransacao.transacoes)

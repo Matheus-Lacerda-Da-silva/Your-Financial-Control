@@ -4,13 +4,15 @@
 
 O frontend React, TypeScript, Vite e Material UI será publicado no Cloudflare Pages. A API REST Hono em TypeScript usa Node.js localmente e Cloudflare Workers na publicação.
 
-O backend já valida o JWT de `GET /api/v1/me` com `auth.getUser(token)` por HTTPS, usando `@supabase/supabase-js` e a chave publicável. Cada requisição guarda o ID autenticado em seu próprio contexto Hono. O Node lê a configuração do ambiente e o Worker recebe os mesmos campos por bindings. `GET /health` é pública e independente do Supabase.
+O backend valida o JWT das rotas protegidas com `auth.getUser(token)` por HTTPS, usando `@supabase/supabase-js` e a chave publicável. Cada requisição guarda o ID autenticado e o JWT no seu contexto Hono. O Node lê a configuração do ambiente e o Worker recebe os mesmos campos por bindings. `GET /health` é pública e independente do Supabase.
 
-O frontend usa o SDK do Supabase para restaurar e renovar a sessão. O painel envia o access token ao Hono e compara o ID da resposta de `GET /api/v1/me` com o ID da sessão. As futuras rotas de categorias encaminharão o JWT à Data API, onde grants, RLS e constraints protegerão propriedade e integridade.
+O frontend usa o SDK do Supabase para restaurar e renovar a sessão. O painel envia o access token ao Hono e compara o ID da resposta de `GET /api/v1/me` com o ID da sessão. As rotas de categorias encaminham o JWT à Data API por um cliente criado para cada requisição. Os grants limitam operações e colunas, a RLS filtra pelo proprietário e o PostgreSQL aplica normalização, unicidade e integridade dos vínculos gravados.
 
 O primeiro acesso ao painel exige confirmação da API. Durante a revalidação de uma conta já confirmada, as páginas permanecem montadas e os formulários preservam os rascunhos. Uma sessão rejeitada bloqueia o conteúdo. Logout e troca de conta desmontam o painel e cancelam a consulta anterior. O frontend exige HTTPS para enviar o JWT a destinos remotos e aceita HTTP apenas em endereços de loopback.
 
-O schema `yfc_privado` é selecionado explicitamente no SDK. A exposição remota e a integração no Workers aguardam validação autorizada. O CRUD comum usa `authenticated`. A primeira entrega integrada será autenticação e categorias. Ver [[02 - Banco de Dados]].
+O painel carrega o catálogo após confirmar a identidade, descarta respostas de contas anteriores e consulta novamente a lista quando o resultado de uma escrita é incerto. Ao renovar o token da mesma conta, mantém rascunhos, lançamentos e a proteção de vínculos da gravação em andamento. A conclusão de uma gravação do token anterior aciona uma releitura com a sessão vigente. Se a leitura ainda não confirmar uma exclusão ou troca de tipo incerta, a aba mantém o bloqueio de novos vínculos para a categoria.
+
+O SDK seleciona `yfc_privado` explicitamente. O CRUD usa o papel `authenticated`. A implementação local foi verificada com mocks. A exposição remota, a RLS real e o fluxo pelo Worker aguardam validação autorizada. Ver [[02 - Banco de Dados]].
 
 ## Evolução das metas — 2026-11-13
 
@@ -105,8 +107,8 @@ Na Etapa 6, `LayoutAcesso.tsx` usa duas colunas iguais a partir de `md`. O paine
 
 - Acesso e cadastro mantêm as validações locais e usam `signInWithPassword` e `signUp`. Quando o cadastro retorna sem sessão, a tela orienta a confirmar o e-mail. A saída usa `signOut` no escopo local.
 - `useSessao` acompanha a sessão inicial e as mudanças publicadas pelo SDK. O painel refaz a consulta à API ao renovar o token e cancela a consulta anterior. A versão da conta controla o ciclo de vida dos reducers, preservados na renovação de token da mesma conta.
-- A API responde separadamente a uma sessão rejeitada e a uma falha de consulta. O CORS de `/api/v1/me` autoriza somente origens em `FRONTEND_ORIGINS`. Consulte [backend/README.md](../backend/README.md).
-- O SDK gerencia a persistência da sessão. A senha permanece no estado do formulário até o envio ao Supabase Auth por HTTPS. Os dados financeiros continuam em memória e a preferência de tema usa `yfc-tema`.
+- A API responde separadamente a uma sessão rejeitada e a uma falha de consulta. O CORS das rotas protegidas autoriza somente origens em `FRONTEND_ORIGINS`. Consulte [backend/README.md](../backend/README.md).
+- O SDK gerencia a persistência da sessão. A senha permanece no estado do formulário até o envio ao Supabase Auth por HTTPS. Transações, metas e aportes continuam em memória e a preferência de tema usa `yfc-tema`.
 
 ## Riscos técnicos e de segurança
 
@@ -114,7 +116,7 @@ Os impactos abaixo registram limites e riscos técnicos da auditoria inicial. El
 
 | Impacto | Constatação e consequência | Evidência |
 | --- | --- | --- |
-| Alto para uso real | A API autentica a consulta de identidade. Operações financeiras ainda executam em memória e aguardam autorização por usuário na Data API | `Painel.tsx`, `backend/src/app.ts` |
+| Alto para uso real | Categorias usam a API Hono com RLS prevista na migration. O isolamento real aguarda teste no PostgreSQL. Transações, metas e aportes executam em memória | `Painel.tsx`, `backend/src/categorias.ts` |
 | Alto | Transações somem ao recarregar/sair; não há recuperação ou backup financeiro identificado | `Painel.tsx` |
 | Corrigido | Valores e totais usam centavos inteiros seguros, sem frações de centavo; limites validados antes da atualização | `utils/dinheiro.ts`, `utils/transacoes.ts` |
 | Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `Painel.tsx` |

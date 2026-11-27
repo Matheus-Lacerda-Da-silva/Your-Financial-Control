@@ -5,6 +5,26 @@ import { criarApp } from '../src/app.ts'
 const origem = 'http://localhost:5173'
 const bindings = { FRONTEND_ORIGINS: `http://127.0.0.1:5173, ${origem}` }
 
+test('preflight de categorias permite JSON e Bearer nas duas rotas somente à origem configurada', async () => {
+  const app = criarApp(() => assert.fail('Preflight não deve autenticar'))
+  for (const [caminho, metodo] of [['/api/v1/categorias', 'POST'], ['/api/v1/categorias/id', 'PATCH']]) {
+    for (const origemRequisicao of [origem, 'https://outra.example']) {
+      const resposta = await app.request(caminho, {
+        method: 'OPTIONS',
+        headers: {
+          Origin: origemRequisicao,
+          'Access-Control-Request-Method': metodo,
+          'Access-Control-Request-Headers': 'authorization,content-type',
+        },
+      }, bindings)
+      assert.equal(resposta.status, 204)
+      assert.equal(resposta.headers.get('Access-Control-Allow-Origin'), origemRequisicao === origem ? origem : null)
+      assert.equal(resposta.headers.get('Access-Control-Allow-Methods'), 'GET,POST,PATCH,DELETE')
+      assert.equal(resposta.headers.get('Access-Control-Allow-Headers'), 'Authorization,Content-Type')
+    }
+  }
+})
+
 test('preflight de /api/v1/me autoriza GET com Bearer para uma origem configurada', async () => {
   const resposta = await criarApp().request('/api/v1/me', {
     method: 'OPTIONS',
