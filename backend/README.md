@@ -59,7 +59,7 @@ Cada categoria retornada contém `id`, `nome` e `tipo`. O tipo pode ser `receita
 
 As respostas privadas usam `Cache-Control: no-store`. Os erros de categorias seguem `{ erro: { codigo, mensagem } }`. O status 400 cobre entrada inválida, 401 cobre sessão rejeitada e 404 vale tanto para ID inexistente quanto para linha invisível pela RLS. O status 409 indica nome duplicado no mesmo tipo ou vínculo com transação gravada. Configuração inválida ou exceção interna retorna 500. Falhas do Supabase retornam 502.
 
-O Hono encaminha a chave publicável e o JWT validado à Data API no schema `yfc_privado`. O PostgreSQL gera o UUID, atribui o proprietário com `auth.uid()` e aplica normalização, unicidade e RLS. A implementação foi testada com mocks. A migration de categorias e a exposição do schema no ambiente de teste dependem de validação autorizada, incluindo chamadas pelo Worker e pela Data API direta.
+O Hono encaminha a chave publicável e o JWT validado à Data API no schema `yfc_privado`. O PostgreSQL gera o UUID, atribui o proprietário com `auth.uid()` e aplica normalização, unicidade e RLS. Para usar as rotas, o projeto Supabase deve ter as duas migrations do repositório aplicadas e `yfc_privado` em **Exposed schemas**. O CRUD foi validado no Sandbox pela Data API direta, pelo Hono em Node e pelo Worker local.
 
 ## Execução local em Cloudflare Workers
 
@@ -79,7 +79,7 @@ curl.exe -i http://127.0.0.1:8787/inexistente
 curl.exe -i http://127.0.0.1:8787/api/v1/me
 ```
 
-A Etapa 7.1 verificou as rotas de saúde e rota inexistente localmente em Wrangler 4.167.0 e workerd 1.20261123.1, com HTTP 200 e 404. O `wrangler.jsonc` desativa explicitamente a compatibilidade Node.js com `no_nodejs_compat` e `no_nodejs_compat_v2`. O adaptador HTTP do Node fica na entrada `src/node.ts`. A verificação do CRUD de categorias pelo Worker está prevista para o ensaio autorizado.
+A Etapa 7.1 verificou as rotas de saúde e rota inexistente localmente em Wrangler 4.167.0 e workerd 1.20261123.1, com HTTP 200 e 404. O `wrangler.jsonc` desativa explicitamente a compatibilidade Node.js com `no_nodejs_compat` e `no_nodejs_compat_v2`. O adaptador HTTP do Node fica na entrada `src/node.ts`. No ensaio de categorias, o Worker local confirmou autenticação, CRUD, isolamento entre contas e exclusão com HTTP `204` sem corpo.
 
 ## Estrutura
 

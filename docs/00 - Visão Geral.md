@@ -2,7 +2,7 @@
 
 ## Direção atual do MVP
 
-O Your Financial Control é um projeto de portfólio Full Stack Júnior. O frontend usa Supabase Auth e confirma a identidade em uma rota protegida da API Hono. O CRUD de categorias está implementado no React e no Hono e foi verificado com mocks. Persistência e isolamento reais aguardam ensaio autorizado. Transações, metas e aportes ficam em memória. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
+O Your Financial Control é um projeto de portfólio Full Stack Júnior. O frontend usa Supabase Auth e confirma a identidade em uma rota protegida da API Hono. As categorias são persistidas por conta no PostgreSQL. O CRUD foi validado no React com a API Hono no ambiente de desenvolvimento. Transações, metas e aportes ficam em memória. Consulte [[01 - Arquitetura]] e [[04 - Roadmap]].
 
 ## Evolução das metas — 2026-11-13 (aprovação visual/funcional pendente)
 
@@ -65,11 +65,11 @@ Em `frontend/package.json`: React e React DOM, TypeScript, Vite e plugin React, 
 | Layout responsivo, menu lateral, cartões no celular e tabela em telas maiores | Implementado no código; validação visual não executada nesta auditoria | `frontend/src/layouts/LayoutPrincipal.tsx`, `frontend/src/components/Sidebar.tsx`, `frontend/src/pages/Transacoes.tsx` |
 | Tema claro/escuro com preferência salva | Implementado | `frontend/src/theme/TemaProvider.tsx` |
 | Acesso e cadastro | Integrados ao Supabase Auth, com restauração de sessão e suporte à confirmação por e-mail | `frontend/src/pages/Acesso.tsx`, `frontend/src/pages/Cadastro.tsx` |
-| Categorias de Receita/Despesa | CRUD pela API com normalização e previsão de unicidade pela constraint do banco. Verificado com mocks | `frontend/src/pages/Categorias.tsx`, `backend/src/categorias.ts` |
+| Categorias de Receita/Despesa | CRUD integrado com persistência, normalização e unicidade no PostgreSQL | `frontend/src/pages/Categorias.tsx`, `backend/src/categorias.ts` |
 | Associação de categorias | Seleção por tipo em transações. Renomeação refletida por projeção. Exclusão e mudança de tipo bloqueadas para categorias usadas na aba | `frontend/src/Painel.tsx`, `frontend/src/utils/estadoFinanceiro.ts` |
 | Backend REST | Rotas de saúde, identidade e CRUD de categorias com erros JSON | `backend/src/app.ts`, `backend/src/categorias.ts` |
-| Banco PostgreSQL | Modelo inicial aplicado no Supabase Cloud de desenvolvimento | [[02 - Banco de Dados]] |
-| JWT e isolamento por usuário na aplicação | Identidade verificada em `/api/v1/me`, catálogo por conta e JWT encaminhado à Data API. RLS real pendente de ensaio | `frontend/src/Painel.tsx`, `backend/src/autenticacao.ts` |
+| Banco PostgreSQL | Migrations do modelo financeiro e de categorias aplicadas no Sandbox e no Development | [[02 - Banco de Dados]] |
+| JWT e isolamento por usuário na aplicação | Identidade verificada em `/api/v1/me`, catálogo por conta e isolamento validado com RLS no PostgreSQL | `frontend/src/Painel.tsx`, `backend/src/autenticacao.ts` |
 
 ## Qualidade e limites
 

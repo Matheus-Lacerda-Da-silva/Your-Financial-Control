@@ -12,7 +12,7 @@ O primeiro acesso ao painel exige confirmação da API. Durante a revalidação 
 
 O painel carrega o catálogo após confirmar a identidade, descarta respostas de contas anteriores e consulta novamente a lista quando o resultado de uma escrita é incerto. Ao renovar o token da mesma conta, mantém rascunhos, lançamentos e a proteção de vínculos da gravação em andamento. A conclusão de uma gravação do token anterior aciona uma releitura com a sessão vigente. Se a leitura ainda não confirmar uma exclusão ou troca de tipo incerta, a aba mantém o bloqueio de novos vínculos para a categoria.
 
-O SDK seleciona `yfc_privado` explicitamente. O CRUD usa o papel `authenticated`. A implementação local foi verificada com mocks. A exposição remota, a RLS real e o fluxo pelo Worker aguardam validação autorizada. Ver [[02 - Banco de Dados]].
+O SDK seleciona `yfc_privado` explicitamente. O CRUD usa o papel `authenticated`. A integração foi verificada no Sandbox por chamadas diretas à Data API e pelo Hono em Node e no Worker local. No Development, o usuário concluiu o CRUD pela interface React. Ver [[02 - Banco de Dados]].
 
 ## Evolução das metas — 2026-11-13
 
@@ -85,9 +85,9 @@ No refinamento de Início, `theme.glass` também centraliza `luzInterna`, `sombr
 
 `main.tsx` monta `TemaProvider → App`. Após a leitura inicial da sessão, o `BrowserRouter` decide entre as rotas públicas e o painel. `Painel` coordena categorias e transações em `useReducer` com `utils/estadoFinanceiro.ts`. A operação pura `aplicarAcaoFinanceira` pré-valida callbacks para manter formulários abertos em caso de recusa. O reducer revalida sobre o estado mais recente e preserva ambos os arrays em erros. As operações reutilizam `aplicarOperacao` de `utils/transacoes.ts`.
 
-`Categoria` contém ID string, nome e tipo. `TransacaoRegistrada` armazena `categoriaId`; `selecionarTransacoes` produz `TransacaoExibicao` com nome derivado, compatível com Início e TransacaoCard existentes, sem alterar esses componentes. O estado não duplica o nome da categoria. IDs são gerados fora do reducer por `crypto.randomUUID()`, com alternativa baseada em `crypto.getRandomValues`; colisões são recusadas no cadastro. Normalização e validação de vínculos ficam em `utils/categorias.ts`. Categorias não recebem valores financeiros e não criam lançamentos automaticamente.
+`Categoria` contém ID string, nome e tipo. `TransacaoRegistrada` armazena `categoriaId`; `selecionarTransacoes` produz `TransacaoExibicao` com nome derivado, compatível com Início e TransacaoCard existentes, sem alterar esses componentes. O estado não duplica o nome da categoria. O PostgreSQL gera o UUID das categorias criadas pelo Hono. O frontend usa `utils/categorias.ts` para normalizar a entrada e validar vínculos com lançamentos em memória. Categorias não recebem valores financeiros e não criam lançamentos automaticamente.
 
-Categorias usa dois painéis `SuperficieVidro`, formulário visível e lista responsiva com itens opacos, contagem de vínculos e diálogos MUI com alertas internos. Cadastro e edição de transações usam seletores compatíveis com o tipo, sem escolha automática. Categorias começam vazias e são limpas junto às transações na saída. Tema, superfícies compartilhadas, dashboard, sidebar, cabeçalho e login não foram alterados nessa implementação. Validação no navegador permanece pendente.
+Categorias usa dois painéis `SuperficieVidro`, formulário visível e lista responsiva com itens opacos, contagem de vínculos e diálogos MUI com alertas internos. Cadastro e edição de transações usam seletores compatíveis com o tipo, sem escolha automática. A lista de categorias é carregada da conta autenticada. Sair descarta a lista em memória e um novo login recupera as categorias persistidas.
 
 | Rota | Comportamento em `App.tsx` |
 | --- | --- |
@@ -95,11 +95,11 @@ Categorias usa dois painéis `SuperficieVidro`, formulário visível e lista res
 | `/cadastro` | Cadastro com Supabase Auth. Aguarda confirmação por e-mail quando exigida |
 | `/` | Resumo financeiro sob LayoutPrincipal, condicionado à identidade confirmada |
 | `/transacoes` | CRUD local sob LayoutPrincipal |
-| `/categorias` | CRUD local de categorias sob LayoutPrincipal |
+| `/categorias` | CRUD de categorias persistidas, via Hono, sob LayoutPrincipal |
 | `/metas` | Metas e aportes em memória sob LayoutPrincipal |
 | Outras | Redirecionamento conforme a sessão |
 
-As rotas principais aguardam a sessão inicial e redirecionam para `/acesso` se ela estiver ausente. Sair e trocar de conta descartam o estado financeiro. Recarregar restaura a sessão quando válida e recria os registros em memória vazios. BrowserRouter exige suporte a fallback para `index.html` para rotas diretas na hospedagem.
+As rotas principais aguardam a sessão inicial e redirecionam para `/acesso` se ela estiver ausente. Sair e trocar de conta descartam o estado financeiro. Recarregar restaura a sessão quando válida, recarrega o catálogo da conta e recria vazios os registros mantidos apenas em memória. BrowserRouter exige suporte a fallback para `index.html` para rotas diretas na hospedagem.
 
 ## Autenticação e APIs
 
@@ -116,7 +116,7 @@ Os impactos abaixo registram limites e riscos técnicos da auditoria inicial. El
 
 | Impacto | Constatação e consequência | Evidência |
 | --- | --- | --- |
-| Alto para uso real | Categorias usam a API Hono com RLS prevista na migration. O isolamento real aguarda teste no PostgreSQL. Transações, metas e aportes executam em memória | `Painel.tsx`, `backend/src/categorias.ts` |
+| Alto para uso real | Transações, metas e aportes têm ciclo de vida em memória e são perdidos ao recarregar ou sair | `Painel.tsx` |
 | Alto | Transações somem ao recarregar/sair; não há recuperação ou backup financeiro identificado | `Painel.tsx` |
 | Corrigido | Valores e totais usam centavos inteiros seguros, sem frações de centavo; limites validados antes da atualização | `utils/dinheiro.ts`, `utils/transacoes.ts` |
 | Médio | IDs com `Date.now()` podem colidir no mesmo milissegundo; edição/exclusão por ID pode atingir registros com IDs repetidos | `Painel.tsx` |

@@ -170,9 +170,9 @@ Os dados financeiros continuam apenas em memória. Recarregar apaga as transaç�
 
 ## Categorias e integridade dos vínculos
 
-Implementação de 2026-11-11 com testes de funções/reducer e compilação executados. Este roteiro de interação ainda não foi executado no navegador e depende da validação visual e funcional do usuário.
+No YFC-Development, o usuário confirmou criação, edição, exclusão, bloqueio de duplicidade e persistência das categorias após F5 e após logout e login. Os registros foram conferidos no Supabase. Os itens abaixo complementam o roteiro para vínculos locais, responsividade e acessibilidade.
 
-- Entrar com a conta de teste e abrir Categorias. Conferir lista vazia, formulário Nome → Tipo → Cadastrar e aviso de dados temporários.
+- Entrar com a conta de teste e abrir Categorias. Conferir o catálogo da conta, o estado vazio em uma conta sem registros e o formulário Nome → Tipo → Cadastrar.
 - Criar “Salário” como Receita e “Alimentação” como Despesa. Nome vazio ou somente espaços deve ser recusado; espaços externos e internos repetidos devem ser normalizados. “ SALÁRIO ” deve duplicar “Salário” no mesmo tipo; o mesmo nome no outro tipo pode existir. Acentos permanecem significativos.
 - Editar uma categoria sem vínculos: mudar nome e tipo; tentar duplicar outra categoria do tipo de destino. Em recusa, conferir alerta dentro do diálogo, campos preservados e lista intacta. Cancelar e Escape não devem salvar.
 - Criar receita e despesa em Transações: conferir que somente as categorias compatíveis aparecem. Trocar o tipo deve limpar a categoria sem selecionar outra, inclusive ao editar. Sem categorias do tipo escolhido, conferir orientação e link para Categorias, sem aceitar envio inválido. O link da edição deve informar que o rascunho será descartado.
@@ -182,7 +182,7 @@ Implementação de 2026-11-11 com testes de funções/reducer e compilação exe
 - Conferir nomes acessíveis Editar/Excluir incluindo nome e tipo da categoria, Tab/Shift+Tab, Enter/Espaço, foco visível, foco inicial no Nome ao editar e em Cancelar ao excluir, Escape, contenção e retorno de foco MUI. Conferir anúncio de erros por leitor de tela.
 - Repetir nos temas claro/escuro, em 320, 375, 768, 1024 e 1440 px, transições de breakpoints e zoom de 200%. Usar nomes extensos, sem espaços, tanto na lista quanto nas opções do seletor. Conferir quebra de texto e ausência de rolagem horizontal da página ou sobreposição de controles.
 - Conferir contraste composto de texto normal (4,5:1), texto grande/controles essenciais (3:1), alvos de ação de pelo menos 44 px e fallback opaco ao desativar `@supports`. Categorias deve ter dois painéis com blur de 8 px, sem filtros internos ou animações novas.
-- Sair e entrar de novo, depois recarregar: categorias e transações devem iniciar vazias. Preferência de tema continua independente. Usar apenas dados fictícios.
+- Sair e entrar novamente na mesma conta e recarregar. As categorias devem reaparecer e as transações em memória devem iniciar vazias. Preferência de tema continua independente. Usar apenas dados fictícios.
 
 ## Acesso e cadastro com Supabase
 
@@ -214,8 +214,8 @@ Refinamento do painel institucional — Chrome headless verificou 28 combinaçõ
 - No cadastro, testar nome vazio, e-mail inválido, senha curta, somente espaços e confirmação diferente.
 - Conferir o aviso de confirmação e o destino do link de e-mail. Em ambiente sem confirmação obrigatória, conferir a entrada imediata.
 - Conferir `GET /api/v1/me` com status 200 na aba Rede, sem copiar o token.
-- Abrir uma rota interna diretamente e recarregar. A restauração deve manter a conta conectada e os dados financeiros devem começar vazios.
-- Testar a troca de conta e conferir que transações, categorias, metas e aportes começam vazios.
+- Abrir uma rota interna diretamente e recarregar. A restauração deve manter a conta conectada e recarregar suas categorias. Transações, metas e aportes devem começar vazios.
+- Testar a troca de conta e conferir que apenas as categorias da nova conta aparecem. Transações, metas e aportes devem começar vazios.
 - Parar a API local e recarregar o painel autenticado. Conferir o aviso de indisponibilidade. Reiniciar a API e usar **Tentar novamente** para voltar ao painel.
 - Clicar em Sair e conferir o retorno ao acesso. Voltar pelo navegador não deve reabrir o painel sem sessão.
 - Conferir que nenhuma senha é adicionada a localStorage, sessionStorage ou à URL.

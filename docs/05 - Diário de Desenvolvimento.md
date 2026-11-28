@@ -1,5 +1,11 @@
 # Diário de Desenvolvimento
 
+## 2026-11-28 — Integração de categorias concluída
+
+O ensaio no Sandbox validou o CRUD real pela Data API direta, pelo Hono em Node e pelo Worker local, incluindo exclusão HTTP `204` sem corpo em ambos os runtimes. Após o ensaio, a migration de categorias foi aplicada no Development e o schema foi exposto na Data API. Os resultados de banco e permissões estão em [[02 - Banco de Dados]].
+
+No Development, o usuário confirmou criação, edição, exclusão, bloqueio de duplicidade e persistência após F5 e após logout e login pela interface React. Os registros foram conferidos diretamente no Supabase. As categorias passam a ter persistência comprovada, enquanto os demais registros financeiros seguem em memória. A próxima etapa é o refinamento visual do frontend, antes da persistência de transações. Ver [[04 - Roadmap]].
+
 ## 2026-11-27 — CRUD de categorias com validação local
 
 O React passou a carregar e gravar categorias pela API Hono depois de confirmar a sessão. O Hono encaminha a chave publicável e o JWT validado à Data API. A aba descarta respostas de sessões anteriores e relê o catálogo antes de liberar uma nova tentativa após gravação de resultado incerto. Transações locais preservam valores e totais quando uma alteração externa torna a categoria indisponível.

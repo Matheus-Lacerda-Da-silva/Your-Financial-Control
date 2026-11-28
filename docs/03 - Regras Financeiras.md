@@ -2,7 +2,7 @@
 
 ## Referência civil do MVP integrado
 
-As regras persistidas que dependem de “hoje” usarão `America/Sao_Paulo`. A demonstração ainda usa a data civil local do navegador. As regras entre transações, metas e aportes entram no banco na etapa de integração de cada funcionalidade, antes da liberação de escrita.
+As regras persistidas que dependem de “hoje” usarão `America/Sao_Paulo`. A demonstração ainda usa a data civil local do navegador. As regras agregadas de transações e as regras entre metas e aportes entram no banco na integração de cada funcionalidade, antes da liberação de escrita.
 
 ## Evolução das metas — 2026-11-13
 
@@ -85,13 +85,13 @@ Conversão e somas usam `BigInt` transitoriamente para verificar limites antes d
 
 Não foram identificados parcelamento, recorrência, juros, transferências entre contas, conciliação, orçamento, metas, importação/exportação, múltiplas moedas, estado pago/pendente ou relatórios por período. São lacunas de escopo, não funcionalidades planejadas confirmadas.
 
-## Categorias e vínculos com lançamentos em memória
+## Categorias no PostgreSQL e lançamentos em memória
 
-`Categorias.tsx` usa o CRUD da API Hono. Categoria tem UUID, nome e tipo Receita/Despesa. Nome usa normalização Unicode NFC, trim e consolidação dos espaços internos. Nome vazio é recusado. A constraint do banco compara a chave em minúsculas pt-BR por conta e tipo. Acentos são significativos e o mesmo nome pode existir em tipos diferentes.
+`Categorias.tsx` usa o CRUD da API Hono. Categoria tem UUID, nome e tipo Receita/Despesa. Nome usa normalização Unicode NFC, trim e consolidação dos espaços internos. Nome vazio é recusado. O PostgreSQL normaliza o nome e garante unicidade pela chave em minúsculas pt-BR por conta e tipo. Acentos são significativos e o mesmo nome pode existir em tipos diferentes.
 
 Transações armazenam `categoriaId`, com existência e compatibilidade de tipo validadas em `utils/estadoFinanceiro.ts` usando `utils/categorias.ts`. Trocar o tipo no formulário limpa a seleção; não há escolha automática. Renomear categoria atualiza apenas a exibição derivada, sem reescrever transações, valores, datas ou ordem. Categoria com vínculos não pode mudar de tipo nem ser excluída; o usuário deve primeiro reclassificar ou excluir os lançamentos. Categoria sem vínculos pode mudar de tipo, respeitando duplicidade no destino, ou ser excluída após confirmação. Não há exclusão em cascata ou reclassificação automática.
 
-A aba bloqueia novos vínculos com uma categoria enquanto sua exclusão ou troca de tipo estiver pendente. Se uma nova leitura encontrar uma categoria removida ou um tipo incompatível por ação externa, a transação aparece com **Categoria indisponível**. Seu valor, data e efeito nos totais são preservados. A edição pede uma categoria compatível. A FK cobre os vínculos gravados no banco, e as transações desta etapa continuam locais à aba.
+A aba bloqueia novos vínculos com uma categoria enquanto sua exclusão ou troca de tipo estiver pendente. Se uma nova leitura encontrar uma categoria removida ou um tipo incompatível por ação externa, a transação aparece com **Categoria indisponível**. Seu valor, data e efeito nos totais são preservados. A edição pede uma categoria compatível. A FK do PostgreSQL exige o mesmo proprietário e tipo para vínculos gravados e impede excluir ou mudar o tipo de categoria vinculada. O React aplica a proteção dos vínculos que existem na aba. As transações, metas e aportes da aplicação permanecem em memória.
 
 As transações são descartadas na saída ou recarga. As categorias são lidas da conta autenticada e uma falha da API bloqueia a criação e a edição de vínculos até a recuperação da lista. Conversão, limites, sinais e cálculos monetários seguem as regras anteriores.
 
